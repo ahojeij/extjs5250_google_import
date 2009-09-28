@@ -46,7 +46,7 @@
      
 		<dwr:convert class="java.lang.Exception" type="exception"/>
 
-	    <!--dwr:convert class="java.lang.StackTraceElement" type="bean"/-->
+	    <dwr:convert class="java.lang.StackTraceElement" type="bean"/>
      
      	<dwr:convert type="bean" class="ws4is.spool.Spool"/>
      	<dwr:convert type="bean" class="ws4is.tn5250.Request"/>
