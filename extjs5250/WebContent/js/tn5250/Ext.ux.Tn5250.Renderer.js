@@ -60,14 +60,16 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 		this.render5250(Ext.ux.Tn5250.testdata);
 	},
 
-	exceptionHandler : function(data){
-		Ext.MessageBox('Error!',data);
+	exceptionHandler : function(){
+		var sc = arguments[1].stackTrace[0];
+		var msg = 'Server call error in <br> File : ' + sc.fileName + ' <br> Class : ' + sc.className + ' <br> Method : ' + sc.methodName + ' <br> Line : ' + sc.lineNumber;
+		Ext.Msg.alert( 'Error!',  msg );
 	},
 
 	initFirstScreen : function (data){
 		if (this.debug ) return;
 		if (data) 
-		Tn5250Proxy.processRequest([],{devName:this.devName},{ exceptionHandler : this.connectError, callback : this.render5250, scope:this}) ;	 
+		Tn5250Proxy.processRequest([],{devName:this.devName},{ exceptionHandler : this.exceptionHandler, callback : this.render5250, scope:this}) ;	 
 		
 	},
 	
@@ -84,7 +86,7 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 
 				// call initial connection
 		    	if (this.debug ) return;
-		    	Tn5250Proxy.CreateSession(render.devName,{exceptionHandler : this.connectError,callback : render.initFirstScreen, scope:render});
+		    	Tn5250Proxy.CreateSession(render.devName,{exceptionHandler : this.exceptionHandler,callback : render.initFirstScreen, scope:render});
 
 		    }
 		},this);
@@ -102,7 +104,7 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 			
 			// call initial connection
 			if (this.debug ) return;
-			Tn5250Proxy.CreateSession(render.devName,{exceptionHandler : this.connectError,callback : this.initFirstScreen, scope:this});		
+			Tn5250Proxy.CreateSession(render.devName,{exceptionHandler : this.exceptionHandler, callback : this.initFirstScreen, scope:this});		
 			return;
 		} 
 		
@@ -166,7 +168,7 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 					};
 			var flds =  this.formatJsonReq();
 			if (this.debug ) return;
-		Tn5250Proxy.processRequest(flds, req, { exceptionHandler : this.connectError, callback:this.render5250, scope:this});
+		Tn5250Proxy.processRequest(flds, req, { exceptionHandler : this.exceptionHandler, callback:this.render5250, scope:this});
 	},
 
 	// keyboard commands - field exit, up,down...
