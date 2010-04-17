@@ -38,9 +38,11 @@ Ext.ux.Tn5250.Field = Ext.extend(Ext.Component, {
                    this.el.setAttribute('class','password');
             	}
             }else  {
-            	this.el.setAttribute('type','text');
-                //TODO  based on field type set appropriate class 
-                this.el.setAttribute('class','textbox');            	
+            	this.el.setAttribute('type','text');                
+                if(this.screenEl.isBypassField()){
+                	this.el.setAttribute('readOnly',true);
+                	this.el.setAttribute('class','txtBypass'); 
+                } else this.el.setAttribute('class','textbox');;
             }
             this.el.setAttribute('length',this.screenEl.getMaxLength());
             this.el.setAttribute('size',this.screenEl.getLength());
@@ -56,6 +58,9 @@ Ext.ux.Tn5250.Field = Ext.extend(Ext.Component, {
      afterRender : function(){
         //Ext.ux.Tn5250.Field.superclass.onRender.call(this);
         this.el.on("focus", this.onFocus,  this);
+        this.el.on("blur", this.onBlur,this);
+        this.el.on("keyup", this.onKeyUp,this);
+        this.el.on("keypress", this.onKeyPress,this);
         
     	this.screenEl.setObject(this.obj);
 
@@ -64,30 +69,56 @@ Ext.ux.Tn5250.Field = Ext.extend(Ext.Component, {
           this.isDecimal = false;
           this.allowDecimal = false;
           this.allowNegative = false;
-          this.el.on("blur", this.extractNumber,this);
-          this.el.on("keyup", this.extractNumber,this);
-          this.el.on("keypress", this.blockNonNumbers,this);
     	};
     	if (this.screenEl.isSignedNumeric()){
           //this.decimal=2;//TODO does have this 
           this.isDecimal = false;
           this.allowDecimal = true;
           this.allowNegative = true;
-          this.el.on("blur", this.extractNumber,this);
-          this.el.on("keyup", this.extractNumber,this);
-          this.el.on("keypress", this.blockNonNumbers,this);
      	};
      	
-     	if (this.screenEl.isToUpper()){
-     		this.el.on("keyup", this.uppercase,this);
-     	}
-
     },
     
     
     //for rederer to know which field is focused
     onFocus : function(){
+      this.screenEl.setObject(this.obj);
       this.fireEvent("focus", this);
+    },
+    
+    onBlur : function(ev,target){
+    	if ( this.screenEl.isNumeric()){
+           return  this.extractNumber(ev,target);
+      	};
+      	if (this.screenEl.isSignedNumeric()){
+      		return this.extractNumber(ev,target);
+      	};
+    },
+    
+    onKeyUp : function(ev,target){
+    	if ( this.screenEl.isNumeric()){
+           return  this.extractNumber(ev,target);
+    	};
+      	if (this.screenEl.isSignedNumeric()){
+      		return this.extractNumber(ev,target);		
+      	};
+     	if (this.screenEl.isToUpper()){
+     		return this.uppercase(ev,target);
+     	}
+    },
+    
+    onKeyPress : function(ev,target){
+    	if ( this.screenEl.isBypassField()){
+            return false;
+     	};
+    	
+    	if ( this.screenEl.isNumeric()){
+           return this.blockNonNumbers(ev,target);
+    	};
+      	if (this.screenEl.isSignedNumeric()){
+      		return this.blockNonNumbers(ev,target);
+      	};
+
     },
 
     
@@ -124,7 +155,7 @@ Ext.ux.Tn5250.Field = Ext.extend(Ext.Component, {
         	return;
         }
 
-        if (this.screenEl.isToUpper()){this.el.dom.value =  this.el.dom.value.toUpperCase()};
+        if (this.screenEl.isToUpper()){this.el.dom.value =  this.el.dom.value.toUpperCase();};
         if (this.screenEl.isFER()){this.el.dom.value = " ".repeat(ml-l) + this.el.dom.value;};
 
     },
@@ -193,7 +224,7 @@ Ext.ux.Tn5250.Field = Ext.extend(Ext.Component, {
   		
   	if(window.event) {
   		key = e.keyCode;
-  		isCtrl = window.event.ctrlKey
+  		isCtrl = window.event.ctrlKey;
   	}
   	else if(e.which) {
   		key = e.which;

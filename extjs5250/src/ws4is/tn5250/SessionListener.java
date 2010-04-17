@@ -35,7 +35,7 @@ import org.tn5250j.Session5250;
 
 public class SessionListener implements HttpSessionListener {
 	
-	private List sessions = null;
+	private transient List sessions = null;
 	
 
 	public SessionListener() {

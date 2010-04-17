@@ -30,6 +30,7 @@
 .nondisp {background-color: black;color: black;} 
 .enterButton{display: none;}
 .textbox {font-family: courier new, courier, mono; font-size: 15px;  background: transparent; border-top-width: 0px;	border-right-width: 0px; border-bottom-width: thin; border-left-width: 0px; border-top-style: none; border-right-style: none; border-bottom-style: solid; border-left-style: none; border-bottom-color: #00CC33; color: #00CC33;}
+.txtBypass {font-family: courier new, courier, mono; font-size: 15px;  background: transparent; border-top-width: 0px;	border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; border-top-style: none; border-right-style: none; border-bottom-style: none; border-left-style: none;  color: #00CC33;}
 .password {font-family: courier new, courier, mono; font-size: 15px;  background: transparent; border-top-width: 0px;	border-right-width: 0px; border-bottom-width: thin; border-left-width: 0px; border-top-style: none; border-right-style: none; border-bottom-style: solid; border-left-style: none; border-bottom-color: #00CC33; color : green;}
 .hidden {font-family: courier new, courier, mono; font-size: 15px;  background: transparent; border-top-width: 0px;	border-right-width: 0px; border-bottom-width: thin; border-left-width: 0px; border-top-style: none; border-right-style: none; border-bottom-style: solid; border-left-style: none; border-bottom-color: #00CC33; color: #000000;}
 .container {background-color: black; color: #00FF00; font-family:courier;}

@@ -22,13 +22,14 @@
  */
 package ws4is.tn5250;
 
+
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 import org.directwebremoting.WebContextFactory;
+import org.slf4j.Logger;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.beans.ProtocolBean;
@@ -38,6 +39,8 @@ import org.tn5250j.framework.tn5250.ScreenOIA;
 
 public class Dwr5250 {
 
+	
+	final static Logger logger = org.slf4j.LoggerFactory.getLogger(Dwr5250.class);
 	public static String sessionStore = "tn5250";
 	//default host name 
 	private String hostName;
@@ -45,12 +48,17 @@ public class Dwr5250 {
 	public Dwr5250(String hostName) {	
 		this.hostName = hostName;
 	}
+	
+
 
 	//Create new telnet session by devicename as device name is unique
 	//If session already exists, does nothing - return true 
 	public boolean CreateSession(String devName){	
+
 		devName = devName.toUpperCase();
 		HttpSession session = WebContextFactory.get().getSession();
+		logger.info(String.format("Creating 5250 session for device : %s for session id %s" , devName,session.getId()));
+		
 		HashMap hm = getSessionStore(session);
 		
 		//TODO see a function
@@ -72,7 +80,8 @@ public class Dwr5250 {
 				Thread.sleep(2000);	
 			}				
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error(String.format("Error while creating new 5250 session for device : %s for session id %s" , devName,session.getId()));
+			logger.error("",e);
 			return false;
 		}
 		
@@ -83,15 +92,16 @@ public class Dwr5250 {
 	//remove TNSession from HTTPSession
 	public boolean DeleteSession(String devName){
 		devName = devName.toUpperCase();
+		HttpSession session = WebContextFactory.get().getSession();
 		try{
-			HttpSession session = WebContextFactory.get().getSession();
-
+			logger.info(String.format("Destroying 5250 session for device : %s for session id %s" , devName,session.getId()));
 			HashMap hm = getSessionStore(session);
 			Session5250 sess = (Session5250)hm.get(devName);
-			sess.disconnect();
-			hm.remove(devName);			
+			if(sess!=null) sess.disconnect();
+			hm.remove(devName);	
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error(String.format("Error destroying 5250 session for device : %s for session id %s" , devName,session.getId()));
+			logger.error("",e);
 			return false;
 		}
 		
@@ -116,7 +126,8 @@ public class Dwr5250 {
 			}else return null;
 			
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("Error processing 5250 request for session id : ".concat(httpsession.getId()));
+			logger.error("",e);
 			return null;
 		}
 				
@@ -196,14 +207,27 @@ public class Dwr5250 {
 	            
 	         }
 
-	         int prow = request.getCursorRow();
-	         if (prow > 0) {
-	        	 screen.setCursor( prow , 5);
+        	 //uzmi trenutno odabrani cursor ili field
+	         boolean nofld = request.getCursorField()<1;
+	         if (!nofld) {
+	        	 int fld = request.getCursorField();
+	        	 ScreenField sf = screen.getScreenFields().getField(fld);
+	        	 if (sf!=null)
+	        		 nofld = sf.isBypassField();
+	         }
+	        	 
+
+	         if (nofld) {
+	        	 screen.setCursor( request.getCursorRow() , 5);
 	         } else if (request.getCursorField() > 0) {
-	        	  int i = request.getCursorField()-1;
+	        	  int i = request.getCursorField();
+	        	  boolean setc = false;
 	        	  if (i<1){
-	        		  screen.gotoField(screen.getScreenFields().getSize());
-	        	  }else screen.gotoField(i);
+	        		 setc =  screen.gotoField(screen.getScreenFields().getSize());
+	        	  }else setc = screen.gotoField(i);
+	        	  if (!setc){
+	        		  System.out.println("Field not set");
+	        	  }
 	               //screen.gotoField(request.getCursorField());
 	         }
 
@@ -212,7 +236,7 @@ public class Dwr5250 {
 	            while (screen.getOIA().getInputInhibited() == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT
 	                  && screen.getOIA().getLevel() != ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
 	               try {
-	                  Thread.currentThread().sleep(300);
+	                  Thread.currentThread().sleep(500);
 	               }
 	               catch (InterruptedException ex) {
 	                  ;
@@ -234,12 +258,13 @@ public class Dwr5250 {
           int lenScreen = screen.getScreenLength();
           int lastAttr = 32;
           int pos = 0;
-          int row = 0;
+          int row = 1;
           int col = 0;
           boolean changeAttr = false;
           Element element= new Element(new ScreenElement());
           list.add(element.getElement());
-
+          screen.updateScreen();
+          //logger.info("****SCREEN CURSOR ACTIVE? ****" + Boolean.toString(screen.isCursorActive()));
           Data screenRect = new Data(1, 1, numRows, numCols, screen);         
 
 	         while (pos < lenScreen) {
@@ -324,6 +349,7 @@ public class Dwr5250 {
 	                     element.setLength(len);
 	                     element.setMaxLength(sf.getFieldLength());
 	                     element.setValue(value);
+	                     element.setRow(row); 
 	                     changeAttr = true;
 	                  }
 	               }
@@ -336,7 +362,7 @@ public class Dwr5250 {
 	                 element.setElement(new ScreenElement()); 
 	                 list.add(element.getElement());  
 	            	element.setValue("");
-	            	element.setFieldId(0); //not a field
+	            	element.setFieldId(-1); //not a field
 	            	element.setAttributeId(lastAttr);
 	                element.setRow(row);
 	                changeAttr = false;
@@ -347,7 +373,7 @@ public class Dwr5250 {
 	               row++;
 	                 element.setElement(new ScreenElement()); 
 	                 list.add(element.getElement());  
-	            	element.setFieldId(0); //not a field
+	            	element.setFieldId(-1); //not a field
 	            	element.setAttributeId(lastAttr);
 	                element.setRow(row);
 	                element.setValue("");

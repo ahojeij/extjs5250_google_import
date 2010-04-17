@@ -25,57 +25,57 @@ Ext.extend(Ext.ux.Tn5250.ScreenElement, Ext.util.Observable, {
     },
     
   isBreak :  function() {
-    if(this.o && this.o.br) {return this.o.br }
+    if(this.o && this.o.br) {return this.o.br; }
       else return false;
     },
 
 
   isField :  function() {
-     if(this.o && this.o.e4) {return this.o.e4>0 } 
+     if(this.o && this.o.e4) {return this.o.e4>0; } 
      else return false;
     },
 
   isHidden :  function() {
-    if(this.o && this.o.e1) {return this.o.e1 } 
+    if(this.o && this.o.e1) {return this.o.e1; } 
       else return false;
     },
 
 
 
   getFieldType :  function() {
-    if(this.o && this.o.e3) {return this.o.e3 }
+    if(this.o && this.o.e3) {return this.o.e3; }
       else return false;
     },
 
   getFieldId :  function() {
-    if(this.o && this.o.e4) {return this.o.e4 }
+    if(this.o && this.o.e4) {return this.o.e4; }
       else return -1;
     },
 
   getAttributeId :  function() {
-    if(this.o  && this.o.e5) {return this.o.e5 }
+    if(this.o  && this.o.e5) {return this.o.e5; }
       else return -1;
     },
 
 
   getLength :  function() {
-    if(this.o  && this.o.e7) {return this.o.e7 }
+    if(this.o  && this.o.e7) {return this.o.e7; }
       else return -1;
     },
 
   getMaxLength :  function() {
-    if(this.o  && this.o.e8) {return this.o.e8 }
+    if(this.o  && this.o.e8) {return this.o.e8; }
       else return -1;
     },
 
   getRow :  function() {
-    if(this.o && this.o.e9) {return this.o.e9 }
+    if(this.o && this.o.e9) {return this.o.e9; }
       else return -1;
     },
 
 
   getValue :  function() {
-    if(this.o && this.o.ea) {return this.o.ea }
+    if(this.o && this.o.ea) {return this.o.ea; }
       else return '';
     },
 

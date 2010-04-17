@@ -104,7 +104,7 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 			
 			// call initial connection
 			if (this.debug ) return;
-			Tn5250Proxy.CreateSession(render.devName,{exceptionHandler : this.exceptionHandler, callback : this.initFirstScreen, scope:this});		
+			Tn5250Proxy.CreateSession(this.devName,{exceptionHandler : this.exceptionHandler, callback : this.initFirstScreen, scope:this});		
 			return;
 		} 
 		
@@ -141,7 +141,7 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 	formatJsonReq : function() {
 		var collection = this.items.filter('id', 'FLD');
 		var fields = new Array(collection.getCount());
-		var i=0;
+		var i=0;	
 		collection.each( function(item, index, length) {
 			fields[i]= {
 				e4 :item.fieldId,
@@ -161,9 +161,9 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 				devName :this.devName,
 				keyRequest :key,
 				
-				cursorField :this.activeField.fieldId,
+				cursorField :this.activeField.screenEl.getFieldId(),
 				// or
-				cursorRow :0
+				cursorRow : this.activeField.screenEl.getRow()
 			// TODO add function to Text renderer, on click
 					};
 			var flds =  this.formatJsonReq();
@@ -297,10 +297,10 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 				prevIsField = false;
 			}
 			// add focus listener to element
-			elm.on('focus', function(o) {this.activeField = o}, this);
+			elm.on('focus', function(o) {this.activeField = o;}, this);
 			
 			// TODO add listener for text also
-			// elm.on('click',function(o){ this.getParent().activeField = o.id}, this);
+			 elm.on('click',function(o){this.activeField = o;}, this);
 		
 			// add element to the screen container (form) and focus it if needed
 			this.add(elm);
@@ -319,415 +319,11 @@ Ext.ux.Tn5250.Renderer = Ext.extend(Ext.form.FormPanel, {
 	// used to disable selection (events : onselectstart - ie, onmousedown -
 	// mozilla)
 		dummyEvent : function() {
-			return false
+			return false;
 		}
 });
 
+
 Ext.reg('ext5250', Ext.ux.Tn5250.Renderer);	
 
-	Ext.ux.Tn5250.testdata = [
-			{
-				e3 :0,
-				e4 :0,
-				e5 :0,
-				e7 :0,
-				e8 :0,
-				e9 :0,
-				ea :"                      "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :34,
-				e7 :0,
-				e8 :0,
-				e9 :0,
-				ea :"             Sign On              "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :0,
-				ea :" SUBSYSTEM : QINTER     "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :1,
-				ea :"                                                         DISPLAY   : TOMI       "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :2,
-				ea :"                                                                     "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :39,
-				e7 :0,
-				e8 :0,
-				e9 :2,
-				ea :"S104TWHM "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :2,
-				ea :"  "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :3,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :4,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :5,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :6,
-				ea :"                User  . . . . . . . .   "
-			},
-			{
-				e3 :1,
-				e4 :1,
-				e5 :0,
-				e6 :1,
-				e7 :10,
-				e8 :10,
-				e9 :0,
-				ea :""
-			},
-			{
-				e1 :1,
-				e3 :0,
-				e4 :0,
-				e5 :36,
-				e7 :0,
-				e8 :0,
-				e9 :6,
-				ea :" "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :6,
-				ea :"                             "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :7,
-				ea :"                Password  . . . . . .   "
-			},
-			{
-				e1 :1,
-				e3 :1,
-				e4 :2,
-				e5 :0,
-				e7 :10,
-				e8 :10,
-				e9 :0,
-				ea :""
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :39,
-				e7 :0,
-				e8 :0,
-				e9 :7,
-				ea :" "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :7,
-				ea :"                             "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :8,
-				ea :"                Program/procedure . .   "
-			},
-			{
-				e3 :0,
-				e4 :3,
-				e5 :0,
-				e7 :10,
-				e8 :10,
-				e9 :0,
-				ea :""
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :36,
-				e7 :0,
-				e8 :0,
-				e9 :8,
-				ea :" "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :8,
-				ea :"                             "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :9,
-				ea :"                Menu  . . . . . . . .   "
-			},
-			{
-				e3 :0,
-				e4 :4,
-				e5 :0,
-				e7 :10,
-				e8 :10,
-				e9 :0,
-				ea :""
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :36,
-				e7 :0,
-				e8 :0,
-				e9 :9,
-				ea :" "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :9,
-				ea :"                             "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :10,
-				ea :"                Current library . . .   "
-			},
-			{
-				e3 :0,
-				e4 :5,
-				e5 :0,
-				e7 :10,
-				e8 :10,
-				e9 :0,
-				ea :""
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :36,
-				e7 :0,
-				e8 :0,
-				e9 :10,
-				ea :" "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :10,
-				ea :"                             "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :11,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :12,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :13,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :14,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :15,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :16,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :17,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :18,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :19,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :20,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :21,
-				ea :"                                                                                "
-			},
-			{
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :22,
-				ea :"                                                                                "
-			}, {
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :23,
-				ea :"                                  "
-			}, {
-				e3 :0,
-				e4 :0,
-				e5 :34,
-				e7 :0,
-				e8 :0,
-				e9 :23,
-				ea :" (C) COPYRIGHT IBM CORP. 1980, 2000.     "
-			}, {
-				e3 :0,
-				e4 :0,
-				e5 :32,
-				e7 :0,
-				e8 :0,
-				e9 :24,
-				ea :""
-			} ];
+

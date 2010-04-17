@@ -10,6 +10,14 @@
 //assign json object, and pass Renderer.ScreenElement
 Ext.ux.Tn5250.Text = Ext.extend(Ext.BoxComponent, {
 
+    initComponent : function(){
+
+		Ext.ux.Tn5250.Text.superclass.initComponent.call(this);
+	    this.addEvents(
+	            'click'
+	            );        
+	},
+
     onRender : function(ct, position){
 
         this.screenEl.setObject(this.obj);
@@ -28,7 +36,16 @@ Ext.ux.Tn5250.Text = Ext.extend(Ext.BoxComponent, {
         }
         Ext.ux.Tn5250.Text.superclass.onRender.call(this, ct, position);
     },
+    
+    afterRender : function(){
+        this.el.on("click", this.onClick,  this);
+    },
 
+    onClick : function(){
+    	this.screenEl.setObject(this.obj);
+        this.fireEvent("click", this);
+      },
+      
      htmlEncode : function(value){
               return !value ? value : String(value).replace(/ /g,'&nbsp;');
         }
