@@ -1,0 +1,122 @@
+.tnline {
+  margin-top:4px;
+}
+
+ /* color styles. */
+.tnmain {background : midnightblue;
+        color : gray;
+        align : "center";
+        text-align : "center";
+        }
+ .tncontainer2 {padding:5px;font-size: 15px; font-family: courier new, courier, mono; !important;}
+ .tncontainer {padding:5px;font-size: 10px; font-family: Lucida Console, Monaco, monospace;  !important;}
+ 
+ .tncontainer .button{
+    cursor:pointer;
+    color:  midnightblue;
+    text-align: center;
+    text-shadow: 0 -1px 1px #64799e;
+    background: #d5d5d5;
+    }
+    
+.tncontainer .txtBypass {background: transparent; 
+           border-width:0 0 0 0px;
+           border-style: none;
+           color: #00CC33;
+           text-decoration: none;}
+
+.tncontainer .password { background: transparent; 
+          border-width:0 0 thin 0px;
+          border-style: solid;
+          border-color: #00CC33; 
+          color : #00CC33;}
+
+.tncontainer .hidden {background: transparent; 
+        border-width:0 0 thin 0px;
+        border-style: solid;
+        border-color: #00CC33;
+        color: #000000;}
+        
+.tncontainer .textbox { background: transparent; 
+         border-width:0 0 thin 0px;
+         border-style: solid;
+         border-color: #00CC33;
+         color: #00CC33;}
+         
+         
+.tncontainer . midnightblue {color: midnightblue;text-decoration: none;} 
+.tncontainer .green {color: Chartreuse;text-decoration: none;} 
+.tncontainer .green-ul {color: Chartreuse;text-decoration: underline;} 
+.tncontainer .green-rv {background-color: Chartreuse;color:  midnightblue;text-decoration: none;} 
+.tncontainer .green-rv-ul {background-color: Chartreuse;color:  midnightblue;text-decoration: underline;} 
+.tncontainer .white {color: white;text-decoration: none;}
+.tncontainer .white-ul {color: white;text-decoration: underline;} 
+.tncontainer .white-rv {background-color: white;color:  midnightblue;text-decoration: none;}
+
+.tncontainer .red {color: crimson;text-decoration: none;}
+.tncontainer .red-rv {background-color: crimson;color: white;text-decoration: none;}
+.tncontainer .red-hi {color: crimson;text-decoration: none;}
+.tncontainer .red-hi-rv {background-color: crimson;color: white;text-decoration: none;}
+.tncontainer .red-ul {color: crimson;text-decoration: underline;} 
+.tncontainer .red-ul-hi-rv {background-color: crimson;color: white;text-decoration: underline;} 
+.tncontainer .red-ul-hi {color: crimson;text-decoration: underline;}  
+
+
+.tncontainer .blue {color: CornflowerBlue;text-decoration: none;}
+.tncontainer .blue-ul {color: CornflowerBlue;text-decoration: underline;} 
+.tncontainer .blue-rv {background-color: CornflowerBlue;color:  midnightblue;text-decoration: none;} 
+.tncontainer .blue-rv-ul {background-color: CornflowerBlue;color:  midnightblue;text-decoration: underline;} 
+
+.tncontainer .pink {color: hotpink;text-decoration: none;} 
+.tncontainer .pink-ul {color: hotpink;text-decoration: underline;} 
+.tncontainer .pink-rv {background-color: hotpink;color:  midnightblue;text-decoration: none;} 
+.tncontainer .pink-rv-ul {background-color: hotpink;color:  midnightblue;text-decoration: underline;}
+
+.tncontainer .yellow {color: yellow;text-decoration: none;} 
+.tncontainer .yellow-ul {color: yellow;text-decoration: underline;} 
+.tncontainer .yellow-rv {background-color: yellow;color:  midnightblue;text-decoration: none;} 
+
+.tncontainer .turq {color: turquoise;text-decoration: none;} 
+.tncontainer .turq-ul {color: turquoise;text-decoration: underline;} 
+.tncontainer .turq-cs {color: turquoise;text-decoration: none;} 
+.tncontainer .turq-rv {background-color: turquoise;color:  midnightblue;text-decoration: none;} 
+.tncontainer .turq-rv-ul {background-color: turquoise;color:  midnightblue;text-decoration: underline;} 
+
+.tncontainer .nondisp {background-color:  midnightblue;color:  midnightblue;text-decoration: none;} 
+.tncontainer .enterButton{display: none;}
+         
+
+.tncontainer .txt_green { border-color: #00CC33;}
+.tncontainer .txt_white { border-color :white;}
+.tncontainer .txt_red { border-color :red;}
+.tncontainer .txt_blue { border-color :CornflowerBlue;}
+.tncontainer .txt_pink  {border-color:pink;}
+.tncontainer .txt_yellow { border-color:yellow;}
+.tncontainer .txt_turq {border-color:turquoise;}
+
+        
+/* crimson blink */
+.tncontainer .red-hi_i {background-color:  midnightblue;color:  midnightblue;}
+.tncontainer .red-hi-rv_i {background-color:  midnightblue;color: crimson;}
+.tncontainer .red-ul-hi_i {background-color:  midnightblue;color:  midnightblue; 
+             border-width:0 0 thin 0px;
+             border-left-width: 0px; 
+             border-style: solid; 
+             border-color: crimson;}
+
+.tnstatus {background-color:  midnightblue;
+        color: white;
+        border-top:solid 2px White;
+        width:100%;
+        text-align:left;
+        padding-left: 2px;
+        font-size: 14px;
+        font-weight: 600;}
+                
+.tnstatus .red {color: crimson;}
+.tnstatus .yellow {color: yellow;} 
+.tnstatus .white {color: white;}
+
+.tnstatus .busy{background-image:url('../img/wait.gif');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .msgw{background-image:url('../img/mail.png');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .err{background-image:url('../img/exclamation.png');background-repeat:no-repeat;margin-top:2px;}
