@@ -24,11 +24,8 @@ package hr.ws4is.websocket.data;
  * Object to be converted into JSON structure.
  * {type :'ws' , sid : session_id , tid : transaction_id, timeout : 0 , ....}
  */
-public class WebSocketResponse 
-{
-	public final String type = "ws";
-	public final String sid; // connection unique id
-	public final String tid; // transaction unique id
+public class WebSocketResponse {
+	private String type = "ws";
 
 	public final WebSocketInstruction cmd;
 	
@@ -36,16 +33,44 @@ public class WebSocketResponse
 	public int errId;
 	public Object data;
 	
-	public WebSocketResponse(WebSocketRequest request, WebSocketInstruction cmd){
-		this.sid=request.getSid();
-		this.tid=request.getTid();
+	public WebSocketResponse(WebSocketInstruction cmd){
 		this.cmd=cmd;
 	}
 
-	public WebSocketResponse(String sid, String tid, WebSocketInstruction cmd) {
-		super();
-		this.sid = sid;
-		this.tid = tid;
-		this.cmd = cmd;
-	}	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getErrMsg() {
+		return errMsg;
+	}
+
+	public void setErrMsg(String errMsg) {
+		this.errMsg = errMsg;
+	}
+
+	public int getErrId() {
+		return errId;
+	}
+
+	public void setErrId(int errId) {
+		this.errId = errId;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	public WebSocketInstruction getCmd() {
+		return cmd;
+	}
+	
 }

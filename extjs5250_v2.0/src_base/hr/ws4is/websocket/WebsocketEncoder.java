@@ -20,21 +20,17 @@ package hr.ws4is.websocket;
 
 import hr.ws4is.JsonDecoder;
 import hr.ws4is.websocket.data.WebSocketResponse;
-
 import java.io.IOException;
-
 import javax.enterprise.inject.Vetoed;
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @Vetoed
 public class WebsocketEncoder implements Encoder.Text<WebSocketResponse> {
 	private ObjectMapper mapper = null;
-
+		
 	@Override
 	public void destroy() {
 		mapper = null;
@@ -49,9 +45,8 @@ public class WebsocketEncoder implements Encoder.Text<WebSocketResponse> {
 	public String encode(WebSocketResponse data) throws EncodeException	{
 		String response = null;
 		try {
-			if(mapper!=null)
-			{
-				response = mapper.writeValueAsString(data);	
+			if(mapper!=null){
+				response = mapper.writeValueAsString(data);				
 			}			
 		} catch (IOException e) {
 			e.printStackTrace();

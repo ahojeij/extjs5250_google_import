@@ -20,11 +20,12 @@ package hr.ws4is.ext;
 
 public class ExtJSDirectResponse<T> {
 	//{"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
-	public String action;
-	public String method;
-	public String type;
-	public String tid;
-	public ExtJSResponse result;		
+	private String action;
+	private String method;
+	private String type;
+	private String tid;
+	private boolean remove = true;
+	private ExtJSResponse result;		
 	
 	public ExtJSDirectResponse(ExtJSDirectRequest<T> request, ExtJSResponse response) {
 		super();
@@ -34,45 +35,53 @@ public class ExtJSDirectResponse<T> {
 		this.tid = request.tid;
 		this.type = request.type;
 	}
-	
-	public ExtJSResponse getResult() {
-		return result;
-	}
-	
-	public void setResult(ExtJSResponse result) {
-		this.result = result;
-	}
-	
+
 	public String getAction() {
 		return action;
 	}
-	
+
 	public void setAction(String action) {
 		this.action = action;
 	}
-	
+
 	public String getMethod() {
 		return method;
 	}
-	
+
 	public void setMethod(String method) {
 		this.method = method;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
-	
+
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public String getTid() {
 		return tid;
 	}
-	
+
 	public void setTid(String tid) {
 		this.tid = tid;
+	}
+
+	public boolean isRemove() {
+		return remove;
+	}
+
+	public void setRemove(boolean remove) {
+		this.remove = remove;
+	}
+
+	public ExtJSResponse getResult() {
+		return result;
+	}
+
+	public void setResult(ExtJSResponse result) {
+		this.result = result;
 	}
 	
 }

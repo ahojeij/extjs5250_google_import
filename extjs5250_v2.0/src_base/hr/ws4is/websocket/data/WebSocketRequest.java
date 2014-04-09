@@ -27,13 +27,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * JsonNode to be converted into JSON structure.
- * {type :'ws' , sid : session_id , tid : transaction_id, timeout : 0 , ....}
  */
-public class WebSocketRequest 
-{
+public class WebSocketRequest {
 	public final String type = "ws";
-	String sid; // connection unique id
-	String tid; // transaction unique id
 
 	WebSocketInstruction cmd;  // 'welcome , bye, data' ,
 	int timeout;  //set only when cmd=welcome
@@ -43,22 +39,6 @@ public class WebSocketRequest
 	
 	//list of commands - batch
 	ArrayList<ExtJSDirectRequest<JsonNode>> data;
-	
-	public String getSid() {
-		return sid;
-	}
-	
-	public void setSid(String sid) {
-		this.sid = sid;
-	}
-	
-	public String getTid() {
-		return tid;
-	}
-	
-	public void setTid(String tid) {
-		this.tid = tid;
-	}
 	
 	public WebSocketInstruction getCmd() {
 		return cmd;

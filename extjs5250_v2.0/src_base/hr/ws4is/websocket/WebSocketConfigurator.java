@@ -32,6 +32,7 @@ import javax.websocket.server.ServerEndpointConfig;
 
 @Vetoed
 public class WebSocketConfigurator extends ServerEndpointConfig.Configurator{
+	
 	@Override
 	public String getNegotiatedSubprotocol(List<String> supported, List<String> requested){
 		return "ws4is";
@@ -52,13 +53,11 @@ public class WebSocketConfigurator extends ServerEndpointConfig.Configurator{
 		Locale locale = Locale.ENGLISH;
 		List<String> params = request.getHeaders().get("Accept-Language");
 	
-		if(params==null) 
-		{
+		if(params==null) {
 			return locale;
 		}
 		
-		if(params.size()>0)
-		{
+		if(params.size()>0){
 			String data = params.get(0);
 			data = data.split(";")[0];
 			data = data.split(",")[0];

@@ -85,8 +85,7 @@ public class WebSocketEndpoint {
 		
 		try {
 			
-			if(!WS.equals(message.getType()))
-			{
+			if(!WS.equals(message.getType())){
 				return;
 			}
 
@@ -94,18 +93,17 @@ public class WebSocketEndpoint {
 			websocketContextThreadLocal.set(wsession);
 			webSocketEvent.fire(new WebsocketEvent(wsession, WebSocketEventStatus.MESSAGE ));
 			
-			switch(message.getCmd())
-			{
-			case WELCO : processWelco(wsession,message); break;	
-			case DATA : processData(wsession,message); break;
-			case ECHO : processEcho(wsession,message); break;
-			case BYE : processBye(wsession,message); break;
-			case ERR : break;
+			switch(message.getCmd()){
+				case WELCO : processWelco(wsession,message); break;	
+				case DATA : processData(wsession,message); break;
+				case ECHO : processEcho(wsession,message); break;
+				case BYE : processBye(wsession,message); break;
+				case ERR : break;
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			WebSocketResponse wsResponse = new WebSocketResponse(message, WebSocketInstruction.DATA);
+			WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
 			ExtJSResponse directResponse = new ExtJSResponse(e,e.getMessage()) ; 
 			wsResponse.data = directResponse;
 			sendResponse(wsResponse,wsession);		
@@ -129,10 +127,9 @@ public class WebSocketEndpoint {
 			websocketContextThreadLocal.set(wsession);
 			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.START));
 			
-			if(!wsession.isValidHttpSession())
-			{
+			if(!wsession.isValidHttpSession()){
 				System.out.println("Websocket requires valid http session");
-				WebSocketResponse response = new WebSocketResponse(null, null, WebSocketInstruction.ERR);
+				WebSocketResponse response = new WebSocketResponse(WebSocketInstruction.ERR);
 				response.errMsg = "Websocket requires valid http session";
 				String responseString =  JsonDecoder.getJSONEngine().writeValueAsString(response);
 				session.close(new CloseReason(CloseCodes.VIOLATED_POLICY, responseString));
@@ -148,7 +145,7 @@ public class WebSocketEndpoint {
 
 	public void onClose(final Session session, final CloseReason reason) {
 		
-		final WebSocketSession wsession = new WebSocketSession(session);		
+		final WebSocketSession wsession = new WebSocketSession(session, null);		
 		try{
 			websocketContextThreadLocal.set(wsession);
 			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.CLOSE));	
@@ -159,7 +156,7 @@ public class WebSocketEndpoint {
 
 	public void onError(Session session, Throwable t) {
 		
-		final WebSocketSession wsession = new WebSocketSession(session);		
+		final WebSocketSession wsession = new WebSocketSession(session, null);		
 		try{
 			websocketContextThreadLocal.set(wsession);
 			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.ERROR,t));	
@@ -188,10 +185,10 @@ public class WebSocketEndpoint {
 		List<ExtJSDirectResponse<?>> responseList = new ArrayList<ExtJSDirectResponse<?>>();
 		List<ExtJSDirectRequest<JsonNode>> requests =  wsMessage.getData();
 		String wsPath = (String) session.getUserProperties().get(WS4ISConstants.WEBSOCKET_PATH);
-		for(ExtJSDirectRequest<JsonNode> request : requests )
-		{
+		for(ExtJSDirectRequest<JsonNode> request : requests ){
 			ExtJSDirectResponse<?> directResponse = null;
 			try{
+				session.setTransactionID(request.getTid());
 				directResponse = directOperations.process(request,session.getHttpSession(),wsPath);
 				responseList.add(directResponse);				
 			}catch(Exception e){
@@ -200,24 +197,21 @@ public class WebSocketEndpoint {
 				responseList.add(errorDirectResponse);
 			}
 
-			if(!session.isOpen())
-			{
+			if(!session.isOpen()){
 				break;
 			}
 		}
 		
 		//send response
-		if(session.isOpen())
-		{			
-			WebSocketResponse wsResponse = new WebSocketResponse(wsMessage, WebSocketInstruction.DATA);
+		if(session.isOpen()){			
+			WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
 			wsResponse.data = responseList;
 			sendResponse(wsResponse,session);
 		}		
 	}
 	
 	private void sendResponse(WebSocketResponse data , WebSocketSession session){
-		if(data!=null && session.isOpen())
-		{			
+		if(data!=null && session.isOpen()){			
 			try {
 				Async basic = session.getAsyncRemote();
 				basic.sendObject(data);

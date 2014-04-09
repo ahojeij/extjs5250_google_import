@@ -42,7 +42,9 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 public class WebSocketSession implements Session {
+
 	private final Session session;
+	private String transactionID;
 	
 	public WebSocketSession(Session session) {
 		super();
@@ -68,7 +70,7 @@ public class WebSocketSession implements Session {
 			return ;
 		}
 		
-		WebSocketResponse response = new WebSocketResponse(null, null, WebSocketInstruction.BYE);
+		WebSocketResponse response = new WebSocketResponse(WebSocketInstruction.BYE);
 		try {
 			session.getBasicRemote().sendObject(response);
 		} catch (EncodeException e) {
@@ -82,14 +84,13 @@ public class WebSocketSession implements Session {
 		session.close(arg0);
 	}
 
-	@Override
-	public Async getAsyncRemote() {
-		return session.getAsyncRemote();
-	}
 
-	@Override
-	public Basic getBasicRemote() {
-		return session.getBasicRemote();
+	public void sendResponse(WebSocketResponse reponse, boolean async) throws IOException, EncodeException {
+		if(async) {
+			session.getAsyncRemote().sendObject(reponse);
+		} else {
+			session.getBasicRemote().sendObject(reponse);	
+		}		
 	}
 
 	@Override
@@ -233,6 +234,24 @@ public class WebSocketSession implements Session {
 	@Override
 	public int hashCode() {
 		return session.hashCode();
+	}
+
+	@Override
+	public Async getAsyncRemote() {
+		return session.getAsyncRemote();
+	}
+
+	@Override
+	public Basic getBasicRemote() {
+		return session.getBasicRemote();
+	}
+
+	public String getTransactionID() {
+		return transactionID;
+	}
+
+	public void setTransactionID(String transactionID) {
+		this.transactionID = transactionID;
 	}
 	
 }
