@@ -26,6 +26,9 @@
        <script type="text/javascript" src="js/tn5250/Ext.ux.Tn5250.Panel.js"></script>
        <script type="text/javascript" src="js/tn5250/Ext.ux.Tn5250.TabPanel.js"></script>
 
+       <script type="text/javascript" src="js/desktop/Ext.ux.Tn5250.HostsMenu.js"></script>
+       <script type="text/javascript" src="js/desktop/Ext.ux.Tn5250.Window.js"></script>
+              
        <script type="text/javascript" src="js/init.js"></script>
        <script type="text/javascript" src="js/desktop/index.js"></script>
 

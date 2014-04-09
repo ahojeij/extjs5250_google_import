@@ -36,16 +36,4 @@ Ext.onReady(function(){
 	Ext.direct.Manager.addProvider(ws_REMOTING_API);
 	Ext.ux.Tn5250.Proxy.RegisterAPI(tn5250API);
 	
-	//reset
-	/*
-	 var prov = Ext.direct.Manager.getProvider('5250provider')
-	 prov.clearListeners()
-	 */
-	//for debug
-	/*
-	Ext.direct.Manager.getProvider('5250provider').addListener('data', function(){console.log(arguments)});
-	Ext.direct.Manager.getProvider('5250provider').addListener('connect', function(){console.log(arguments)});
-	Ext.direct.Manager.getProvider('5250provider').addListener('exception', function(){console.log(arguments)});
-	*/
-	
 });
