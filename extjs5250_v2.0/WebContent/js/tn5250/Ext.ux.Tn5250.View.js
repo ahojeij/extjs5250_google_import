@@ -178,7 +178,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 
 	getRequest : function(key,data){
 	    var req = {
-	    	 devName :this.devName,
+	    	 displayID :this.displayID,
 			 keyRequest :key,
 			 data:data ,
 			 cursorField :this.activeField.screenEl.getFieldId(),

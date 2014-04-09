@@ -20,7 +20,7 @@ Ext.define('Ext.ux.Tn5250.TabPanel', {
     		 	    newCard.fireEvent('tabchange');
     	 	          },
 	         remove : function(t,c,o){
-    			    Ext.ux.Tn5250.Proxy.CloseSession(c.devName);
+    			    Ext.ux.Tn5250.Proxy.CloseSession(c.displayID);
 	 		  }
     },
     autoReload : true,
@@ -51,7 +51,7 @@ Ext.define('Ext.ux.Tn5250.TabPanel', {
     
    createPanel: function(dev){
        var me = this,
-       cfg = {title : dev, devName : dev, closable : true, active : true, autodestroy :true};
+       cfg = {title : dev, displayID : dev, closable : true, active : true, autodestroy :true};
        var pnl = Ext.create('Ext.ux.Tn5250.Panel', cfg);
        me.add(pnl);
        me.setActiveTab(pnl);
@@ -61,7 +61,7 @@ Ext.define('Ext.ux.Tn5250.TabPanel', {
   createSession: function(name){
       var me = this;
       Ext.ux.Tn5250.Proxy.CreateSession(name, {success : function(res){
-      	me.createPanel(res.devName);
+      	me.createPanel(res.displayID);
       }});
   }
       

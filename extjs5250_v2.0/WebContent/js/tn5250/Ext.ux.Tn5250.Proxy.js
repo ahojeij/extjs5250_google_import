@@ -31,8 +31,8 @@
     };
     
     
-    var getDisplay = function (devName){
-    	var panels = Ext.ComponentQuery.query('tnpanel[devName="'+ devName +'"]')
+    var getDisplay = function (displayID){
+    	var panels = Ext.ComponentQuery.query('tnpanel[displayID="'+ displayID +'"]')
 		 if(panels.length==1){
 			 return panels[0];
 		 }
@@ -51,9 +51,12 @@
 			API = remotingApi;
             var prov = Ext.direct.Manager.getProvider(API.provider);
             prov.addListener('data',function(prov,resp,act){
+            	//debug
+            	window.resp = resp;
             	console.log(resp);
-                if(resp.devName){
-                	var panel = getDisplay(resp.devName);
+            	
+                if(resp.displayID){
+                	var panel = getDisplay(resp.displayID);
                     if(panel){
                     	panel.fireEvent('5250response',resp);
                      }                        		  
@@ -62,12 +65,12 @@
 
 		},
 
-		RefreshSession : function (devName, cb){
-			eval(buildApiCall('refresh'))(devName, cb);
+		RefreshSession : function (displayID, cb){
+			eval(buildApiCall('refresh'))(displayID, cb);
 		},
         		
-        CloseSession : function (devName, cb){
-         	eval(buildApiCall('close'))(devName, cb);
+        CloseSession : function (displayID, cb){
+         	eval(buildApiCall('close'))(displayID, cb);
         },
 
 

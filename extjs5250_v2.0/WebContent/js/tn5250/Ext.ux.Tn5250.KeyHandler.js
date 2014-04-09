@@ -12,7 +12,7 @@
 Ext.define('Ext.ux.Tn5250.KeyHandler',{
   extend : 'Ext.util.Observable',
 
-  devName : '',
+  displayID : '',
 
   constructor : function(config){
     var me = this;

@@ -35,7 +35,7 @@ Ext.define('Ext.ux.Tn5250.Panel', {
 	          pack  : 'start'
 	        };
 		
-	        me.items = [{xtype: 'tnview', devName : me.devName},
+	        me.items = [{xtype: 'tnview', displayID : me.displayID},
 	                    {xtype:'tnstatusline'}
 	                   ];
 		me.callParent();
