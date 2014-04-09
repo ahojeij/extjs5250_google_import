@@ -133,7 +133,7 @@ public class Tn5250Controller {
 				response = new Tn5250ResponseScreen(true,null);
 				response.setLocked(true);
 				response.setClearScr(true);
-				response.setDevName(displayId);
+				response.setDisplayID(displayId);
 				
 				Runnable rn = new Runnable() {
 					@Override
@@ -180,7 +180,7 @@ public class Tn5250Controller {
 		} catch (Exception e){
 			response = getErrorResponse(e);
 		}
-		response.setDevName(data);
+		response.setDisplayID(data);
         return response;
 	}
 
@@ -200,7 +200,7 @@ public class Tn5250Controller {
 		} catch (Exception e){
 			response = getErrorResponse(e);
 		}
-		response.setDevName(data);
+		response.setDisplayID(data);
         return response;		
 	}
 	
@@ -222,7 +222,7 @@ public class Tn5250Controller {
 		} catch (Exception e){
 			response = getErrorResponse(e);
 		}
-		response.setDevName(data.getDevName());
+		response.setDisplayID(data.getDisplayID());
         return response;
 	}
 	
@@ -249,7 +249,7 @@ public class Tn5250Controller {
 	}	
 	
 	private TnSession findTnSession(TnScreenRequest data){
-		return getTnSessions().get(data.getDevName());
+		return getTnSessions().get(data.getDisplayID());
 	}
 
 	private TnSession findTnSession(String name){

@@ -27,7 +27,7 @@ public class TnScreenRequest {
 	private String keyRequest;
 	private int cursorField; 
 	private int cursorRow;
-	private String devName;
+	private String displayID;
 	private String data;
 	
 	public String getKeyRequest() {
@@ -48,17 +48,17 @@ public class TnScreenRequest {
 	public void setCursorRow(int cursorRow) {
 		this.cursorRow = cursorRow;
 	}
-	public String getDevName() {
-		return devName;
-	}
-	public void setDevName(String devName) {
-		this.devName = devName.toUpperCase();
-	}
 	public String getData() {
 		return data;
 	}
 	public void setData(String data) {
 		this.data = data;
+	}
+	public String getDisplayID() {
+		return displayID;
+	}
+	public void setDisplayID(String displayID) {
+		this.displayID = displayID;
 	}
 	
 }

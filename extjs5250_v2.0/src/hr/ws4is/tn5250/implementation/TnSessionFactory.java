@@ -40,7 +40,6 @@ public enum TnSessionFactory {
 		String hostName = host.getName();		
 		Session5250 session = createSession(wsSession,host,displayName, displayId);		
 		TnSession hostSession = new TnSession(displayId, displayName, hostName, session);
-		System.out.println(session.getAllocDeviceName());
 		return hostSession;
 	}
 	
@@ -83,7 +82,7 @@ public enum TnSessionFactory {
 	    TnSessionListener listener = new TnSessionListener(wsSession, displayId);
 	    hostSession.addSessionListener(listener);
 	    hostSession.connect(); 
-            return hostSession;
+        return hostSession;
 	}
 	
 }

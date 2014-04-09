@@ -30,7 +30,8 @@ public class Tn5250ResponseScreen extends ExtJSResponse {
 
 	private static final long serialVersionUID = 1L;
 	
-	public String devName;	
+	public String devName;
+	public String displayID;	
 	public boolean locked;		 //sends lock screen request
 	public boolean clearScr = true; //sends clear screen request
 	public int size = 80;		 //sends screen size 80/132
@@ -109,6 +110,12 @@ public class Tn5250ResponseScreen extends ExtJSResponse {
 		this.data = data;
 	}
 
-	
+	public String getDisplayID() {
+		return displayID;
+	}
+
+	public void setDisplayID(String displayID) {
+		this.displayID = displayID;
+	}
 
 }

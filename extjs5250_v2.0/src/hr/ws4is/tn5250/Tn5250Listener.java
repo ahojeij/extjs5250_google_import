@@ -28,7 +28,6 @@ import hr.ws4is.websocket.WebsocketEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,11 +76,12 @@ public final class Tn5250Listener implements HttpSessionListener, ServletContext
 	protected void onWSClose(@Observes WebsocketEvent wsEvent){		
 	  if(wsEvent.getEventStatus() == WebSocketEventStatus.START){
 		  WebSocketSession wsSession = wsEvent.getWebSocketSession();
-		  Map<String, TnSession> sessions = (Map<String, TnSession>) wsSession.getHttpSession().getAttribute(TnSession.class.getCanonicalName());
-		  Iterator<TnSession> it = sessions.values().iterator();
-		  while(it.hasNext()){
-			  TnSession session = it.next();
-			  session.updateWebSocketSession(wsSession);
+		  Map<String, TnSession> tnSessions = (Map<String, TnSession>) wsSession.getHttpSession().getAttribute(TnSession.class.getCanonicalName());
+		  Collection<TnSession> sessions =  tnSessions.values();
+		  for(TnSession session : sessions){
+			  if(session.isConnected()){
+				  session.updateWebSocketSession(wsSession);
+			  }
 		  }
 	  }
 	}

@@ -36,7 +36,7 @@ public class TnSession {
 	//(needed because displayName can be null and it's impossible to know host generated display name)
 	public String displayId;
 	
-	//display name of 5250 connectiond (can be null)
+	//display name of 5250 connection (can be null)
 	public String displayName;
 	
 	//virtual host name to which real configuration is mapped
@@ -54,17 +54,15 @@ public class TnSession {
 	}
 	
 	/*process key request*/
-	public void process(TnScreenRequest request, TnScreenElement[] fields){
-		TnStreamProcessor processor = new TnStreamProcessor();
-		processor.process(session, request, fields);
+	public void process(TnScreenRequest request, TnScreenElement[] fields){		
+		TnStreamProcessor.process(session, request, fields);
 	}
 	
 	/*resends last screen*/
 	public Tn5250ResponseScreen refresh(){
 		Tn5250ResponseScreen response = new Tn5250ResponseScreen(true, null);
-		response.setDevName(this.displayId);
-		TnStreamProcessor processor = new TnStreamProcessor();
-		processor.refresh(session, response);
+		response.setDisplayID(this.displayId);
+		TnStreamProcessor.refresh(session, response);
 		return response;
 	}
 

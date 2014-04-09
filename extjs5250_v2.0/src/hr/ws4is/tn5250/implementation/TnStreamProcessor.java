@@ -23,66 +23,53 @@ import hr.ws4is.tn5250.data.TnScreenData;
 import hr.ws4is.tn5250.data.TnScreenElement;
 import hr.ws4is.tn5250.data.TnScreenRequest;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenField;
+import org.tn5250j.framework.tn5250.ScreenFields;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 
 /**
  * Main 5250 stream processor which converts 5250 screen data into web data 
- *
  */
-public class TnStreamProcessor {
+public enum TnStreamProcessor {
+	;
 
-	private StringBuffer valueBuffer = new StringBuffer(5);
-	private boolean updateScreen = true;
-
+	private final static Pattern LTRIM = Pattern.compile("^\\s+");
+	private final static Pattern RTRIM = Pattern.compile("\\s+$");
+	
+	public static String ltrim(String s) {
+	    return LTRIM.matcher(s).replaceAll("");
+	}
+	
+	public static String rtrim(String s) {
+	    return RTRIM.matcher(s).replaceAll("");
+	}
+	
 	/*
 	 * Refresh current screen 
 	 */
-	public void refresh(Session5250 session, Tn5250ResponseScreen response){
+	static public void refresh(Session5250 session, Tn5250ResponseScreen response){
 		List<TnScreenElement> list = getResponse(session);
 		response.setData(list);
 		response.setSize(session.getScreen().getColumns());
 		response.setLocked(session.getScreen().getOIA().isKeyBoardLocked());
 		response.setMsgw(session.getScreen().getOIA().isMessageWait());
 	}
-		
-
-	public void process(Session5250 session,TnScreenRequest request, TnScreenElement[] fields, Tn5250ResponseScreen response){
-
-		//send data to 5250 session, wait for response and return new screen
-		//TODO test listener engine, this should only send data to host without waiting
-		if (process(session,request,fields)){
-			refresh(session,response);
-		}else{
-			response.setSuccess(false);
-		}
-		
-		/*
-		 * 	logger.error("Error processing 5250 request for session id {} ", wsctx.getSession(false).getId() );
-		 * logger.error("",e);
-		 */
-	}
-	
+			
 
 	/*
 	 * forward request from web to host and waits for return
 	 * after response, screen will be reloaded
 	 * TODO - handle session hang & timeout so not to continue
 	 */
-	public boolean process(Session5250 session, TnScreenRequest request, TnScreenElement[] fields){
+	static public boolean process(Session5250 session, TnScreenRequest request, TnScreenElement[] fields){
 
-		Screen5250 screen= session.getScreen();
+		Screen5250 screen = session.getScreen();
 
         boolean sendIt = false;
 
@@ -92,7 +79,6 @@ public class TnStreamProcessor {
 	            sendIt = true;
 	    }
 
-
         if (aidS != null && aidS.length() > 0) {
             aidS = "[" + aidS.toLowerCase() + "]";
         }else {
@@ -100,288 +86,262 @@ public class TnStreamProcessor {
 	    }
 
         if(aidS.equals(TN5250jConstants.MNEMONIC_SYSREQ)){
-        	if(request.getData()!=null){
-            	session.getVT().systemRequest(request.getData());
-            	return true;
-        	}else return false;
+        	if(request.getData()==null){
+        		return false;
+        	}
+        	session.getVT().systemRequest(request.getData());
+        	return true;
         }
 
-        	int fl = fields.length;
-        	TnScreenElement element = new TnScreenElement();
-        	 for (int x = 0; x < fl; x++) {
-        		element = fields[x];
-	            String field = element.getValue();
-	            if (field != null && field.length() > 0) {
-	               sendIt = true;
-	               ScreenField sf = screen.getScreenFields().getField(element.getFieldId()-1);
-	               screen.setCursor(sf.startRow(), sf.startCol());
-	               sf.setString(field);
-	               //System.out.println("FLD" + (x + 1) + "-> " + field + " -> " + sf.getString());
-	            }else{
-	            	ScreenField sf = screen.getScreenFields().getField(element.getFieldId()-1);
-	            	sf.setString("");
-	            }
+        //fill screen fields from web data 
+         if(updateFieldValues(screen, fields)){
+        	 sendIt = true;
+         };
 
-	         }
+        //get currently cursor positioned field  
+        processCursor(screen, request.getCursorField());
 
-        	 //uzmi trenutno odabrani cursor ili field
-	         boolean nofld = request.getCursorField()<1;
-	         if (!nofld) {
-	        	 int fld = request.getCursorField();
-	        	 if(fld>1000) fld = (fld-1000)>>1;
-	        	 ScreenField sf = screen.getScreenFields().getField(fld);
-	        	 if (sf!=null)
-	        		 nofld = sf.isBypassField();
-	         }
-
-
-	         if (nofld) {
-	        	 //screen.setCursor( request.getCursorRow() , 5);
-	         } else if (request.getCursorField() > 0) {
-	        	  int i = request.getCursorField();
-	        	  boolean setc = false;
-	        	  if (i<1){
-	        		 setc =  screen.gotoField(screen.getScreenFields().getSize());
-	        	  }else setc = screen.gotoField(i);
-	        	  if (!setc){
-	        		  System.out.println("Field not set");
-	        	  }
-	               //screen.gotoField(request.getCursorField());
-	         }
-
-	         if (sendIt || screen.getScreenFields().getFieldCount() == 0) {
-	            screen.sendKeys(aidS);
-	            while (screen.getOIA().getInputInhibited() == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT
-	                  && screen.getOIA().getLevel() != ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
-	               try {
-
-	                  Thread.sleep(500);
-	               }
-	               catch (InterruptedException ex) {
-	                  ;
-	               }
-	            }
-	         }
+        sendKeyRequest(screen, sendIt, aidS);
 
 	   return true;
 	}
+	
+	//sends request from web to host
+	static private void sendKeyRequest(Screen5250 screen, boolean sendIt, String aidS){
+        if (sendIt || screen.getScreenFields().getFieldCount() == 0) {
+            screen.sendKeys(aidS);           
+            while (screen.getOIA().getInputInhibited() == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT
+                   && 
+                   screen.getOIA().getLevel() != ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
+               try {
+                  Thread.sleep(500);
+               }
+               catch (InterruptedException ex) {
+                  ;
+               }
+            }
+         }
+	}
+	
+	//detect cursor position and update position to 5250 screen
+	static private void processCursor(Screen5250 screen, int fld) {
+	    boolean nofld = fld<1;
+	    if (!nofld) {
 
-	protected void setUpdateScreen(boolean status){
-		updateScreen = status;
+	        if(fld>1000) fld = (fld-1000)>>1;
+	        ScreenField sf = screen.getScreenFields().getField(fld);
+	        if (sf!=null) {
+	        	nofld = sf.isBypassField();
+	        }
+	    }
+
+	    if (nofld) {
+	    	//screen.setCursor( request.getCursorRow() , 5);
+	    } else if (fld > 0) {
+
+	    	boolean setc = false;
+	    	if (fld<1){
+	    		setc =  screen.gotoField(screen.getScreenFields().getSize());
+	    	} else {
+	    		setc = screen.gotoField(fld);
+	    	}
+	    	if (!setc){
+	    		System.out.println("Field not set");
+	    	}
+	        //screen.gotoField(request.getCursorField());
+	    }		
 	}
 
-	protected boolean isUpdating(){
-		return updateScreen;
+	//update values from web field to 5250 screen fields
+	static private boolean  updateFieldValues(Screen5250 screen, TnScreenElement[] webFields){
+		boolean sendIt = false;
+		ScreenFields fields = screen.getScreenFields();
+        for(TnScreenElement webField :  webFields){
+        	String fieldValue = webField.getValue();
+        	if (fieldValue != null && fieldValue.length() > 0) {
+        		sendIt = true;
+ 	            ScreenField sf = fields.getField(webField.getFieldId()-1);
+ 	            screen.setCursor(sf.startRow(), sf.startCol());
+ 	            sf.setString(fieldValue);
+ 	            //System.out.println("FLD" + (x + 1) + "-> " + field + " -> " + sf.getString());        			
+ 	        } else {
+ 	        	ScreenField sf = fields.getField(webField.getFieldId()-1);
+	            sf.setString("");        			
+        	}
+        }
+        return sendIt ;
 	}
 
-	/*
-	 * Process response screen and fills up list of screen elements ready to be sent to the browser
-	 */
-	protected List<TnScreenElement> getResponse(Session5250 session){
-		  List<TnScreenElement>  list =new Vector<TnScreenElement>();
+
+	// Process response screen and fills up list of screen elements ready to be sent to the browser
+	static private List<TnScreenElement> getResponse(Session5250 session){
+
 		  Screen5250 screen = session.getScreen();
-		  int focusfield = getFocusField(screen);
-          int numRows = screen.getRows();
-          int numCols = screen.getColumns();
-          int lenScreen = screen.getScreenLength();
-          int lastAttr = 32;
-          int pos = 0;
-          int row = 1;
-          int col = 0;
-          boolean changeAttr = false;
-
-          TnScreenElement element= new TnScreenElement();
-          list.add(element);
-          //if(updateScreen) screen.updateScreen();
-          //logger.info("****SCREEN CURSOR ACTIVE? ****" + Boolean.toString(screen.isCursorActive()));
-          TnScreenData screenRect = new TnScreenData(1, 1, numRows, numCols, screen);
-
+          TnScreenData screenRect = new TnScreenData(1, 1, screen);
+          
           //for debug purposes
-       	  //saveDebug(screenRect);
+          //TnScreenData.saveDebug(screenRect);
+          
+          int pos = 0;
+	      while (pos < screenRect.getLenScreen()) {
 
-
-	         while (pos < lenScreen) {
-
-	            // check for the changing of the text color attributes.
-	        	if(screenRect.isAttr[pos]==1){
-	        		changeAttr = true;
-	        		lastAttr = screenRect.attr[pos];
-	        	}
-	        	/*
-	            if (screenRect.attr[pos] != lastAttr) {
-	            	//if (! changeAttr) new ScreenElement ???????
-	               if (pos < lenScreen - 1 && screenRect.field[pos + 1] == 0) {
-	                  // close the previous
-	                  changeAttr = true;
-	               }
-	               lastAttr = screenRect.attr[pos];
-	            }
-	        	 */
-	            if (screenRect.field[pos] != 0) {
-	               ScreenField sf = screen.getScreenFields().findByPosition(pos);
-	               if (sf != null) {
-	                  if (sf.startPos() == pos) {
-	                	//element.update();
-		                 element = new TnScreenElement();
-		                 list.add(element);
-
-	                     if ((screenRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0)
-	                    	 element.setHidden(1);
-
-	                     if (sf.isBypassField()) {
-	                        if ((int) screenRect.attr[pos] == 39) {
-	                        	element.setHidden(1);
-	                        }
-	                     }
-
-	                     // if the field will extend past the screen column size
-	                     //  we will just truncate it to be the size of the rest
-	                     //  of the screen.
-	                     int len = sf.getLength();
-	                     if (col + len > numCols){
-	                    	  len = numCols - col;
-	                    	  //row++;
-	                     }
-
-	                     // get the field contents and only trim the non numeric
-	                     //   fields so that the numeric fields show up with
-	                     //   the correct alignment within the field.
-	                     String value = "";
-	                     if (sf.isNumeric() || sf.isSignedNumeric()){
-	                    	 value = sf.getString();
-	                     } else
-	                    	 value = RTrim(sf.getString());
-
-
-	                     int i=0;
-	                     i = i | ((focusfield == sf.getFieldId())? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isAutoEnter() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isBypassField() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isContinued() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isContinuedFirst() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isContinuedLast() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isContinuedMiddle() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isDupEnabled() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isFER() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isHiglightedEntry() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isMandatoryEnter() ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isNumeric()  ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isSignedNumeric()  ? 1 : 0);
-	                     i = i << 1;
-	                     i = i | ( sf.isToUpper()   ? 1 : 0);
-
-	                     element.setFieldType(i);
-	                     element.setFieldId(sf.getFieldId());
-	                     element.setLength(len);
-	                     //element.setMaxLength(sf.getFieldLength());
-	                     element.setMaxLength(len);
-	                     element.setValue(value);
-	                     element.setRow(row);
-	                     //changeAttr = true;
-
-
-	                     if(len < sf.getLength()){
-	                    	 int r = row;
-	                    	 int alen = (sf.getLength()-len);
-	                    	 int al = alen /(numCols-1);
-	                    	 int ai,astart,astop;
-
-	                    	 for (ai=1;ai<=al;ai++){
-	                    		 r++;
-
-	                    		 astart=len + (ai-1)*(numCols-1);
-	                    		 astop=astart+(numCols-1);
-	                    		 if(astop>alen){
-	                    			 astop=alen;
-	                    		 }
-	                    		 String aval = sf.getString().substring(astart,astop);
-	                    		 if (sf.isNumeric() || sf.isSignedNumeric()){
-
-	    	                     } else
-	    	                    	 aval = RTrim(aval);
-
-	                    		 int flen = (numCols-1) * ai;
-	    	                     if(flen >sf.getLength()){
-	    	                    	 flen =  sf.getLength() - flen;
-	    	                     }else flen = numCols-1;
-
-	                    		 element = new TnScreenElement();
-	                    		 list.add(element);
-	                    		 element.setFieldType(i);
-	    	                     element.setFieldId(sf.getFieldId()*1000+ ai);
-	    	                     element.setLength(flen);
-	    	                     element.setMaxLength(flen);
-	    	                     element.setValue(aval);
-	    	                     element.setRow(r);
-	                    	 }
-	                     }
-	                  }
-	               }
-	            }else {
-	             if(screenRect.isAttr[pos]==0){
-	               element.addToValue(screenRect.text[pos]);
-	             } else{
-		                element = new TnScreenElement();
-		                list.add(element);
-		            	element.addToValue(' ');
-		            	element.setFieldId(-1); //not a field
-		            	element.setAttributeId(39); //non-display
-		                element.setRow(row);
-		                changeAttr=true;
-	             }
+	        	screenRect.updateIfColorChanged(pos);
+	        	
+	            if (screenRect.isField(pos)) {
+	               processFields(screenRect, pos);
+	            }else {            	
+	            	
+		             if(screenRect.isText(pos)){
+		            	 screenRect.addTextToElement(pos);
+		             } else {
+		            	 screenRect.addSpace();
+	                 }
 	            }
 
-	            if (changeAttr) {
-	            	//element.update();
-	                element = new TnScreenElement();
-	                list.add(element);
-	            	element.setValue("");
-	            	element.setFieldId(-1); //not a field
-	            	element.setAttributeId(lastAttr);
-	                element.setRow(row);
-	                changeAttr = false;
-	            }
-
-	            if (++col == numCols) {
-	               col = 0;
-	               row++;
-	                //element.update();
-	                element = new TnScreenElement();
-	                list.add(element);
-	            	element.setFieldId(-1); //not a field
-	            	element.setAttributeId(lastAttr);
-	                element.setRow(row);
-	                element.setValue("");
-
-	            }
+	            screenRect.updateIfAttributeChanged();
+	            screenRect.updateIfNewLine();
+	            
 	            pos++;
 	         }
-	         //element.update();
-	         Iterator<TnScreenElement> it = list.iterator();
-	         while(it.hasNext()){
-	        	 ((TnScreenElement)it.next()).update();
+	         
+	         screenRect.updateScreenElements();
+	         return screenRect.getScreenElements();
+	}
+	
+	static private void processFields(TnScreenData screenRect, int pos){
+        ScreenField screenField = screenRect.findScreenField(pos);
+        if (screenField != null) {
+           if (screenField.startPos() == pos) {
+        	  screenRect.initScreenElement(0);
+              
+
+        	  screenRect.updateIfHiddenField(pos);
+
+              if (screenField.isBypassField()) {
+            	  screenRect.updateIfHiddenField(pos);
+              }
+
+              // if the field will extend past the screen column size
+              //  we will just truncate it to be the size of the rest
+              //  of the screen.
+              int len = screenField.getLength();
+              if (screenRect.getCol() + len > screenRect.getNumCols()){
+             	  len = screenRect.getNumCols() - screenRect.getCol();
+              }
+
+              // get the field contents and only trim the non numeric
+              //   fields so that the numeric fields show up with
+              //   the correct alignment within the field.
+              String value = getFieldValue(screenField);
+      		
+    		  int focusfield = getFocusField(screenRect.getScreenFields());
+              int fieldMask=getFieldMask(screenField, focusfield);
+
+              screenRect.getElement().setFieldType(fieldMask);
+              screenRect.getElement().setFieldId(screenField.getFieldId());
+              screenRect.getElement().setLength(len);
+              screenRect.getElement().setMaxLength(len);
+              screenRect.getElement().setValue(value);
+
+              if(len < screenField.getLength()){
+            	  processMultiLineField(screenRect, screenField, len, fieldMask);
+              }
+           }
+        }		
+	}
+	
+	//process 5250 multiline screen fields to web fields
+	static private void processMultiLineField(TnScreenData screenRect, ScreenField screenField, int len, int fieldMask){		 
+	   	 int _row = screenRect.getRow();
+	   	 int numCols =screenRect.getNumCols();
+	   	 
+	   	 int alen = (screenField.getLength()-len);
+	   	 int al = alen /(screenRect.getNumCols()-1);
+	   	 int ai,astart,astop;
+	
+	   	 for (ai=1;ai<=al;ai++){
+	   		_row++;
+	
+	   		 astart=len + (ai-1)*(numCols-1);
+	   		 astop=astart+(numCols-1);
+	   		 if(astop>alen){
+	   			 astop=alen;
+	   		 }
+	   		 String aval = screenField.getString().substring(astart,astop);
+	   		 if (screenField.isNumeric() || screenField.isSignedNumeric()){
+	
+	         } else {
+	           	aval = rtrim(aval);
 	         }
-	         return list;
+	
+	   		 int flen = (numCols-1) * ai;
+	         if(flen >screenField.getLength()){
+	           	 flen =  screenField.getLength() - flen;
+	         } else {
+	        	 flen = numCols-1;
+	         }
+	
+	   		 screenRect.initScreenElement(0);
+	   		 screenRect.getElement().setFieldType(fieldMask);
+	   		 screenRect.getElement().setFieldId(screenField.getFieldId()*1000 + ai);
+	   		 screenRect.getElement().setLength(flen);
+	   		 screenRect.getElement().setMaxLength(flen);
+	   		 screenRect.getElement().setValue(aval);
+	   		 screenRect.getElement().setRow(_row);
+	   	 }		
+	}
+		
+	//get 5250 field value
+	static private String getFieldValue(ScreenField screenField){
+        String value = "";
+        if (screenField.isNumeric() || screenField.isSignedNumeric()){
+       	 value = screenField.getString();
+        } else {
+        	value = rtrim(screenField.getString());
+        }
+        return value;
+	}
+	
+	//convert 5250 field statuses to web field mask
+	static private int getFieldMask(ScreenField screenField, int focusfield){
+        int i=0;
+        i = i | ((focusfield == screenField.getFieldId())? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isAutoEnter() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isBypassField() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isContinued() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isContinuedFirst() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isContinuedLast() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isContinuedMiddle() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isDupEnabled() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isFER() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isHiglightedEntry() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isMandatoryEnter() ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isNumeric()  ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isSignedNumeric()  ? 1 : 0);
+        i = i << 1;
+        i = i | ( screenField.isToUpper()   ? 1 : 0);
+        return i;
 	}
 
-	private int getFocusField(Screen5250 screen){
+	//find focused field on 5250 screen
+	static private int getFocusField(ScreenFields ScreenFields){
 
-		ScreenField focusField = screen.getScreenFields().getCurrentField();
+		ScreenField focusField = ScreenFields.getCurrentField();
 
         if (focusField == null)
-        	focusField = screen.getScreenFields().getFirstInputField();
+        	focusField = ScreenFields.getFirstInputField();
 
         if (focusField != null){
         	return focusField.getFieldId();
@@ -389,48 +349,4 @@ public class TnStreamProcessor {
 
 	}
 
-
-	private String RTrim(String text) {
-
-	      valueBuffer.setLength(0);
-
-	      // Here we are going to perform a trim of only the trailing
-	      //   white space.
-	      valueBuffer.append(text);
-	      int len2 = valueBuffer.length();
-
-	      while ((len2 > 0) && (valueBuffer.charAt(len2-1) <= ' ')) {
-
-	         len2--;
-	      }
-	      valueBuffer.setLength(len2);
-	      return valueBuffer.toString();
-	   }
-
-	/*
-	 * For debug purposes
-	 */
-	private void save(char[] data,String name) {
-		 File file = new File("d:\\" + name);
-		 Writer output;
-		try {
-			output = new FileWriter(file);
-			output.write(data);
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-	
-	protected void saveDebug(TnScreenData screenRect){
-  	  save(screenRect.attr,"attr.txt");
-  	  save(screenRect.color,"color.txt");
-  	  save(screenRect.extended,"extnded.txt");
-  	  save(screenRect.field,"field.txt");
-
-  	  save(screenRect.graphic,"gaphic.txt");
-  	  save(screenRect.isAttr,"isattr.txt");
-  	  save(screenRect.text,"text.txt");		
-	}
 }

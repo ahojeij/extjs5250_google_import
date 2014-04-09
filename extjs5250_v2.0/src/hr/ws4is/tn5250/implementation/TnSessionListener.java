@@ -37,7 +37,6 @@ import org.tn5250j.framework.tn5250.ScreenOIA;
 /**
  * Session5250 screen change listener.
  * Whenever screen changes, new websocket event is sent to the browser for screen refresh
- *
  */
 public class TnSessionListener implements SessionListener,  ScreenListener, ScreenOIAListener {
 
@@ -104,23 +103,21 @@ public class TnSessionListener implements SessionListener,  ScreenListener, Scre
 	/*
 	private String[] desc = {"0","KEYS_BUFFERED","KEYBOARD_LOCKED","MESSAGELIGHT","SCRIPT","BELL","CLEAR_SCREEN","INPUTINHIBITED","CURSOR"} ;
 	private String[] lev = {"0","INPUT_INHIBITED","NOT_INHIBITED","MESSAGE_LIGHT_ON","MESSAGE_LIGHT_OFF","AUDIBLE_BELL","INSERT_MODE","KEYBOARD","CLEAR_SCREEN","SCREEN_SIZE","INPUT_ERROR","KEYS_BUFFERED","SCRIPT"} ;
-	*/
 
+	System.out.println("OIA_CHANGED " + desc[arg1] + " ->> " + arg1);
+	System.out.println("   INHIBITIED " + arg0.getInputInhibited());
+	System.out.println("   COMMCHECK  " + arg0.getCommCheckCode());
+	System.out.println("   LEVEL      " + lev[OIAlevel] + " ->> " + OIAlevel );
+	System.out.println("   MACHCHECK  " + arg0.getMachineCheckCode());
+	System.out.println("   PROGCHECK  " + arg0.getProgCheckCode());
+	System.out.println("   TEXT       " + arg0.getInhibitedText());
+	System.out.println("   KBDLOK     " + arg0.isKeyBoardLocked());
+	System.out.println("   MSGW       " + arg0.isMessageWait());
+	*/
 	public void onOIAChanged(ScreenOIA arg0, int arg1) {
 		//status linija - lock/wait/error/msgw ....
 		OIAchange = arg1;
 		OIAlevel = arg0.getLevel();
-		/*
-		System.out.println("OIA_CHANGED " + desc[arg1] + " ->> " + arg1);
-		System.out.println("   INHIBITIED " + arg0.getInputInhibited());
-		System.out.println("   COMMCHECK  " + arg0.getCommCheckCode());
-		System.out.println("   LEVEL      " + lev[OIAlevel] + " ->> " + OIAlevel );
-		System.out.println("   MACHCHECK  " + arg0.getMachineCheckCode());
-		System.out.println("   PROGCHECK  " + arg0.getProgCheckCode());
-		System.out.println("   TEXT       " + arg0.getInhibitedText());
-		System.out.println("   KBDLOK     " + arg0.isKeyBoardLocked());
-		System.out.println("   MSGW       " + arg0.isMessageWait());
-		*/
 
 		if(arg0.getInputInhibited()==0 && (OIAlevel==3 || OIAlevel == 4 || OIAlevel == 7)){			    
 				sendData();
@@ -132,32 +129,30 @@ public class TnSessionListener implements SessionListener,  ScreenListener, Scre
 		response.setSize(screenSize);
 		response.setLocked(oia!=null ? oia.isKeyBoardLocked() : false);		
 		response.setMsgw(oia!=null ? oia.isMessageWait() : false);
-		response.setDevName(displayID);
+		response.setDisplayID(displayID);
 		if(!session.isConnected()){
 			response.setMsg(TnConstants.NOT_CONNECTED);
 			response.setClearScr(true);
 			response.setLocked(true);
 		}
 		
-		TnStreamProcessor sp = new TnStreamProcessor();
-		sp.refresh(session, response);
+		TnStreamProcessor.refresh(session, response);
 		
 		return response;
 	}
+
 	
+	/*
+	 inUpdate = 1 , indikator za crtanje ekrana
+	 screen element set statuse oia radi lockanja ekrana
+	 (screen.getOIA().getInputInhibited() == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT && screen.getOIA().getLevel() != ScreenOIA.OIA_LEVEL_INPUT_ERROR)
+	*/
 	private  void sendData(){
-		
-		/*
-		 * inUpdate = 1 , indikator za crtanje ekrana
-		 *screen element set statuse oia radi lockanja ekrana
-		 (screen.getOIA().getInputInhibited() == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT && screen.getOIA().getLevel() != ScreenOIA.OIA_LEVEL_INPUT_ERROR)
-		 * */
-		//System.out.println("******** SENDING DATA **********");
 
 		try {	
 			if(wsSession!=null && wsSession.isOpen()){
 				Tn5250ResponseScreen screen = getResponseScreen();		
-				WebSocketResponse response = new WebSocketResponse("0", "0", WebSocketInstruction.DATA);
+				WebSocketResponse response = new WebSocketResponse(WebSocketInstruction.DATA);
 				response.data = screen;		
 				Async basic = wsSession.getAsyncRemote();
 				if(basic!=null){
