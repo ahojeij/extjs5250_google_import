@@ -113,7 +113,7 @@ Ext.define('WS4IS.direct.WebSocket', {
             request.jsonData = callData;
           }
 
-          var data = {type :'ws' , sid : '', cmd:'data' , 'data': request.jsonData};          
+          var data = {type :'ws' , cmd:'data' , 'data': request.jsonData};          
           ws.send(Ext.encode(data));          
      },
 
@@ -205,7 +205,7 @@ Ext.define('WS4IS.direct.WebSocket', {
 
               };
               console.log(reqData, o);
-              var data = {type :'ws' , sid : '', cmd:'data' , 'data': reqData};
+              var data = {type :'ws' , cmd:'data' , 'data': reqData};
               ws.send(Ext.encode(data));
            }
 

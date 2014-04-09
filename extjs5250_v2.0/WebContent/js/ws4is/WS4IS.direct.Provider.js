@@ -18,7 +18,19 @@ Ext.define('WS4IS.direct.Provider', {
         var me = this;
         me.namespaceName = (Ext.isString(config.namespace)) ? config.namespace : "";
         me.callParent(arguments);
+        me.on('beforecallback', me.onCallback);
     },
+    
+    onCallback : function(me, event, transaction){
+        me.runCallback(transaction, event, true);
+        
+        if(event.remove == true ){
+        	Ext.direct.Manager.removeTransaction(transaction);
+        };
+        
+        return  false;
+    },
+
     
     createHandler: function(action, method) {
         var me = this, handler = null;

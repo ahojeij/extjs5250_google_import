@@ -100,6 +100,7 @@ Ext.define('WS4IS.WebSocket', {
     	 var me = this, _evt=evt;
     	 var recursion = function(){
              if (me.wsocket.readyState === 1) {
+            	  WS4IS.WebSocket.register(me);
                   me.fireEvent('connect', _evt);
                  return;
              } else {
