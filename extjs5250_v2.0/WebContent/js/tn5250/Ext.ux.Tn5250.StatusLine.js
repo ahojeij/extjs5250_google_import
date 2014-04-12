@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.StatusLine ExtJS 4.x; Bottom tn5250 status line
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,6 +6,9 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+/** 
+ * Bottom status line with tn5250 status indicators
+ */
 Ext.define('Ext.ux.Tn5250.StatusLine', {
 	extend: 'Ext.Component',
 	requires : ['Ext.Component'],

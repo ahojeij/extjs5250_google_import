@@ -24,16 +24,18 @@ public class ExtJSDirectResponse<T> {
 	private String method;
 	private String type;
 	private String tid;
-	private boolean remove = true;
-	private ExtJSResponse result;		
+	private boolean keepTransaction = false;
+	private Object result;		
 	
-	public ExtJSDirectResponse(ExtJSDirectRequest<T> request, ExtJSResponse response) {
+	public ExtJSDirectResponse(ExtJSDirectRequest<T> request, Object response) {
 		super();
 		this.result = response;
-		this.action = request.action;
-		this.method=request.method;
-		this.tid = request.tid;
-		this.type = request.type;
+		if(request!=null){
+			this.action = request.action;
+			this.method = request.method;
+			this.tid = request.tid;
+			this.type = request.type;			
+		}
 	}
 
 	public String getAction() {
@@ -68,20 +70,20 @@ public class ExtJSDirectResponse<T> {
 		this.tid = tid;
 	}
 
-	public boolean isRemove() {
-		return remove;
-	}
-
-	public void setRemove(boolean remove) {
-		this.remove = remove;
-	}
-
-	public ExtJSResponse getResult() {
+	public Object getResult() {
 		return result;
 	}
 
-	public void setResult(ExtJSResponse result) {
+	public void setResult(Object result) {
 		this.result = result;
+	}
+
+	public boolean isKeepTransaction() {
+		return keepTransaction;
+	}
+
+	public void setKeepTransaction(boolean keepTransaction) {
+		this.keepTransaction = keepTransaction;
 	}
 	
 }

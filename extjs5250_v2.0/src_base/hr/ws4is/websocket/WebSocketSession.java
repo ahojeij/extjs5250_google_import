@@ -19,6 +19,8 @@
 package hr.ws4is.websocket;
 
 import hr.ws4is.WS4ISConstants;
+import hr.ws4is.ext.ExtJSDirectRequest;
+import hr.ws4is.ext.ExtJSDirectResponse;
 import hr.ws4is.websocket.data.WebSocketInstruction;
 import hr.ws4is.websocket.data.WebSocketResponse;
 
@@ -42,9 +44,8 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 public class WebSocketSession implements Session {
-
 	private final Session session;
-	private String transactionID;
+	private ExtJSDirectRequest<?> request;
 	
 	public WebSocketSession(Session session) {
 		super();
@@ -65,8 +66,7 @@ public class WebSocketSession implements Session {
 
 	@Override
 	public void close() throws IOException {
-		if(!session.isOpen()) 
-		{
+		if(!session.isOpen()) {
 			return ;
 		}
 		
@@ -85,12 +85,28 @@ public class WebSocketSession implements Session {
 	}
 
 
-	public void sendResponse(WebSocketResponse reponse, boolean async) throws IOException, EncodeException {
-		if(async) {
-			session.getAsyncRemote().sendObject(reponse);
-		} else {
-			session.getBasicRemote().sendObject(reponse);	
-		}		
+	public boolean sendResponse(WebSocketResponse wsResponse, boolean async) {
+		if(wsResponse == null) {
+			return false;
+		}
+		if(!session.isOpen()) {
+			//TODO log
+			return false;
+		}
+		
+		boolean success = true;
+		try{
+			if(async) {
+				session.getAsyncRemote().sendObject(wsResponse);
+			} else {
+				session.getBasicRemote().sendObject(wsResponse);	
+			}		
+			
+		} catch(Exception e){
+			success = false;
+			e.printStackTrace();
+		}
+		return success;
 	}
 
 	@Override
@@ -246,12 +262,25 @@ public class WebSocketSession implements Session {
 		return session.getBasicRemote();
 	}
 
-	public String getTransactionID() {
-		return transactionID;
+	public ExtJSDirectRequest<?> getRequest() {
+		return request;
 	}
 
-	public void setTransactionID(String transactionID) {
-		this.transactionID = transactionID;
+	public void setRequest(ExtJSDirectRequest<?> request) {
+		this.request = request;
 	}
 	
+	public  WebSocketResponse wrap(Object o, boolean keepTransaction){
+		ExtJSDirectResponse<?> directResponse = null;
+		if(o instanceof ExtJSDirectResponse){
+			directResponse = (ExtJSDirectResponse<?>) o;
+		} else {
+			directResponse = new ExtJSDirectResponse<>(getRequest(), o);
+		}		
+		
+		directResponse.setKeepTransaction(keepTransaction);
+		WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
+		wsResponse.setData(directResponse);
+		return wsResponse;
+	}
 }

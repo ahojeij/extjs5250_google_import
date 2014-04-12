@@ -5,7 +5,7 @@ REQUIREMENTS :
 	
 INSTRUCTION :	
 
-1. Set AS4oo ip address and port in Configuration file 5250_5250.properties.
+1. Set AS4/00 ip address and port in Configuration file 5250_5250.properties.
 2. Copy 5250_5250.properties to user home directory
    For example
    if it is windows 7 -> copy to C:\Users\CURRENT_WINDOWS_USER_NAME
@@ -29,5 +29,5 @@ TODO :
   
 ISSUES: 
   Only issue is tn5250j old connection mechanism - thread based connections. 
-  This is limitation for many tn5250 sessions, best option would be to switch to event based communication.
+  This is limitation for having many tn5250 sessions, best option would be to switch to event based communication.
    

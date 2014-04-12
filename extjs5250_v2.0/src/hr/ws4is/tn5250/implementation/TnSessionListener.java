@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010,  Tomislav Milkovic
+ * Copyright (C) 2014,  Tomislav Milkovic
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,6 @@
  * 
  */
 package hr.ws4is.tn5250.implementation;
-
-import javax.websocket.RemoteEndpoint.Async;
 
 import hr.ws4is.tn5250.Tn5250ResponseScreen;
 import hr.ws4is.websocket.WebSocketSession;
@@ -152,12 +150,9 @@ public class TnSessionListener implements SessionListener,  ScreenListener, Scre
 		try {	
 			if(wsSession!=null && wsSession.isOpen()){
 				Tn5250ResponseScreen screen = getResponseScreen();		
-				WebSocketResponse response = new WebSocketResponse(WebSocketInstruction.DATA);
-				response.data = screen;		
-				Async basic = wsSession.getAsyncRemote();
-				if(basic!=null){
-					basic.sendObject(response);				
-				}				
+				WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
+				wsResponse.setData(screen);		
+				wsSession.sendResponse(wsResponse, true);
 			} else{				
 				unregister();
 			}

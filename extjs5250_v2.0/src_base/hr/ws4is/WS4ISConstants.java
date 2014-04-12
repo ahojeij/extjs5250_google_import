@@ -18,9 +18,15 @@
  */
 package hr.ws4is;
 
-public enum WS4ISConstants{
+public enum WS4ISConstants {
 	;
 		
 	public static final String HTTP_SEESION_STATUS = "ws4is.session.status";
+	public static final String HTTP_SEESION_REQUIRED = "Websocket requires valid http session";
+	
 	public static final String WEBSOCKET_PATH = "ws4is.websocket.path";
+	public static final String WEBSOCKET_SUBPROTOCOL = "ws4is";
+	public static final String WEBSOCKET_TYPE = "ws";
+	
+	public static final String DIRECT_SERVICE_NOT_FOUND = "Requested ExtDirect Service not found";
 }

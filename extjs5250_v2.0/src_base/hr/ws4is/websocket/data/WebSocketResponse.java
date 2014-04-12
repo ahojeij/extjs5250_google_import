@@ -19,13 +19,15 @@
 
 package hr.ws4is.websocket.data;
 
+import hr.ws4is.WS4ISConstants;
+
 
 /**
  * Object to be converted into JSON structure.
  * {type :'ws' , sid : session_id , tid : transaction_id, timeout : 0 , ....}
  */
 public class WebSocketResponse {
-	private String type = "ws";
+	private String type = WS4ISConstants.WEBSOCKET_TYPE ;
 
 	public final WebSocketInstruction cmd;
 	

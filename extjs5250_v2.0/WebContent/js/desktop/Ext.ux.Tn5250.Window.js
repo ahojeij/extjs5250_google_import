@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.Panel; main 5250 panel. Contains view and satus bar; attached key handler 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -24,14 +24,19 @@
       css.dom.setAttribute('href', 'css/' + css_themes[id] + '.css');
    };
 
+   /**
+    * Main TN5250 window. Contains connection panels
+    */
 	Ext.define('Ext.ux.Tn5250.Window', {
 		extend : 'Ext.window.Window',
+		
 		requires : ['Ext.window.Window',
 		            'Ext.ux.Tn5250.HostsMenu',
 		            'Ext.ux.Tn5250.TabPanel'
 		           ],
 		            
 	    alias : 'widget.tnwindow',
+	    
 	    autoDestroy : true,       
 	     
 	    constructor	: function(config){
@@ -44,7 +49,7 @@
 	        me.layout = {
 	            type: 'fit'
 	        };
-	        me.items =[{xtype: 'tntabpanel', autoReload:false}],
+	        me.items =[{xtype: 'tntabpanel', autoReload:true}],
 	        me.tbar = [{ xtype: 'tnmenu', text: 'Connect'},
 	                   {xtype: 'button', text: 'Switch Theme', handler : switchTheme }
 	                  ];			

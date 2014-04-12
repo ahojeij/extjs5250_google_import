@@ -1,8 +1,4 @@
-String.prototype.repeat = function(l){
-	return new Array(l+1).join(this);
-};
-
-/**
+/*
  * @Description Ext.ux.Tn5250.Field ExtJS 4.x; input field for 5250 screen
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -10,6 +6,13 @@ String.prototype.repeat = function(l){
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+String.prototype.repeat = function(l){
+	return new Array(l+1).join(this);
+};
+
+/**
+ * Single screen input field, part of single view
+ */
 Ext.define('Ext.ux.Tn5250.Field',{
 	extend : 'Ext.Component',
 	requires : ['Ext.Component'],	
@@ -76,7 +79,6 @@ Ext.define('Ext.ux.Tn5250.Field',{
     //@Private Shared
     internalConfig:function(){
         var me = this;
-        me.screenEl.setObject(me.obj);
         
         me.on("focus", me.onFocus,  me);
         me.on("blur", me.onBlur,me);
@@ -85,13 +87,13 @@ Ext.define('Ext.ux.Tn5250.Field',{
         me.on("keydown", me.onKeyDown,me);
         me.on("dblclick", me.onDoubleClick,me);
 
-    	if ( me.screenEl.isNumeric()){
+    	if ( me.screenEl.isNumeric(me.obj)){
           me.decimal=0; //TODO does have me
           me.isDecimal = false;
           me.allowDecimal = false;
           me.allowNegative = false;
     	};
-    	if (me.screenEl.isSignedNumeric()){
+    	if (me.screenEl.isSignedNumeric(me.obj)){
           //me.decimal=2;//TODO does have me
           me.isDecimal = false;
           me.allowDecimal = true;
@@ -103,37 +105,36 @@ Ext.define('Ext.ux.Tn5250.Field',{
     internalRender:function(){
       var me = this;
       var dom = me.element.dom;
-      me.screenEl.setObject(me.obj);
-      me.klass=me.screenEl.getClass();
+      me.klass=me.screenEl.getClass(me.obj);
       me.baseklass='';
       
       dom.setAttribute('name',me.id);
 
-      if(me.screenEl.isHidden()){
+      if(me.screenEl.isHidden(me.obj)){
         dom.setAttribute('type','password');
-        if(me.screenEl.isBypassField()){
+        if(me.screenEl.isBypassField(me.obj)){
           me.baseklass='hidden ';
          }else {
            me.baseklass='password ';
          }
        }else{
          dom.setAttribute('type','text');
-         if(me.screenEl.isBypassField()){
+         if(me.screenEl.isBypassField(me.obj)){
            dom.setAttribute('readOnly',true);
            me.baseklass='txtBypass ';
          } else me.baseklass='textbox ';
        }
        
        dom.setAttribute('class',me.baseklass + me.klass + ' txt_' + me.klass.split('-')[0]);
-       dom.setAttribute('length',me.screenEl.getMaxLength());
-       dom.setAttribute('size',me.screenEl.getLength());
-       dom.setAttribute('maxlength',me.screenEl.getMaxLength());
+       dom.setAttribute('length',me.screenEl.getMaxLength(me.obj));
+       dom.setAttribute('size',me.screenEl.getLength(me.obj));
+       dom.setAttribute('maxlength',me.screenEl.getMaxLength(me.obj));
        dom.setAttribute('autocomplete','off');
        dom.setAttribute('autocomplete','off');
-       dom.value = me.screenEl.getValue();
+       dom.value = me.screenEl.getValue(me.obj);
 
 
-       if(me.screenEl.isBlink()){
+       if(me.screenEl.isBlink(me.obj)){
          me.interval=setInterval(function () { me.blink(); }, 500);
        }
 
@@ -169,52 +170,54 @@ Ext.define('Ext.ux.Tn5250.Field',{
     },
 
     onBlur : function(ev,target){
-    	var sts = true;
-    	if ( this.screenEl.isNumeric() || this.screenEl.isSignedNumeric()){
-           sts = this.extractNumber(ev,target);
+    	var sts = true, me = this;
+    	if ( me.screenEl.isNumeric(me.obj) || me.screenEl.isSignedNumeric(me.obj)){
+           sts = me.extractNumber(ev,target);
       	};
       	if(sts){
-      		this.processFieldExit();
+      		me.processFieldExit();
       	};
       	return sts;
     },
 
     onKeyUp : function(ev,target){
     	//3
-    	if ( this.screenEl.isNumeric() || this.screenEl.isSignedNumeric()){
-           return  this.extractNumber(ev,target);
+    	var me = this;
+    	if ( me.screenEl.isNumeric(me.obj) || me.screenEl.isSignedNumeric(me.obj)){
+           return  me.extractNumber(ev,target);
     	};
     },
 
     onKeyPress : function(ev,target){
     	//2
-    	if ( this.screenEl.isBypassField()){
+    	var me = this;
+    	if ( me.screenEl.isBypassField(me.obj)){
             return false;
      	};
 
-    	if ( this.screenEl.isNumeric()||this.screenEl.isSignedNumeric()){
-           return this.blockNonNumbers(ev,target);
+    	if ( me.screenEl.isNumeric(me.obj)|| me.screenEl.isSignedNumeric(me.obj)){
+           return me.blockNonNumbers(ev,target);
     	};
 
-    	var input= this.element.dom;
+    	var input= me.element.dom;
 
     	var selection = new Selection(input);
     	var s = selection.create();
     	if(s.end>s.start) return;
 
     	if(input.value.length>0 ){
-    		if(this.view.insmode){
+    		if(me.view.insmode){
         		var caretPos = doGetCaretPosition(input);
 
         		input.value = input.value.slice(0,caretPos) + input.value.slice(caretPos+1);
-             	if (this.screenEl.isToUpper() && ev.browserEvent.keyCode>40){
-             		this.uppercase(ev,target);
+             	if (me.screenEl.isToUpper(me.obj) && ev.browserEvent.keyCode>40){
+             		me.uppercase(ev,target);
              	}
         		doSetCaretPosition(input, caretPos);
 
     		}else{
-             	if (this.screenEl.isToUpper() && ev.browserEvent.keyCode>40){
-             		this.uppercase(ev,target);
+             	if (me.screenEl.isToUpper(me.obj) && ev.browserEvent.keyCode>40){
+             		me.uppercase(ev,target);
              	}
 
     		}
@@ -223,17 +226,17 @@ Ext.define('Ext.ux.Tn5250.Field',{
 
     onKeyDown : function(ev,target){
     	//1
+    	var me = this;
     	if(ev.browserEvent.keyCode==45){
     		this.view.switchIns();
     	}
 
-    	this.screenEl.setObject(this.obj);
-    	var l = this.element.dom.value.length;
-    	var ml = this.screenEl.getMaxLength();
+    	var l = me.element.dom.value.length;
+    	var ml = me.screenEl.getMaxLength(me.obj);
     	if(l==ml && ev.browserEvent.keyCode>40){
-    		var caretPos = doGetCaretPosition(this.element.dom);
+    		var caretPos = doGetCaretPosition(me.element.dom);
     		if(caretPos>=l)
-    			this.view.doTab();
+    			me.view.doTab();
     	}
     },
 
@@ -256,40 +259,40 @@ Ext.define('Ext.ux.Tn5250.Field',{
 
 
     processFieldExit : function(){
-
-    	this.screenEl.setObject(this.obj);
-        var ml = this.screenEl.getMaxLength();
-        var l = this.element.dom.value.length;
-        var sel = this.getSelectionStart(this.element.dom);
+    	var me = this;
+        var ml = me.screenEl.getMaxLength(me.obj);
+        var l = me.element.dom.value.length;
+        var sel = me.getSelectionStart(me.element.dom);
         //clear if all selected
-        if ((sel==0)&&( l>0)) {this.element.dom.value=""; return;};
+        if ((sel==0)&&( l>0)) {me.element.dom.value=""; return;};
         if ((l-sel) >0) {
-        	this.element.dom.value = this.element.dom.value.substr(0,sel);
+        	me.element.dom.value = me.element.dom.value.substr(0,sel);
         }
 
         //TODO check field type, according to type do field formatting
         //fill right/left with blank or zeroes
         //this.element.dom.dom.value = " ".repeat(ml-l) + this.element.dom.dom.value;
         //this.element.dom.dom.value =  this.element.dom.dom.value + "0".repeat(ml-l);
-        if (this.screenEl.isSignedNumeric() ||  this.screenEl.isNumeric()){
-        	if (this.screenEl.isFER()){
-        		this.element.dom.value =  this.element.dom.value + "0".repeat(ml-l);
+        if (me.screenEl.isSignedNumeric(me.obj) ||  me.screenEl.isNumeric(me.obj)){
+        	if (me.screenEl.isFER(me.obj)){
+        		me.element.dom.value =  me.element.dom.value + "0".repeat(ml-l);
         	}
         	return;
         }
 
-        if (this.screenEl.isToUpper()){this.element.dom.value =  this.element.dom.value.toUpperCase();};
-        if (this.screenEl.isFER()){this.element.dom.value = " ".repeat(ml-l) + this.element.dom.value;};
+        if (me.screenEl.isToUpper(me.obj)){me.element.dom.value =  me.element.dom.value.toUpperCase(me.obj);};
+        if (me.screenEl.isFER(me.obj)){me.element.dom.value = " ".repeat(ml-l) + me.element.dom.value;};
 
     },
 
     extractNumber : function (ev,target) {
-    	var temp = this.element.dom.value;
-    	var decimalPlaces = this.decimal;
-        var allowNegative = this.allowNegative;
+    	var me = this;
+    	var temp = me.element.dom.value;
+    	var decimalPlaces = me.decimal;
+        var allowNegative = me.allowNegative;
 
-          this.isDecimal = false;
-          this.allowNegative = false;
+          me.isDecimal = false;
+          me.allowNegative = false;
 
     	// avoid changing things if already formatted correctly
     	var reg0Str = '[0-9]*';
@@ -329,19 +332,18 @@ Ext.define('Ext.ux.Tn5250.Field',{
     		}
     	}
 
-    	this.element.dom.value = temp;
+    	me.element.dom.value = temp;
     },
 
   blockNonNumbers : function (ev,target) {
-
-    	var allowDecimal = this.allowDecimal;
-        var allowNegative = this.allowNegative;
-        var e = ev;
-
-  	var key=0;
-  	var isCtrl = false;
-  	var keychar;
-  	var reg;
+	  var me = this;
+	  var allowDecimal = me.allowDecimal;
+	  var allowNegative = me.allowNegative;
+	  var e = ev;
+	  var key=0;
+	  var isCtrl = false;
+	  var keychar;
+	  var reg;
 
   	if(window.event) {
   		key = e.keyCode;
@@ -363,14 +365,14 @@ Ext.define('Ext.ux.Tn5250.Field',{
   	}
 
   	reg = /\d/;
-  	var isFirstN = allowNegative ? keychar == '-' && this.element.dom.value.indexOf('-') == -1 : false;
-  	var isFirstD = allowDecimal ? keychar == '.' && this.element.dom.value.indexOf('.') == -1 : false;
+  	var isFirstN = allowNegative ? keychar == '-' && me.element.dom.value.indexOf('-') == -1 : false;
+  	var isFirstD = allowDecimal ? keychar == '.' && me.element.dom.value.indexOf('.') == -1 : false;
 
   	return isFirstN || isFirstD || reg.test(keychar);
   },
 
   uppercase : function (ev,target) {
-	  this.element.dom.value = this.element.dom.value.toUpperCase();
+	  me.element.dom.value = me.element.dom.value.toUpperCase();
   }
 
 });

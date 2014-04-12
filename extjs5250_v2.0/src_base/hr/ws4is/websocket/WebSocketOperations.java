@@ -76,13 +76,9 @@ public class WebSocketOperations<T> {
 			ExtJSDirect direct = beanClass.getAnnotation(ExtJSDirect.class);
 			
 			boolean error = checkForError(annType, selectedMethod, direct, session, uri);	
-			if(error)
-			{
-				String msg = "DIRECT_SERVICE_NOT_FOUND";
-				response = new ExtJSResponse(false,msg);				
-			}
-			else 
-			{
+			if(error) {
+				response = new ExtJSResponse(false,WS4ISConstants.DIRECT_SERVICE_NOT_FOUND);				
+			} else {
 				List<AnnotatedParameter<?>> paramList = selectedMethod.getParameters();
 				Object params [] = fillParams(request, paramList);			
 				response = executeBean(bean, selectedMethod, params);	
@@ -104,20 +100,13 @@ public class WebSocketOperations<T> {
 		boolean error = false;
 		
 		//check for path			
-		if(direct==null) 
-		{
+		if(direct==null) {
 			error = true;				
-		} 
-		else if(!checkPath(uri,direct.paths())) 
-		{
+		} else if(!checkPath(uri,direct.paths())) {
 			error = true;				
-		} 
-		else if(!isValidHttpSession(session))
-		{
+		}  else if(!isValidHttpSession(session)) {
 			error = true;
-		} 
-		else if(selectedMethod == null)
-		{
+		} else if(selectedMethod == null) {
 			error = true;
 		}
 		return error;
@@ -125,17 +114,15 @@ public class WebSocketOperations<T> {
 	
 	private boolean checkPath(String uri , String[] paths){
 		boolean result = false;
-		for(String path : paths)
-		{
-			if("*".equals(path)) 
-			{
+		for(String path : paths) {
+			
+			if("*".equals(path)) {
 				result = true;
 				break;
 			}
 
 			int idx = uri.indexOf(path);
-			if(idx==0 || idx==1)
-			{
+			if(idx==0 || idx==1){
 				result = true;
 				break;
 			}
@@ -147,7 +134,7 @@ public class WebSocketOperations<T> {
 	private boolean isValidHttpSession(HttpSession httpSession) {
 		if(httpSession==null) return false;
 		String attr = (String)httpSession.getAttribute(WS4ISConstants.HTTP_SEESION_STATUS);		
-		return "true".equals(attr);
+		return "true".equalsIgnoreCase(attr);
 	}
 	
 
@@ -162,16 +149,13 @@ public class WebSocketOperations<T> {
 
 		AnnotatedMethod<?> selectedMethod = null;				
 		Set<AnnotatedMethod<?>> aMethods = annType.getMethods();
-		for(AnnotatedMethod<?> aMethod : aMethods)
-		{
+		for(AnnotatedMethod<?> aMethod : aMethods) {
 			ExtJSMethod annMethod = aMethod.getAnnotation(ExtJSMethod.class);
-			if(annMethod==null)
-			{
+			if(annMethod==null){
 				continue;
 			};
 			
-			if(annMethod.value().equals(request.getMethod()))
-			{
+			if(annMethod.value().equals(request.getMethod())) {
 				selectedMethod = aMethod;
 				break;
 			}
@@ -185,16 +169,13 @@ public class WebSocketOperations<T> {
 		int incomingParamsSize = request.getData() == null ? 0 : request.getData().size();
 		
 		Object params [] = new Object[paramSize];
-		for(int i = 0; i < paramSize; i++)
-		{
-				if(i<incomingParamsSize)
-				{
+		for(int i = 0; i < paramSize; i++) {
+			
+				if(i<incomingParamsSize) {
 					Object paramData = request.getData().get(i);
-					if(paramData instanceof JsonNode)
-					{
+					if(paramData instanceof JsonNode) {
 						JsonNode jnode = (JsonNode) paramData;
-						if(jnode!=null)
-						{	
+						if(jnode!=null) {	
 							Class<?> jType = (Class<?>) methodParams.get(i).getBaseType();
 							ObjectMapper mapper = JsonDecoder.getJSONEngine();
 							params[i] = mapper.treeToValue(jnode, jType);
@@ -219,8 +200,7 @@ public class WebSocketOperations<T> {
 			Object beanInstance = di.getInstance();
 			
 			Method javaMethod = method.getJavaMember();				
-			if(javaMethod.isAccessible())
-			{
+			if(javaMethod.isAccessible()) {
 				javaMethod.setAccessible(true);
 			}
 			

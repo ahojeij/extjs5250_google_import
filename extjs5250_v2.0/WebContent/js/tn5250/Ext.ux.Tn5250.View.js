@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.View ExtJS 4.x; Main 5250 panel , holder of scren data
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,7 +6,11 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
-
+/**
+ * Scren veiw - used to rendr received data onto 
+ * and to process keyboard requests from screen and fields
+ * Contains field navigation and field exit behaviour
+ */
 Ext.define('Ext.ux.Tn5250.View', {
 	extend : 'Ext.container.Container',
 	requires : ['Ext.container.Container',
@@ -32,12 +36,14 @@ Ext.define('Ext.ux.Tn5250.View', {
 
       //ExtJs 4
       initComponent  : function() {
+    	  
     	var me = this;
         me.callParent();
         me.initInternal();
         if(Ext.getVersion().getMajor() < 5){
         	me.addEvents('5250request','5250response','5250keyboard');
         }
+        
         me.on('added', function( me, container, pos, eOpts ){
         	var relayers =  me.relayEvents(container,['5250response','5250keyboard']);
         	var prelayers =  container.relayEvents(me,['5250request']);
@@ -55,7 +61,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 
       initInternal  : function(config) {
     	var me = this;
-        me.screenEl = Ext.create('Ext.ux.Tn5250.ScreenElement');
+        me.screenEl = Ext.ux.Tn5250.ScreenElement;
         me.clear = true;
         me.lock = false;
         me.wsize = 80;
@@ -161,8 +167,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 		var fields = [];
 		var i=0;
 		Ext.each(collection, function(item, index, length) {
-			me.screenEl.setObject(item.obj);
-			var id = this.screenEl.getFieldId(); 
+			var id = me.screenEl.getFieldId(item.obj); 
 			if(id>1000){
 				fields[i].t=fields[i].t +item.el.dom.value;
 			}else{
@@ -177,13 +182,14 @@ Ext.define('Ext.ux.Tn5250.View', {
 	},
 
 	getRequest : function(key,data){
+		var me = this;
 	    var req = {
-	    	 displayID :this.displayID,
+	    	 displayID :me.displayID,
 			 keyRequest :key,
 			 data:data ,
-			 cursorField :this.activeField.screenEl.getFieldId(),
+			 cursorField :me.screenEl.getFieldId(me.activeField.obj),
 			 // or
-			 cursorRow : this.activeField.screenEl.getRow()
+			 cursorRow : me.screenEl.getRow(me.activeField.obj)
 			 // TODO add function to Text renderer, on click
 		     };
 	    return req;
@@ -292,20 +298,21 @@ Ext.define('Ext.ux.Tn5250.View', {
 
 	// clear 5250 screen data
 	clearScreen : function() {
-		this.removeAll(true);
-                this.elements=[];
-                this.fields=[];
+		var me = this;
+		me.removeAll(true);
+		me.elements=[];
+		me.fields=[];
 	},
 
-        getLine : function(row){
+    getLine : function(row){
           var el = Ext.create('Ext.Container' , {cls : 'tnline', row : row});
           return el;
-        },
+    },
 
-        addToLine : function(line,elm){
+    addToLine : function(line,elm){
             line.add(elm);
             this.elements.push(elm);
-        },
+    },
 
 	//draws initial screen while connecting to host
 	preRender5250 : function(data) {
@@ -322,7 +329,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 	
 	// parse received json stream and create 5250 screen
 	render5250 : function(data) {
-		var me = this;
+	    	var me = this;
             if(me.clear) me.clearScreen();
 
             if (data==undefined) return;
@@ -339,32 +346,31 @@ Ext.define('Ext.ux.Tn5250.View', {
 
       		for ( var i = 0, l = me.objs.length; i < l; i++) {
       			jsonobj = me.objs[i];
-      			me.screenEl.setObject(jsonobj);
-      			if (me.screenEl.getRow() > row) {
-      				row = me.screenEl.getRow();
+      			if (me.screenEl.getRow(jsonobj) > row) {
+      				row = me.screenEl.getRow(jsonobj);
       				//jsonobj.br = true;
       				line = me.getLine(row);
       				lines.push(line);
       			}
 
-      			if (me.screenEl.isField()) {
+      			if (me.screenEl.isField(jsonobj)) {
       				prevIsField = true;
       				elm = Ext.create('Ext.ux.Tn5250.Field',{
       					obj :jsonobj,
       					screenEl :me.screenEl,
-      					name :'FLD' + me.screenEl.getFieldId(),
+      					name :'FLD' + me.screenEl.getFieldId(jsonobj),
       					view :me
       				});
       				me.fields.push(elm);
       			} else {
       				var pos = jsonobj.t.search(me.btnmatch);
       				if(pos>-1){
-      					me.renderBtn(line,jsonobj);
+      					me.renderClickable(line,jsonobj,me.btnmatch,true);
       					continue;
       				}
       				var pos = jsonobj.t.search(me.urlmatch);
       				if(pos>-1){
-      					me.renderUrl(line,jsonobj);
+      					me.renderClickable(line,jsonobj,me.urlmatch,false);
       					continue;
       				}
 
@@ -381,15 +387,15 @@ Ext.define('Ext.ux.Tn5250.View', {
       			 elm.on('click',function(o){me.activeField = o;}, me);
       			// add element to the screen container (form) and focus it if needed
       			me.addToLine(line,elm);
-      			if (me.screenEl.isFocused()) {
+      			if (me.screenEl.isFocused(jsonobj)) {
       				me.activeField = elm;
       				elm.focused = true;
       			}
 
 		} //end for
 
-                me.add(lines);
-                /*
+        me.add(lines);
+        /*
 		if(this.lock){
 			this.disable();
 		} else 	this.enable();
@@ -397,81 +403,66 @@ Ext.define('Ext.ux.Tn5250.View', {
 	},
 
 
-	renderUrl : function(line,jsonobj){
-		var elm =null;
-		var tx = jsonobj.t;
-		var poseq=-1;
-		var pos=-1;
+    newLine : function(jsonobj){
+        var elm = null;
 		if(jsonobj.br==true){
-			elm = this.getPart(jsonobj, '', false, true);
-                        this.addToLine(line,elm);
+			elm = me.getPart(jsonobj, '', false, true);
+			me.addToLine(line,elm);
 		}
-
-		while(true){
-			pos = tx.search(this.urlmatch);
-			if(pos==-1) break;
-			poseq=tx.indexOf(' ',pos);
-			if(poseq==-1) {
-				elm = this.getPart(jsonobj, tx.slice(0,pos), false,false);
-				this.addToLine(line,elm);
-				elm = this.getUrlPart(jsonobj, tx.slice(pos));
-				this.addToLine(line,elm);
-				tx='';
-				break;
-			}
-			elm = this.getPart(jsonobj, tx.slice(0,pos), false,false);
-			this.addToLine(line,elm);
-			elm = this.getUrlPart(jsonobj, tx.slice(pos,poseq));
-			this.addToLine(line,elm);
-
-			tx=tx.slice(tx.indexOf(' ',pos));
-		}
-
-		if(tx.length>0){
-			elm = this.getPart(jsonobj, tx, false,false);
-			this.addToLine(line,elm);
-		}
-
 	},
-
-	renderBtn : function(line,jsonobj){
-                var elm = null;
+		
+	renderClickable : function(line,jsonobj, text, isButton ){
+		var me = this;
+	    var elm = null;
 		var tx = jsonobj.t;
 		var poseq=-1;
 		var pos=-1;
-		if(jsonobj.br==true){
-			elm = this.getPart(jsonobj, '', false, true);
-			this.addToLine(line,elm);
-		}
-
+		var sig = isButton ? '=' : ' ';
+		
+		me.newLine(jsonobj);
+		
 		while(true){
-			pos = tx.search(this.btnmatch);
+			pos = tx.search(text);
 			if(pos==-1) break;
-			poseq=tx.indexOf('=',pos);
+			poseq=tx.indexOf(sig,pos);
 			if(poseq==-1) break;
-			elm = this.getPart(jsonobj, tx.slice(0,pos), false,false);
-			this.addToLine(line,elm);
-			elm = this.getPart(jsonobj, tx.slice(pos,poseq), true,false);
-			this.addToLine(line,elm);
-
-			tx=tx.slice(tx.indexOf('=',pos));
+			
+			//render url part
+			if(!isButton){
+					if(poseq==-1) {
+						elm = me.getPart(jsonobj, tx.slice(0,pos), false,false);
+						me.addToLine(line,elm);
+						elm = me.getUrlPart(jsonobj, tx.slice(pos));
+						me.addToLine(line,elm);
+						tx='';
+						break;
+					}
+		    }
+		
+			elm = me.getPart(jsonobj, tx.slice(0,pos), false,false);
+			me.addToLine(line,elm);
+			if(isButton){
+		      elm = me.getPart(jsonobj, tx.slice(pos,poseq), true,false);
+		    } else {
+		      elm = me.getUrlPart(jsonobj, tx.slice(pos,poseq), true,false);
+		    }
+			me.addToLine(line,elm);
+			tx=tx.slice(tx.indexOf(sig,pos));
 		}
-
+		
 		if(tx.length>0){
-			elm = this.getPart(jsonobj, tx, false,false);
-			this.addToLine(line,elm);
-                 }
-
+			elm = me.getPart(jsonobj, tx, false,false);
+			me.addToLine(line,elm);
+		}
 	},
-
+		
 	getPart : function(jsonobj,txt,btn,brk){
 
 		var me = this,
-                obj = Object.create(jsonobj);
+        obj = Object.create(jsonobj);
 		obj.br=brk;
 		obj.t= txt;
 		obj.b= btn;
-		this.screenEl.setObject(obj);
 		var elm = new Ext.ux.Tn5250.Text( {
 			obj :obj,
 			screenEl :me.screenEl
@@ -490,7 +481,6 @@ Ext.define('Ext.ux.Tn5250.View', {
 		obj.br=false;
 		obj.t= txt;
 		obj.u=true;
-		this.screenEl.setObject(obj);
 		var elm = new Ext.ux.Tn5250.Text( {
 			obj :obj,
 			screenEl :this.screenEl
@@ -503,6 +493,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 	dummyEvent : function() {
 		return false;
 	}
+	
 });
 
 

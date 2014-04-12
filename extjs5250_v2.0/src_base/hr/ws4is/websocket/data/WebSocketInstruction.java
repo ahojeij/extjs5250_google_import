@@ -24,15 +24,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * WebSocket return structure {type:'ws' , cmd : * , data : *}
  */
-public enum WebSocketInstruction 
-{
+public enum WebSocketInstruction {
 	WELCO("welco"), BYE("bye"), ERR("err"), DATA("data"), ECHO("echo");
 
     private final String text;
 
-	  /**
-     * @param text
-     */
     private WebSocketInstruction(final String text) {
         this.text = text;
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.Panel; main 5250 panel. Contains view and satus bar; attached key handler 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,8 +6,12 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+/**
+ * Single session panel, has a 5250 screen view and status line
+ */
 Ext.define('Ext.ux.Tn5250.Panel', {
 	extend : 'Ext.container.Container',
+	
 	requires : ['Ext.container.Container',
 	            'Ext.ux.Tn5250.Proxy',
 	            'Ext.ux.Tn5250.KeyManager',
@@ -16,7 +20,9 @@ Ext.define('Ext.ux.Tn5250.Panel', {
 	            'Ext.ux.Tn5250.StatusLine'],
 	            
     alias : 'widget.tnpanel',
-    autoDestroy : true,       
+    
+    autoDestroy : true,
+    
     mixins : {
     	keyhandler : 'Ext.ux.Tn5250.KeyHandler'
     },

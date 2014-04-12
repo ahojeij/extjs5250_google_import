@@ -40,17 +40,14 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
+import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
-import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 
 public class WebSocketEndpoint {	
-	final static String WS = "ws";
-	final static String WELCO = "{type:'ws' , protocol:'ws4is' , version : '1.0' , cmd :'welco'}";
-	final static String BYE = "{type:'ws' , cmd :'bye'}";
 	
 	static final ThreadLocal<WebSocketSession> websocketContextThreadLocal = new ThreadLocal<WebSocketSession>();
 			
@@ -85,7 +82,7 @@ public class WebSocketEndpoint {
 		
 		try {
 			
-			if(!WS.equals(message.getType())){
+			if(!WS4ISConstants.WEBSOCKET_TYPE.equals(message.getType())){
 				return;
 			}
 
@@ -94,19 +91,17 @@ public class WebSocketEndpoint {
 			webSocketEvent.fire(new WebsocketEvent(wsession, WebSocketEventStatus.MESSAGE ));
 			
 			switch(message.getCmd()){
-				case WELCO : processWelco(wsession,message); break;	
+				case WELCO : processSimple(wsession,message); break;	
 				case DATA : processData(wsession,message); break;
-				case ECHO : processEcho(wsession,message); break;
-				case BYE : processBye(wsession,message); break;
+				case ECHO : processSimple(wsession,message); break;
+				case BYE : processSimple(wsession,message); break;
 				case ERR : break;
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
-			ExtJSResponse directResponse = new ExtJSResponse(e,e.getMessage()) ; 
-			wsResponse.data = directResponse;
-			sendResponse(wsResponse,wsession);		
+			WebSocketResponse wsResponse = getErrorResponse(e);
+			wsession.sendResponse(wsResponse, true);
 		} finally {
 			websocketContextThreadLocal.remove();
 		}
@@ -125,13 +120,13 @@ public class WebSocketEndpoint {
 			session.getUserProperties().put(WS4ISConstants.WEBSOCKET_PATH,config.getUserProperties().get(WS4ISConstants.WEBSOCKET_PATH));
 
 			websocketContextThreadLocal.set(wsession);
-			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.START));
+			webSocketEvent.fire(new WebsocketEvent(wsession, WebSocketEventStatus.START));
 			
 			if(!wsession.isValidHttpSession()){
-				System.out.println("Websocket requires valid http session");
-				WebSocketResponse response = new WebSocketResponse(WebSocketInstruction.ERR);
-				response.errMsg = "Websocket requires valid http session";
-				String responseString =  JsonDecoder.getJSONEngine().writeValueAsString(response);
+				System.out.println(WS4ISConstants.HTTP_SEESION_REQUIRED);
+				IllegalStateException ise = new IllegalStateException(WS4ISConstants.HTTP_SEESION_REQUIRED);
+				WebSocketResponse wsResponse = getErrorResponse(ise);
+				String responseString =  JsonDecoder.getJSONEngine().writeValueAsString(wsResponse);
 				session.close(new CloseReason(CloseCodes.VIOLATED_POLICY, responseString));
 			} 
 
@@ -148,7 +143,7 @@ public class WebSocketEndpoint {
 		final WebSocketSession wsession = new WebSocketSession(session, null);		
 		try{
 			websocketContextThreadLocal.set(wsession);
-			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.CLOSE));	
+			webSocketEvent.fire(new WebsocketEvent(wsession, WebSocketEventStatus.CLOSE));	
 		} finally {
 			websocketContextThreadLocal.remove();
 		}		
@@ -159,7 +154,7 @@ public class WebSocketEndpoint {
 		final WebSocketSession wsession = new WebSocketSession(session, null);		
 		try{
 			websocketContextThreadLocal.set(wsession);
-			webSocketEvent.fire(new WebsocketEvent(wsession,WebSocketEventStatus.ERROR,t));	
+			webSocketEvent.fire(new WebsocketEvent(wsession, WebSocketEventStatus.ERROR,t));	
 		} finally {
 			websocketContextThreadLocal.remove();
 		}		
@@ -168,57 +163,45 @@ public class WebSocketEndpoint {
 	/*
 	 * PRIVATE SECTION
 	 */
+	
+	private WebSocketResponse getErrorResponse(Exception e){
+		WebSocketResponse wsResponse = null;
+		ExtJSResponse response = new ExtJSResponse(e,e.getMessage()) ;
+		wsResponse = new WebSocketResponse(WebSocketInstruction.ERR);
+		wsResponse.setData(response);
+		wsResponse.setErrMsg(e.getMessage());
+		return wsResponse;
+	}
 		
-	private void processEcho(WebSocketSession session, WebSocketRequest message) {
-		session.getAsyncRemote().sendText(message.toString());
+	private void processSimple(WebSocketSession session, WebSocketRequest message) {
+		WebSocketResponse wsResposne = new WebSocketResponse(message.getCmd());
+		session.sendResponse(wsResposne, true);
 	}
 	
-	private void processWelco(WebSocketSession session, WebSocketRequest wsMessage) {
-		session.getAsyncRemote().sendText(WELCO);
-	}
-
-	private void processBye(WebSocketSession session, WebSocketRequest wsMessage) {
-		session.getAsyncRemote().sendText(BYE);
-	}	
-
-	private void processData(WebSocketSession session, WebSocketRequest wsMessage)	{
-		List<ExtJSDirectResponse<?>> responseList = new ArrayList<ExtJSDirectResponse<?>>();
-		List<ExtJSDirectRequest<JsonNode>> requests =  wsMessage.getData();
+	private void processData(WebSocketSession session, WebSocketRequest wsMessage) throws IOException, EncodeException	{
+		List<ExtJSDirectResponse<?>> responseList = new ArrayList<ExtJSDirectResponse<?>>();		
 		String wsPath = (String) session.getUserProperties().get(WS4ISConstants.WEBSOCKET_PATH);
+		
+		List<ExtJSDirectRequest<JsonNode>> requests =  wsMessage.getData();
 		for(ExtJSDirectRequest<JsonNode> request : requests ){
-			ExtJSDirectResponse<?> directResponse = null;
-			try{
-				session.setTransactionID(request.getTid());
-				directResponse = directOperations.process(request,session.getHttpSession(),wsPath);
-				responseList.add(directResponse);				
-			}catch(Exception e){
-				ExtJSResponse errorResponse = new ExtJSResponse(e, e.getMessage());
-				ExtJSDirectResponse<?> errorDirectResponse = new ExtJSDirectResponse<>(request, errorResponse) ;
-				responseList.add(errorDirectResponse);
-			}
-
-			if(!session.isOpen()){
-				break;
-			}
+			processRequest(session, request, wsPath, responseList);
 		}
 		
-		//send response
-		if(session.isOpen()){			
-			WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
-			wsResponse.data = responseList;
-			sendResponse(wsResponse,session);
-		}		
+		WebSocketResponse wsResponse = new WebSocketResponse(WebSocketInstruction.DATA);
+		wsResponse.setData(responseList);
+		session.sendResponse(wsResponse, true);	
 	}
 	
-	private void sendResponse(WebSocketResponse data , WebSocketSession session){
-		if(data!=null && session.isOpen()){			
-			try {
-				Async basic = session.getAsyncRemote();
-				basic.sendObject(data);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}			
-		}
-	}	
+	private void processRequest(WebSocketSession session, ExtJSDirectRequest<JsonNode> request, String wsPath, List<ExtJSDirectResponse<?>> responseList ) throws IOException, EncodeException	{
+		ExtJSDirectResponse<?> directResponse = null;
+		try{
+			session.setRequest(request);
+			directResponse = directOperations.process(request,session.getHttpSession(),wsPath);
+		}catch(Exception e){
+			ExtJSResponse errorResponse = new ExtJSResponse(e, e.getMessage());
+			directResponse = new ExtJSDirectResponse<>(request, errorResponse) ;			
+		}		
+		responseList.add(directResponse);
+	}
 
 }

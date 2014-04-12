@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.ScreenElemen ExtJS 4.x; Screen data decoder
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,62 +6,64 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+/**
+ * Used for decoding of received 5250 screen data.
+ * Received data is encoded and minimized for better network optimization
+ * so data has to be decoded to get relevant information about screen element
+ */
 Ext.define('Ext.ux.Tn5250.ScreenElement', {
-  
-  setObject :  function(o) {
-    ((o==undefined) || (o==null)) ?  this.o=null : this.o = o;
+  singleton: true,
+   
+  isBreak :  function(o) {
+    return (o && o.br) ? o.br : false;
   },
 
-  isBreak :  function() {
-    return (this.o && this.o.br) ? this.o.br : false;
+  isField :  function(o) {
+     return (o  && o.d) ? o.d[2]>0 : false;
   },
 
-  isField :  function() {
-     return (this.o  && this.o.d) ? this.o.d[2]>0 : false;
+  isHidden :  function(o) {
+    return (o  && o.d) ? o.d[0] : -1;
   },
 
-  isHidden :  function() {
-    return (this.o  && this.o.d) ? this.o.d[0] : -1;
+  getFieldType :  function(o) {
+    return (o  && o.d) ? o.d[1] : -1;
   },
 
-  getFieldType :  function() {
-    return (this.o  && this.o.d) ? this.o.d[1] : -1;
-  },
-
-  getFieldId :  function() {
-    return (this.o  && this.o.d) ? this.o.d[2] : -1;
+  getFieldId :  function(o) {
+    return (o  && o.d) ? o.d[2] : -1;
     },
 
-  getAttributeId :  function() {
-    return (this.o  && this.o.d) ? this.o.d[3] : -1;
+  getAttributeId :  function(o) {
+    return (o  && o.d) ? o.d[3] : -1;
     },
 
 
-  getLength :  function() {
-    return (this.o  && this.o.d) ? this.o.d[4] : -1;
+  getLength :  function(o) {
+    return (o  && o.d) ? o.d[4] : -1;
     },
 
-  getMaxLength :  function() {
-    return (this.o  && this.o.d) ? this.o.d[5] : -1;
+  getMaxLength :  function(o) {
+    return (o  && o.d) ? o.d[5] : -1;
     },
 
-  getRow :  function() {
-    return (this.o && this.o.d) ? this.o.d[6] : -1;
+  getRow :  function(o) {
+    return (o && o.d) ? o.d[6] : -1;
   },
 
 
-  getValue :  function() {
-    return (this.o && this.o.t) ? this.o.t : '';
+  getValue :  function(o) {
+    return (o && o.t) ? o.t : '';
   },
 
-  isBlink : function(){
-	 var id=this.getAttributeId();
+  isBlink : function(o){
+	 var id=this.getAttributeId(o);
 	 return id==42 || id==43 || id==46;
   },
 
-  getClass : function(){
+  getClass : function(o){
 
-      switch(this.getAttributeId()){
+      switch(this.getAttributeId(o)){
          case 32: return 'green';
          case 33: return 'green-rv';
          case 34: return 'white';
@@ -103,73 +105,73 @@ Ext.define('Ext.ux.Tn5250.ScreenElement', {
 
    },
 
-   isFocused : function(){
-	   if(this.getFieldId()>1000) return false;
-	   var i = this.getFieldType();
+   isFocused : function(o){
+	   if(this.getFieldId(o)>1000) return false;
+	   var i = this.getFieldType(o);
 	   return (i >>13)&1;
    },
 
-    isAutoEnter : function(){
-	   var i = this.getFieldType();
+    isAutoEnter : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>12)&1;
    },
 
-    isBypassField : function(){
-	   var i = this.getFieldType();
+    isBypassField : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>11)&1;
    },
 
-    isContinued : function(){
-	   var i = this.getFieldType();
+    isContinued : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>10)&1;
    },
 
-    isContinuedFirst : function(){
-	   var i = this.getFieldType();
+    isContinuedFirst : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>9)&1;
    },
 
-    isContinuedLast : function(){
-	   var i = this.getFieldType();
+    isContinuedLast : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>8)&1;
    },
 
-    isContinuedMiddle : function(){
-	   var i = this.getFieldType();
+    isContinuedMiddle : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>7)&1;
    },
 
-    isDupEnabled : function(){
-	   var i = this.getFieldType();
+    isDupEnabled : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>6)&1;
    },
 
     isFER : function(){
-	   var i = this.getFieldType();
+	   var i = this.getFieldType(o);
 	   return (i >>5)&1;
    },
 
-    isHiglightedEntry : function(){
-	   var i = this.getFieldType();
+    isHiglightedEntry : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>4)&1;
    },
 
-    isMandatoryEnter : function(){
-	   var i = this.getFieldType();
+    isMandatoryEnter : function(o){
+	   var i = this.getFieldType(o);
 	   return (i >>3)&1;
    },
 
-    isNumeric : function(){
+    isNumeric : function(o){
 	   var i = this.getFieldType();
 	   return (i >>2)&1;
    },
 
-    isSignedNumeric : function(){
-	   var i = this.getFieldType();
+    isSignedNumeric : function(o){
+	   var i = this.getFieldType(o);
 	   return (i>>1)&1;
    },
 
-    isToUpper : function(){
+    isToUpper : function(o){
 	   var i = this.getFieldType();
 	   return (i&1);
    }

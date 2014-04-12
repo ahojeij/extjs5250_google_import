@@ -1,36 +1,73 @@
-/**
- * @Description WS4IS.WebSocket ExtJS 4.x; custom websocket data provider
+/*
+ * @Description ExtJS wrapper for WebSocket object adding Observable linked to WebSocket events
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
  * @version 2.0, 08.04.2014.
  * @project_url http://code.google.com/p/extjs5250/
+ * @example
+ *  Ext.create('WS4IS.WebSocket',{url :'ws://localhost:8080/ws/socket' , type : 'ws4isWebSocket'})  
  */
 
 
+//fix for Mozilla WebSocket
+if(typeof MozWebSocket !== 'undefined' && typeof WebSocket === 'undefined'){WebSocket = MozWebSocket;}
+
+
+/**
+ * ExtJS wrapper for WebSocket object adding Observable linked to WebSocket events
+ */
 Ext.define('WS4IS.WebSocket', {
+
+	/**
+	 * @cfg {object} parametres of WebSocket conenction
+	 * @param {String} [config.url=''] url address of remote socket
+	 * @return {String} [config.url='ws4is'] subprotocol name 
+	 */	
 	config : {
 		url : '',
 		type : 'ws4is'
 	},	
+	
     mixins: {
         observable: 'Ext.util.Observable'
     },
 
     statics : {
     	$instances : {},
+    	
+    	/**
+    	* Register WS4IS.WebSocket object to instance list
+    	* @param {object} WS4IS.WebSocket
+    	* @static
+    	*/    	
     	register : function(ws){
             WS4IS.WebSocket.$instances[ws.id] = ws;    		
     	},
+    	
+    	/**
+    	* Unregister WS4IS.WebSocket object from instance list
+    	* @param {object} WS4IS.WebSocket
+    	* @static
+    	*/      	
     	unregister : function(ws){
     		WS4IS.WebSocket.$instances[ws.id]= null;
     		delete WS4IS.WebSocket.$instances[ws.id];
-    	},    	
+    	},
+    	
+    	/**
+    	* Retrieves WS4IS.WebSocket object from instance list
+    	* @param {String} name of WS4IS.WebSocket instance
+    	* @static
+    	*/      	
     	getInstance : function(name){
     		return WS4IS.WebSocket.$instances[name];
     	}
     },
-    /*
-    * config = {url , type }
+    
+    
+   /**
+    * Create WS4IS.WebSocket object
+    * @param {object} {url , type }
     */
     constructor : function(config){
         var me = this;
@@ -51,6 +88,10 @@ Ext.define('WS4IS.WebSocket', {
         };
     },
     
+    /**
+     * Opens WebSocket connection and bind events to internal methods. 
+     * Throws an error if already opened.
+     */    
     open : function(){
         var me = this;
    	    if(me.isConnected()) return;
@@ -70,11 +111,19 @@ Ext.define('WS4IS.WebSocket', {
         me.wsocket.onerror = Ext.Function.bind(me._onSockError, me);
      },
 
+     /**
+      * Checks for connection status of WebSocket 
+      * @return {Boolean} status
+      */
      isConnected : function(){
         var me = this;
         return (me.wsocket && me.wsocket.readyState === 1);
      },
      
+     /**
+      * Sends data over WebSocket 
+      * @param {object} json object
+      */     
      send : function(data){
     	 var me = this;
     	 if(me.isConnected()){
@@ -82,13 +131,19 @@ Ext.define('WS4IS.WebSocket', {
     	 }    	 
      },
 
-     close : function(data){
+     /**
+      * Closes WebSocket connection 
+      */       
+     close : function(){
     	 var me = this;
     	 if(me.isConnected()){
     		 me.wsocket.close();
     	 }
      },
-     
+
+     /**
+      * Destroys WS4IS.WebSocket object 
+      */              
      destroy: function() {
     	 var me = this;
          me.destroy = Ext.emptyFn;
@@ -96,11 +151,15 @@ Ext.define('WS4IS.WebSocket', {
          WS4IS.WebSocket.unregister(me);
      },
      
+     
+     /**
+      * Method executed from WebSocket callback on connection open
+      * @private
+      */
      _onSockOpen: function(evt) {
     	 var me = this, _evt=evt;
     	 var recursion = function(){
              if (me.wsocket.readyState === 1) {
-            	  WS4IS.WebSocket.register(me);
                   me.fireEvent('connect', _evt);
                  return;
              } else {
@@ -110,11 +169,19 @@ Ext.define('WS4IS.WebSocket', {
     	 Ext.Function.defer(recursion,50,me);
      },
 
+     /**
+      * Method executed from WebSocket callback when message arrives
+      * @private
+      */     
      _onSockMessage: function(obj) {
          var me = this;
          me.fireEvent('data', obj);
      },
 
+     /**
+      * Method executed from WebSocket callback on connection close
+      * @private
+      */     
      _onSockClose: function(obj) {
     	 var me = this;
          me.wsocket.onopen = null;
@@ -125,6 +192,10 @@ Ext.define('WS4IS.WebSocket', {
          me.fireEvent('disconnect', obj);
       },
 
+      /**
+       * Method executed from WebSocket callback when connection error ocures
+       * @private
+       */      
      _onSockError: function(obj) {
     	 var me = this;
     	 me.fireEvent('exception', obj);
@@ -132,4 +203,3 @@ Ext.define('WS4IS.WebSocket', {
 
 });
 
-// Ext.create('WS4IS.WebSocket',{url :'ws://localhost:8080/ws/socket' , type : 'ws4isWebSocket'})

@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.Panel; main 5250 panel. Contains view and satus bar; attached key handler 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,8 +6,13 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+
+/**
+ * Dynamic menu, shows list of available hosts to which user can connect
+ */
 Ext.define('Ext.ux.Tn5250.HostsMenu', {
 	extend : 'Ext.button.Button',
+	
 	requires : ['Ext.button.Button',
 	            'Ext.menu.Item',
 	            'Ext.ux.Tn5250.Proxy',

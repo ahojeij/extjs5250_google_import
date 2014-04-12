@@ -35,7 +35,7 @@ public class WebSocketConfigurator extends ServerEndpointConfig.Configurator{
 	
 	@Override
 	public String getNegotiatedSubprotocol(List<String> supported, List<String> requested){
-		return "ws4is";
+		return WS4ISConstants.WEBSOCKET_SUBPROTOCOL;
 	}
  
 	// modifyHandshake() is called before getEndpointInstance()!

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010,  Tomislav Milkovic
+ * Copyright (C) 2014,  Tomislav Milkovic
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -135,6 +135,9 @@ public class Tn5250Controller {
 				response.setClearScr(true);
 				response.setDisplayID(displayId);
 				
+				//little delay for WebSocket to send display id response.
+				//after successful connection to tn5250, listener will send first screen data
+				//with displayID so front end can find proper display to render image on it
 				Runnable rn = new Runnable() {
 					@Override
 					public void run() {

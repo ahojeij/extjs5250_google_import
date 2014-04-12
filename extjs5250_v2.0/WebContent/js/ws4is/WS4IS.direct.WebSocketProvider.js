@@ -1,27 +1,36 @@
-/**
- * @Description WS4IS.direct.WebSocket ExtJS 4.x; custom websocket data provider
+/*
+ * @Description ExtJS data provider for WebSocket protocol 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
  * @version 2.0, 08.04.2014.
  * @project_url http://code.google.com/p/extjs5250/
  */
 
-/************************************************************************
- * WebSocket support for ExtJS 4
- ************************************************************************/
-
-//fix for Mozilla WebSocket
-if(typeof MozWebSocket !== 'undefined' && typeof WebSocket === 'undefined'){WebSocket = MozWebSocket;}
-
-/*
- * Based on https://github.com/moyarada/WebSocket-provider-for-ExtJS
-*/
-Ext.define('WS4IS.direct.WebSocket', {
+/**
+ * ExtJS data provider for WebSocket protocol.  
+ */
+Ext.define('WS4IS.direct.WebSocketProvider', {
       extend: 'WS4IS.direct.Provider',
       alias : 'direct.ws4isWebSocketprovider',
 
+      /**
+       * @property {String} wsocket
+       * This property contains a name of registered WebSocket provider. 
+       * This is used to retrieve provider when sending data voer registered WebSocket
+       * @private
+       */
       wsocket: null,
-      callbacks: [],
+      
+      
+      constructor : function(config){
+          var me = this;
+          
+          if(Ext.getVersion().getMajor() == 4){
+          	me.addEvents('echo','bye');
+          }
+          
+          me.callParent(arguments);
+      },      
 
       parseResponse: function(xhr){
                //console.log(xhr);
@@ -29,13 +38,20 @@ Ext.define('WS4IS.direct.WebSocket', {
                    if(typeof xhr.data == 'object'){
                        return xhr.data;
                    }
-                  var result =  Ext.decode(xhr.data);
+                  var me = this, result =  Ext.decode(xhr.data);
                   if(Ext.isObject(result)){
                    if(result.type=='ws'){
                  	  if(result.cmd=='bye'){
                           var ws = WS4IS.WebSocket.getInstance(this.wsocket);
                           if(ws) ws.close();
+                          me.fireEvent('bye', me, result);
                           return null;
+                 	  } else if(result.cmd=='err'){
+                 		 me.fireEvent('exception', me, result);
+                 		return null;
+                 	  } else if(result.cmd=='echo'){
+                 		 me.fireEvent('echo', me, result);
+                 		return null;
                  	  } else{
                           result = result.data;
               	      }                	   
@@ -84,15 +100,35 @@ Ext.define('WS4IS.direct.WebSocket', {
            }
          }
      },
-
-     sendRequest : function(data){
-    	 var me = this, ws = WS4IS.WebSocket.getInstance(me.wsocket);
+     
+     /**
+      * Method to verify if connection is open and active
+      * @private
+      */
+     checkSocket : function(){
+    	 var me = this, ws = WS4IS.WebSocket.getInstance(me.wsocket); 
          if (!ws) {
         	 Ext.Error.raise('Socket not initialized!');
           };    	 
           if (!ws.isConnected()) {
          	 Ext.Error.raise('Socket not connected!');
-           };    	           
+           }; 
+           return ws;
+     },
+
+     /**
+      * Method to check server side socket status. WebSocket simple echo. 
+      */
+     echo : function(data){
+    	 var me = this, ws = me.checkSocket();
+         var data = {type :'ws' , cmd:'echo'};          
+         ws.send(Ext.encode(data));     	 
+     },
+     
+     
+     sendRequest : function(data){
+    	 var me = this, ws = me.checkSocket();
+
           var request = {
                         url: me.url,
                         callback: me.onData,

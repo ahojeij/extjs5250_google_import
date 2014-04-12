@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.KeyHandler ExtJS 4.x; Keyboard handler 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,9 +6,9 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
-//handle active 5250 session , send keystrokes to renderer, overrides standard browser keys while active
-
-
+/**
+ * Handle active 5250 session, send keystrokes to renderer, overrides standard browser keys while active
+ */
 Ext.define('Ext.ux.Tn5250.KeyHandler',{
   extend : 'Ext.util.Observable',
 

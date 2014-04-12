@@ -1,4 +1,4 @@
-/**
+/*
  * @Description Ext.ux.Tn5250.TabPanel; main tab for 5250 panels.  
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
@@ -6,6 +6,9 @@
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+/**
+ * Main panel representing sessions in tabs
+ */
 Ext.define('Ext.ux.Tn5250.TabPanel', {
 	extend : 'Ext.tab.Panel',
     requires : ['Ext.tab.Panel', 

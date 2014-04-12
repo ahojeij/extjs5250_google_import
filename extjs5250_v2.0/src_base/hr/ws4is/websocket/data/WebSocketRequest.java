@@ -19,6 +19,7 @@
 
 package hr.ws4is.websocket.data;
 
+import hr.ws4is.WS4ISConstants;
 import hr.ws4is.ext.ExtJSDirectRequest;
 
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * JsonNode to be converted into JSON structure.
  */
 public class WebSocketRequest {
-	public final String type = "ws";
+	
+	public final String type = WS4ISConstants.WEBSOCKET_TYPE;
 
 	WebSocketInstruction cmd;  // 'welcome , bye, data' ,
 	int timeout;  //set only when cmd=welcome

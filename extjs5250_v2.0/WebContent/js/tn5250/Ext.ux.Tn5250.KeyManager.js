@@ -1,11 +1,14 @@
-/**
- * @Description Ext.ux.Tn5250.KeyManager; KeyManager singleton for paner key observer registration 
+/*
+ * @Description Ext.ux.Tn5250.KeyManager; KeyManager singleton for panel key observer registration 
  * @author  Tomislav Milkovic
  * @license LGPLv3 http://www.opensource.org/licenses/lgpl-3.0.html
  * @version 2.0, 08.04.2014.
  * @project_url http://code.google.com/p/extjs5250/
  */
 
+/**
+ * Keyboard manager, used to activate/reactivate on 5250 session panels switch to be able to handle keystrokes on proper screen. 
+ */
 Ext.define( 'Ext.ux.Tn5250.KeyManager', {
 	singleton: true,
 	bypass : false,
