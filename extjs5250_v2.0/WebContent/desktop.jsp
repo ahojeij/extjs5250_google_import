@@ -32,10 +32,23 @@
        <script type="text/javascript" src="js/init.js"></script>
        <script type="text/javascript" src="js/desktop/index.js"></script>
 
+	   <script type="text/javascript">
+	    function beep(){
+	     var sound = document.getElementById('beep');	     
+	     sound.load();
+	     sound.play();
+	     }
+	   </script>
 
 </head>
 
 <body>
-
+<pre>Ctrl+SHIFT = Reset
+Ctrl = Return
+Enter = Field Exit
+F1..12 = PF1..12
+F1..12 + SHIFT = PF12..24
+</pre>
+<audio src="sounds/beep.mp3" id="beep" style="visibility:hidden;" type="audio/mpeg" ></audio>
 </body>
 </html>

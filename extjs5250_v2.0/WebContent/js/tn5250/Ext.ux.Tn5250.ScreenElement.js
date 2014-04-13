@@ -146,7 +146,7 @@ Ext.define('Ext.ux.Tn5250.ScreenElement', {
 	   return (i >>6)&1;
    },
 
-    isFER : function(){
+    isFER : function(o){
 	   var i = this.getFieldType(o);
 	   return (i >>5)&1;
    },
@@ -162,7 +162,7 @@ Ext.define('Ext.ux.Tn5250.ScreenElement', {
    },
 
     isNumeric : function(o){
-	   var i = this.getFieldType();
+	   var i = this.getFieldType(o);
 	   return (i >>2)&1;
    },
 
@@ -172,7 +172,7 @@ Ext.define('Ext.ux.Tn5250.ScreenElement', {
    },
 
     isToUpper : function(o){
-	   var i = this.getFieldType();
+	   var i = this.getFieldType(o);
 	   return (i&1);
    }
 

@@ -16,10 +16,11 @@ String.prototype.repeat = function(l){
 Ext.define('Ext.ux.Tn5250.Field',{
 	extend : 'Ext.Component',
 	requires : ['Ext.Component'],	
+	alias : 'widget.tnfield',
 	
 	_lastvalue:'',
-
-        //ExtJs 4
+	
+     //ExtJs 4
 	autoEl : {tag : 'input'},
 
      constructor: function(config) {
@@ -35,7 +36,6 @@ Ext.define('Ext.ux.Tn5250.Field',{
     initComponent : function(){
         var me = this;
 	    me.callParent();
-        //me.addEvents('focus','blur');
         me.internalConfig();
     },
     
@@ -50,43 +50,26 @@ Ext.define('Ext.ux.Tn5250.Field',{
     onRender : function(ct, position){
        var me = this;
        me.callParent(arguments);
-       me.element = me.el;
        me.internalRender();
-    },
-
-    //Touch 2
-    initialize : function(){
-       var me = this;
-       me.callParent(arguments);
-       me.internalConfig();
-       me.internalRender();
-
-    },
-    
-    //Touch 2
-    getElementConfig: function() {
-        return Ext.apply(this.callParent(),{
-          tag : 'input'
-        });
-    },
-
-    //Touch 2
-    remove : function(){
-      this.unblink();
-      this.callParent();
     },
 
     //@Private Shared
     internalConfig:function(){
         var me = this;
+       
+		if(Ext.getVersion().getMajor() < 5){
+			me.addEvents('5250lock','5250unlock');
+		}        
+        me.on('added', function( me, container, pos, eOpts ){
+        	var relayers =  me.relayEvents(container.view,['5250lock','5250unlock']);
+        	me.on('removed', function( me, container, pos, eOpts ){
+        		Ext.destroy(relayers);
+        	});
+        });
         
-        me.on("focus", me.onFocus,  me);
-        me.on("blur", me.onBlur,me);
-        me.on("keyup", me.onKeyUp,me);
-        me.on("keypress", me.onKeyPress,me);
-        me.on("keydown", me.onKeyDown,me);
-        me.on("dblclick", me.onDoubleClick,me);
-
+        me.on("5250unlock", me.onUnlock,  me);
+        me.on("5250lock", me.onLock,  me);
+        
     	if ( me.screenEl.isNumeric(me.obj)){
           me.decimal=0; //TODO does have me
           me.isDecimal = false;
@@ -99,12 +82,28 @@ Ext.define('Ext.ux.Tn5250.Field',{
           me.allowDecimal = true;
           me.allowNegative = true;
      	};
+     	
+    },
+    
+    applyRenderSelectors: function() {
+        var me = this;
+
+        me.callParent();
+        var el = me.getEl();
+        el.on("focus", me.onFocusClick,  me);
+        el.on("blur", me.onBlur,me);
+        el.on("keyup", me.onKeyUp,me);
+        el.on("keypress", me.onKeyPress,me);
+        el.on("keydown", me.onKeyDown,me);
+        el.on("click", me.onFocusClick,me);
+        el.on("dblclick", me.onDoubleClick,me);        
+        
     },
     
     //@Private Shared
     internalRender:function(){
       var me = this;
-      var dom = me.element.dom;
+      var dom = me.getEl().dom;
       me.klass=me.screenEl.getClass(me.obj);
       me.baseklass='';
       
@@ -138,7 +137,9 @@ Ext.define('Ext.ux.Tn5250.Field',{
          me.interval=setInterval(function () { me.blink(); }, 500);
        }
 
-       if(me.focused){
+       if(me.readOnly){
+    	   dom.setAttribute('readOnly',true);
+       } else  if(me.focused){
      	dom.focus();
        }
     },
@@ -153,10 +154,10 @@ Ext.define('Ext.ux.Tn5250.Field',{
 
     blink: function(){
     	  if(!this.interval) return;
-    	  var klasses=this.element.dom.getAttribute("class");
+    	  var klasses=this.getEl().dom.getAttribute("class");
     	  if(klasses.indexOf(this.klass+'_i') == -1){
-    		this.element.dom.setAttribute("class",this.baseklass + this.klass + '_i txt_' + this.klass.split('-')[0]);
-    	  } else this.element.dom.setAttribute("class",this.baseklass + this.klass+ ' txt_' + this.klass.split('-')[0]);
+    		this.getEl().dom.setAttribute("class",this.baseklass + this.klass + '_i txt_' + this.klass.split('-')[0]);
+    	  } else this.getEl().dom.setAttribute("class",this.baseklass + this.klass+ ' txt_' + this.klass.split('-')[0]);
      },
 
     onDoubleClick : function(){
@@ -164,9 +165,8 @@ Ext.define('Ext.ux.Tn5250.Field',{
     },
 
     //for rederer to know which field is focused
-    onFocus : function(){
-      this.screenEl.setObject(this.obj);
-      //this.fireEvent("focus", this);
+    onFocusClick : function(){
+      this.view.activeField = this;
     },
 
     onBlur : function(ev,target){
@@ -199,7 +199,7 @@ Ext.define('Ext.ux.Tn5250.Field',{
            return me.blockNonNumbers(ev,target);
     	};
 
-    	var input= me.element.dom;
+    	var input= me.getEl().dom;
 
     	var selection = new Selection(input);
     	var s = selection.create();
@@ -231,26 +231,30 @@ Ext.define('Ext.ux.Tn5250.Field',{
     		this.view.switchIns();
     	}
 
-    	var l = me.element.dom.value.length;
+    	var l = me.getEl().dom.value.length;
     	var ml = me.screenEl.getMaxLength(me.obj);
     	if(l==ml && ev.browserEvent.keyCode>40){
-    		var caretPos = doGetCaretPosition(me.element.dom);
+    		var caretPos = doGetCaretPosition(me.getEl().dom);
     		if(caretPos>=l)
     			me.view.doTab();
     	}
     },
 
-    enable : function(){
-       this.element.dom.removeAttribute('readonly');
+    onUnlock : function(){
+       var me = this;
+       me.readOnly = false;
+       me.getEl().dom.removeAttribute('readonly');
     },
 
-     disable : function(){
-       this.element.dom.setAttribute('readonly','');
+    onLock : function(){
+       var me = this;
+       me.readOnly = true;
+       me.getEl().dom.setAttribute('readonly','');
     },
 
     getSelectionStart : function(o) {
-        	if (o.createTextRange) {
-        		var r = document.selection.createRange().duplicate();
+        	if (o.createTextRange) {        		
+        		var r = o.createTextRange().duplicate();
         		r.moveEnd('character', o.value.length);
         		if (r.text == '') return o.value.length;
         		return o.value.lastIndexOf(r.text);
@@ -261,33 +265,33 @@ Ext.define('Ext.ux.Tn5250.Field',{
     processFieldExit : function(){
     	var me = this;
         var ml = me.screenEl.getMaxLength(me.obj);
-        var l = me.element.dom.value.length;
-        var sel = me.getSelectionStart(me.element.dom);
+        var l = me.getEl().dom.value.length;
+        var sel = me.getSelectionStart(me.getEl().dom);
         //clear if all selected
-        if ((sel==0)&&( l>0)) {me.element.dom.value=""; return;};
+        if ((sel==0)&&( l>0)) {me.getEl().dom.value=""; return;};
         if ((l-sel) >0) {
-        	me.element.dom.value = me.element.dom.value.substr(0,sel);
+        	me.getEl().dom.value = me.getEl().dom.value.substr(0,sel);
         }
 
         //TODO check field type, according to type do field formatting
         //fill right/left with blank or zeroes
-        //this.element.dom.dom.value = " ".repeat(ml-l) + this.element.dom.dom.value;
-        //this.element.dom.dom.value =  this.element.dom.dom.value + "0".repeat(ml-l);
+        //this.getEl().dom.dom.value = " ".repeat(ml-l) + this.getEl().dom.dom.value;
+        //this.getEl().dom.dom.value =  this.getEl().dom.dom.value + "0".repeat(ml-l);
         if (me.screenEl.isSignedNumeric(me.obj) ||  me.screenEl.isNumeric(me.obj)){
         	if (me.screenEl.isFER(me.obj)){
-        		me.element.dom.value =  me.element.dom.value + "0".repeat(ml-l);
+        		me.getEl().dom.value =  me.getEl().dom.value + "0".repeat(ml-l);
         	}
         	return;
         }
 
-        if (me.screenEl.isToUpper(me.obj)){me.element.dom.value =  me.element.dom.value.toUpperCase(me.obj);};
-        if (me.screenEl.isFER(me.obj)){me.element.dom.value = " ".repeat(ml-l) + me.element.dom.value;};
+        if (me.screenEl.isToUpper(me.obj)){me.getEl().dom.value =  me.getEl().dom.value.toUpperCase(me.obj);};
+        if (me.screenEl.isFER(me.obj)){me.getEl().dom.value = " ".repeat(ml-l) + me.getEl().dom.value;};
 
     },
 
     extractNumber : function (ev,target) {
     	var me = this;
-    	var temp = me.element.dom.value;
+    	var temp = me.getEl().dom.value;
     	var decimalPlaces = me.decimal;
         var allowNegative = me.allowNegative;
 
@@ -332,7 +336,7 @@ Ext.define('Ext.ux.Tn5250.Field',{
     		}
     	}
 
-    	me.element.dom.value = temp;
+    	me.getEl().dom.value = temp;
     },
 
   blockNonNumbers : function (ev,target) {
@@ -365,14 +369,15 @@ Ext.define('Ext.ux.Tn5250.Field',{
   	}
 
   	reg = /\d/;
-  	var isFirstN = allowNegative ? keychar == '-' && me.element.dom.value.indexOf('-') == -1 : false;
-  	var isFirstD = allowDecimal ? keychar == '.' && me.element.dom.value.indexOf('.') == -1 : false;
+  	var isFirstN = allowNegative ? keychar == '-' && me.getEl().dom.value.indexOf('-') == -1 : false;
+  	var isFirstD = allowDecimal ? keychar == '.' && me.getEl().dom.value.indexOf('.') == -1 : false;
 
   	return isFirstN || isFirstD || reg.test(keychar);
   },
 
   uppercase : function (ev,target) {
-	  me.element.dom.value = me.element.dom.value.toUpperCase();
+	  var me = this;
+	  me.getEl().dom.value = me.getEl().dom.value.toUpperCase();
   }
 
 });

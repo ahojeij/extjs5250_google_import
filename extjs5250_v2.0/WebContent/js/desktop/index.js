@@ -2,8 +2,9 @@
 
    Ext.create('Ext.ux.Tn5250.Window', {
           title: 'Telnet 5250 - JsonRPC Services Framework - WebSocket',
-          width: 800,
-          height: 600,
+          maximizable : true,
+          width: 950,
+          height: 700,
           name : 'main'               
    }).show();
    

@@ -1,3 +1,10 @@
+.x-mask {
+  filter: alpha(opacity=60);
+  opacity: .6;
+  background: rgba(0, 0, 0, 1);
+  cursor: default;
+}
+
 .tnline {
   margin-top:4px;
 }
@@ -66,3 +73,8 @@
 .tnstatus .msgw{background-image:url('../img/mail.png');background-repeat:no-repeat;margin-top:2px;}
 .tnstatus .err{background-image:url('../img/exclamation.png');background-repeat:no-repeat;margin-top:2px;}
 
+input, textarea, select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}

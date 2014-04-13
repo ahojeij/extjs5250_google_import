@@ -25,12 +25,6 @@ Ext.define('Ext.ux.Tn5250.Text', {
          this.callParent(arguments);
      },
 
-    //Touch 2
-    getElementConfig: function() {
-        return Ext.apply(this.callParent(),{
-          tag : 'span'
-        });
-    },
     
     //ExtJs 4
     initComponent : function(){
@@ -39,12 +33,6 @@ Ext.define('Ext.ux.Tn5250.Text', {
       //me.addEvents('click');
     },
 
-    //Touch 2
-    initialize : function(){
-    	var me = this;
-    	me.callParent(arguments);
-        me.internalRender();
-    },
 
     //ExtJs 4
     onRender : function(ct, position){

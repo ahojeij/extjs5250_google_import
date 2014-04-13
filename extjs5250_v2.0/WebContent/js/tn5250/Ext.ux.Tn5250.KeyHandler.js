@@ -90,11 +90,13 @@ Ext.define('Ext.ux.Tn5250.KeyHandler',{
                   //replace with tab -> go to next field
                   evt = ev;
                   bubble = false;
-           } else if(ev.keyCode == Ext.EventObject.PAGEUP){
+           } else if(ev.keyCode == Ext.EventObject.PAGE_UP){
                   evt = 'PGUP';
+                  remote = true;
                   bubble = false;
-           } else if(ev.keyCode == Ext.EventObject.PAGEDOWN){
+           } else if(ev.keyCode == Ext.EventObject.PAGE_DOWN){
                   evt = 'PGDOWN';
+                  remote = true;
                   bubble = false;
            };
 

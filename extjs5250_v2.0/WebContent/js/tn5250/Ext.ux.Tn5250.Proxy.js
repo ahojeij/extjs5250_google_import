@@ -98,9 +98,10 @@
             var prov = Ext.direct.Manager.getProvider(API.provider);
             prov.addListener('data',function(prov,resp,act){
             	//debug
+            	/*
             	window.resp = resp;
             	console.log(resp);
-            	
+            	*/
                 if(resp.displayID){
                 	var panel = getDisplay(resp.displayID);
                     if(panel){

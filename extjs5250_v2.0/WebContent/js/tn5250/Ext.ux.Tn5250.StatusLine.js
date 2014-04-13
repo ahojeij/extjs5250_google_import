@@ -63,7 +63,7 @@ Ext.define('Ext.ux.Tn5250.StatusLine', {
          	});
          });
 
-         me.on('5250response', me.requestHandler);
+         //me.on('5250request', me.requestHandler);
          me.on('5250response', me.responseHandler);
          me.on('5250keyboard', me.keyboardHandler);
        },
@@ -82,6 +82,9 @@ Ext.define('Ext.ux.Tn5250.StatusLine', {
        
        keyboardHandler : function(evt,remote) {
            var me = this;
+       	   if (me.params.lock && evt!="Reset") {    		
+    			return;
+    	   }
            if(remote){
         	   me.setLock(true);  
            }
@@ -91,43 +94,48 @@ Ext.define('Ext.ux.Tn5250.StatusLine', {
        
        
     refresh : function(obj){
-    	 var data = obj ||this.data;
+    	 var data = obj || this.data;
     	 if(Ext.version) {
     		 this.updateData(data);
-    	 } else
+    	 } else {
     		 this.update(data);
+    	 }
     },
 
 
    setStatus : function(data){
-      this.params={clear : data.clearScr, lock  : data.locked, msgw : data.msgw, conerr : data.conerr	};
-      if(this.params.clear) this.clearScreen();
-      this.setLock(this.params.lock,true);
-      this.setError(this.params.conerr);
-      this.setMsgw(this.params.msgw);
+	  var me = this;
+      me.params={clear : data.clearScr, lock  : data.locked, msgw : data.msgw, conerr : data.conerr	};
+      if(me.params.clear) me.clearScreen();
+      me.setLock(me.params.lock,true);
+      me.setError(me.params.conerr);
+      me.setMsgw(me.params.msgw);
    },
 
    clearScreen:function(){
-      this.setLock(false,false);
-      this.setMsgw(false);
+	  var me = this;
+      me.setLock(false,false);
+      me.setMsgw(false);
 
-      this.data.errmsg='&nbsp;';
-      this.data.msgw='&nbsp;';
-      this.data.msg='&nbsp;';
+      me.data.errmsg='&nbsp;';
+      me.data.msgw='&nbsp;';
+      me.data.msg='&nbsp;';
    },
 
     connecting:function(){
-      this.clearScreen();
-      this.setLock(true,false);
-      this.data.msg='Connecting...please wait!!!';
+      var me = this;	
+      me.clearScreen();
+      me.setLock(true,false);
+      me.data.msg='Connecting...please wait!!!';
     },
 
     setLock:function(sts,ret){
+      var me = this;	
       if(sts){
-        this.data.clslock == ret ? 'err' : 'busy';
+        me.data.clslock =  ret ? 'err' : 'busy';
       }else {
-        this.data.clslock= '';
-        this.setError();
+        me.data.clslock= '';
+        me.setError();
       }
     },
 
@@ -136,9 +144,10 @@ Ext.define('Ext.ux.Tn5250.StatusLine', {
     },
 
     setError:function(data){
+      var me = this;
       if(Ext.isDefined(data)){
-        this.data.errmsg = data;
+        me.data.errmsg = data;
       }else
-        this.data.errmsg = '&nbsp;';
+        me.data.errmsg = '&nbsp;';
     }
   });

@@ -41,7 +41,7 @@ Ext.define('Ext.ux.Tn5250.View', {
         me.callParent();
         me.initInternal();
         if(Ext.getVersion().getMajor() < 5){
-        	me.addEvents('5250request','5250response','5250keyboard');
+        	me.addEvents('5250request','5250response','5250keyboard','5250lock','5250unlock');
         }
         
         me.on('added', function( me, container, pos, eOpts ){
@@ -138,23 +138,6 @@ Ext.define('Ext.ux.Tn5250.View', {
 		var msg = 'Server call error in <br> File : ' + sc.fileName + ' <br> Class : ' + sc.className + ' <br> Method : ' + sc.methodName + ' <br> Line : ' + sc.lineNumber;
 		Ext.Msg.alert( 'Error!',  msg );
 	},
-
-
-	//disable/enable must be overriden as we are working with custom html elements not belonging to ext
-      disable : function(){
-		var me = this;
-		var collection = me.getFields();
-		Ext.each(collection, function(item, index, length) {
-			item.disable();
-		});
-	},
-
-      enable : function(){
-		var collection = this.getFields();
-		Ext.each(collection, function(item, index, length) {
-			item.enable();
-		});
-	},
         
       getFields : function(){
          return this.fields;
@@ -199,8 +182,15 @@ Ext.define('Ext.ux.Tn5250.View', {
 	requestHandler : function(key,data) {
 		var me = this;
 		if (me.activeField==null) return;
-		if (me.disabled) return;
+		if (me.lock && key!="Reset") {
+			me.enable();
+			if(Ext.isFunction(beep)) {
+				beep();
+			}
+			return;
+		}
 		me.disable();
+		me.fireEvent('5250lock');
 		me.lock=true;
 		var req = me.getRequest(key,Ext.isString(data) ? data : null);
 		var flds = me.formatJsonReq();
@@ -212,6 +202,13 @@ Ext.define('Ext.ux.Tn5250.View', {
 		var me = this;
 		me.preRender5250(obj);
 		me.render5250(obj.data);
+		me.enable();
+
+		if(me.lock){
+			me.fireEvent('5250lock');
+		} else {
+			me.fireEvent('5250unlock');
+		}		
     },
 
 	// keyboard commands - field exit, up,down...
@@ -235,18 +232,18 @@ Ext.define('Ext.ux.Tn5250.View', {
 	},
 
 	prevField : function() {
-		var comp = this;
+		var me = this;
+		if(!me.activeField) return;
 		//var collection = comp.items.filter('id', 'FLD');
-		var collection = this.getFields();
+		var collection = me.getFields();
 		Ext.each(collection, function(item, index, items) {
-			if (item.id == comp.activeField.id) {
+			if (item.id == me.activeField.id) {
 				if (index > 0) {
-					comp.activeField = collection[index - 1];
-					collection[index - 1].el.dom.focus();
+					me.activeField = collection[index - 1];
 				} else {
-					comp.activeField = collection[length - 1];
-					collection[length - 1].el.dom.focus();
+					me.activeField = collection[collection.length - 1];
 				}
+				me.activeField.el.dom.focus();
 				return false;
 			}
 
@@ -254,18 +251,17 @@ Ext.define('Ext.ux.Tn5250.View', {
 	},
 
 	nextField : function() {
-		var comp = this;
-		var collection = this.getFields();
-
+		var me = this;
+		if(!me.activeField) return;
+		var collection = me.getFields();
 		Ext.each(collection, function(item, index, items) {
-			if (item.id == comp.activeField.id) {
+			if (item.id == me.activeField.id) {
 				if (index < collection.length - 1) {
-					comp.activeField = collection[index + 1];
-					collection[index + 1].el.dom.focus();
+					me.activeField = collection[index + 1];
 				} else {
-					comp.activeField = collection[0];
-					collection[0].el.dom.focus();
+					me.activeField = collection[0];
 				}
+				me.activeField.el.dom.focus();
 				return false;
 			}
 
@@ -274,21 +270,20 @@ Ext.define('Ext.ux.Tn5250.View', {
 
 	// proces tab key, find nex and focuse it, if last go to first
 	doTab : function() {
-		var comp = this;
-		var collection = this.getFields();
+		var me = this;
+		if(!me.activeField) return;
+		var collection = me.getFields();
 
 		Ext.each(collection, function(item, index, items) {
-			if (item.id == comp.activeField.id) {
+			if (item.id == me.activeField.id) {
 				item.processFieldExit();
 				if (index < collection.length - 1) {
-					comp.activeField = collection[index + 1];
-					collection[index + 1].el.dom.focus();
-					collection[index + 1].el.dom.select();
+					me.activeField = collection[index + 1];
 				} else {
-					comp.activeField = collection[0];
-					collection[0].el.dom.focus();
-					collection[0].el.dom.select();
+					me.activeField = collection[0];
 				}
+				me.activeField.el.dom.focus();
+				me.activeField.el.dom.select();
 				return false;
 			}
 
@@ -305,7 +300,7 @@ Ext.define('Ext.ux.Tn5250.View', {
 	},
 
     getLine : function(row){
-          var el = Ext.create('Ext.Container' , {cls : 'tnline', row : row});
+          var el = Ext.create('Ext.Container' , {cls : 'tnline', row : row, view : this});
           return el;
     },
 
@@ -334,7 +329,8 @@ Ext.define('Ext.ux.Tn5250.View', {
 
             if (data==undefined) return;
       	    if (!Ext.isArray(data)) return;
-
+      	    
+      	    Ext.suspendLayouts();
       		me.objs = data;
       		var jsonobj = null;
       		var row = 0;
@@ -359,8 +355,13 @@ Ext.define('Ext.ux.Tn5250.View', {
       					obj :jsonobj,
       					screenEl :me.screenEl,
       					name :'FLD' + me.screenEl.getFieldId(jsonobj),
+      					readOnly : me.lock,
       					view :me
       				});
+          			if (me.screenEl.isFocused(jsonobj)) {
+          				me.activeField = elm;
+          				elm.focused = true;
+          			}      				
       				me.fields.push(elm);
       			} else {
       				var pos = jsonobj.t.search(me.btnmatch);
@@ -380,21 +381,14 @@ Ext.define('Ext.ux.Tn5250.View', {
       				});
       				prevIsField = false;
       			}
-      			// add focus listener to element
-      			elm.on('focus', function(o) {me.activeField = o;}, me);
 
-      			// TODO add listener for text also
-      			 elm.on('click',function(o){me.activeField = o;}, me);
-      			// add element to the screen container (form) and focus it if needed
+      			// add element to the screen container (form) 
       			me.addToLine(line,elm);
-      			if (me.screenEl.isFocused(jsonobj)) {
-      				me.activeField = elm;
-      				elm.focused = true;
-      			}
 
 		} //end for
 
         me.add(lines);
+        Ext.resumeLayouts(true);
         /*
 		if(this.lock){
 			this.disable();
