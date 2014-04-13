@@ -58,7 +58,6 @@ public class TnScreenData  implements TN5250jConstants{
     private boolean changeAttr = false;
     private TnScreenElement element = null;
     
-    
     public TnScreenData(int startRow, int startCol, Screen5250 screen) {
         this.screenElements = new Vector<TnScreenElement>();
         this.screenFields = screen.getScreenFields();
@@ -130,7 +129,7 @@ public class TnScreenData  implements TN5250jConstants{
         return this.element;
 	}
 	
-	public void addTextToElement(int pos){
+	public void addText(int pos){
 		element.addToValue(text[pos]);
 	}
 

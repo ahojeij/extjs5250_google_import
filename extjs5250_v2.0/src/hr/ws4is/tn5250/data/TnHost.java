@@ -43,24 +43,26 @@ public class TnHost {
 	public String getIpAddress() {
 		return ipAddress;
 	}
+	
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 	
 	public String getPort() {
-		
 		return Integer.toString(port);
 	}
+	
 	public void setPort(String port) {
 		this.port = Integer.parseInt(port);
-	}	
+	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
 
 	public boolean isScreen132() {
 		return screen132;
@@ -72,11 +74,13 @@ public class TnHost {
 			return;
 		}
 		
-		if("true".equals(screen.toLowerCase()))
+		if("true".equals(screen.toLowerCase())){
 			this.screen132 = true;
+		}
 
-		if(  "false".equals(screen.toLowerCase()))
+		if("false".equals(screen.toLowerCase())){
 			this.screen132 = false;
+		}
 
 	}
 		

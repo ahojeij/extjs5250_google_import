@@ -19,12 +19,15 @@
 package hr.ws4is.tn5250.implementation;
 
 import hr.ws4is.tn5250.data.TnHost;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +51,15 @@ public enum TnConfigLoader {
 
 	//SUFFIXES FOR REMOTE 5250 HOST
 	private static final String HOST_PREFIX = "5250_prefixes";
+	
 	//address of 5250 server
 	private static final String HOST_IP = "5250.ip";
+	
 	//port of 5250 server
 	private static final String HOST_PORT = "5250.port";
+	
 	//virtual name used from frontend
 	private static final String HOST_NAME = "5250.name";
-
 
 	public static final Map<String,TnHost> reload() throws RuntimeException  {
 
@@ -91,12 +96,21 @@ public enum TnConfigLoader {
 	private static Properties loadConfig(){
 		String prefix = System.getProperty("user.home") + System.getProperty("file.separator");
 		File f = new File(prefix + PROP_ID);
+		FileInputStream fis = null;
 		Properties prop = new Properties();
 		try{
-			FileInputStream fis = new FileInputStream(f);
+			fis = new FileInputStream(f);
 			prop.load(fis);
 		}catch(Exception e){
 			throw new RuntimeException(e);
+		} finally{
+			if(fis!=null){
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return prop;
 	}

@@ -33,30 +33,39 @@ public class TnScreenRequest {
 	public String getKeyRequest() {
 		return keyRequest;
 	}
+	
 	public void setKeyRequest(String keyRequest) {
 		this.keyRequest = keyRequest;
 	}
+	
 	public int getCursorField() {
 		return cursorField;
 	}
+	
 	public void setCursorField(int cursorField) {
 		this.cursorField = cursorField;
 	}
+	
 	public int getCursorRow() {
 		return cursorRow;
 	}
+	
 	public void setCursorRow(int cursorRow) {
 		this.cursorRow = cursorRow;
 	}
+	
 	public String getData() {
 		return data;
 	}
+	
 	public void setData(String data) {
 		this.data = data;
 	}
+	
 	public String getDisplayID() {
 		return displayID;
 	}
+	
 	public void setDisplayID(String displayID) {
 		this.displayID = displayID;
 	}

@@ -42,13 +42,11 @@ public enum TnSessionFactory {
 		TnSession hostSession = new TnSession(displayId, displayName, hostName, session);
 		return hostSession;
 	}
-	
 
 	private static final String getDisplayName(WebSocketSession wsSession){
 		AtomicInteger counter = (AtomicInteger) wsSession.getHttpSession().getAttribute(TnConstants.SESSION_COUNTER);
 		return Integer.toString(counter.incrementAndGet());
 	}
-
 	
 	private static final Session5250 createSession(WebSocketSession wsSession, TnHost host, String displayName, String displayId) {
 		Session5250 hostSession = null;

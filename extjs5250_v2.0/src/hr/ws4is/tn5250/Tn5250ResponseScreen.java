@@ -24,7 +24,7 @@ import hr.ws4is.ext.ExtJSResponse;
 import hr.ws4is.tn5250.data.TnScreenElement;
 
 /**
- * Resposne structure with screen information
+ * Response structure with screen information
  */
 public class Tn5250ResponseScreen extends ExtJSResponse {
 
@@ -32,17 +32,16 @@ public class Tn5250ResponseScreen extends ExtJSResponse {
 	
 	public String devName;
 	public String displayID;	
-	public boolean locked;		 //sends lock screen request
+	public boolean locked;		    //sends lock screen request
 	public boolean clearScr = true; //sends clear screen request
-	public int size = 80;		 //sends screen size 80/132
-	public boolean msgw; 	 //sends message wait signal
-	public String conerr; 	 //host error code
+	public int size = 80;		    //sends screen size 80/132
+	public boolean msgw; 	        //sends message wait signal
+	public String conerr; 	        //host error code
 	
 	public List<TnScreenElement> data;
 	
 	public Tn5250ResponseScreen() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tn5250ResponseScreen(boolean success, String message) {

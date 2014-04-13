@@ -60,7 +60,6 @@ public enum TnStreamProcessor {
 		response.setLocked(session.getScreen().getOIA().isKeyBoardLocked());
 		response.setMsgw(session.getScreen().getOIA().isMessageWait());
 	}
-			
 
 	/*
 	 * forward request from web to host and waits for return
@@ -105,7 +104,7 @@ public enum TnStreamProcessor {
 
 	   return true;
 	}
-	
+		
 	//sends request from web to host
 	static private void sendKeyRequest(Screen5250 screen, boolean sendIt, String aidS){
         if (sendIt || screen.getScreenFields().getFieldCount() == 0) {
@@ -192,7 +191,7 @@ public enum TnStreamProcessor {
 	            }else {            	
 	            	
 		             if(screenRect.isText(pos)){
-		            	 screenRect.addTextToElement(pos);
+		            	 screenRect.addText(pos);
 		             } else {
 		            	 screenRect.addSpace();
 	                 }
@@ -210,44 +209,41 @@ public enum TnStreamProcessor {
 	
 	static private void processFields(TnScreenData screenRect, int pos){
         ScreenField screenField = screenRect.findScreenField(pos);
-        if (screenField != null) {
-           if (screenField.startPos() == pos) {
-        	  screenRect.initScreenElement(0);
-              
-
-        	  screenRect.updateIfHiddenField(pos);
-
-              if (screenField.isBypassField()) {
-            	  screenRect.updateIfHiddenField(pos);
-              }
-
-              // if the field will extend past the screen column size
-              //  we will just truncate it to be the size of the rest
-              //  of the screen.
-              int len = screenField.getLength();
-              if (screenRect.getCol() + len > screenRect.getNumCols()){
-             	  len = screenRect.getNumCols() - screenRect.getCol();
-              }
-
-              // get the field contents and only trim the non numeric
-              //   fields so that the numeric fields show up with
-              //   the correct alignment within the field.
-              String value = getFieldValue(screenField);
+        if (screenField == null) return;
+        if (screenField.startPos() != pos) return;
+        
+        screenRect.initScreenElement(0);
+        screenRect.updateIfHiddenField(pos);
+        
+        if (screenField.isBypassField()) {
+        	screenRect.updateIfHiddenField(pos);
+        }
+        
+        // if the field will extend past the screen column size
+        //  we will just truncate it to be the size of the rest
+        //  of the screen.
+        int len = screenField.getLength();
+        if (screenRect.getCol() + len > screenRect.getNumCols()){
+        	len = screenRect.getNumCols() - screenRect.getCol();
+        }
+        
+        // get the field contents and only trim the non numeric
+        //   fields so that the numeric fields show up with
+        //   the correct alignment within the field.
+        String value = getFieldValue(screenField);
       		
-    		  int focusfield = getFocusField(screenRect.getScreenFields());
-              int fieldMask=getFieldMask(screenField, focusfield);
+    	int focusfield = getFocusField(screenRect.getScreenFields());
+        int fieldMask=getFieldMask(screenField, focusfield);
 
-              screenRect.getElement().setFieldType(fieldMask);
-              screenRect.getElement().setFieldId(screenField.getFieldId());
-              screenRect.getElement().setLength(len);
-              screenRect.getElement().setMaxLength(len);
-              screenRect.getElement().setValue(value);
+        screenRect.getElement().setFieldType(fieldMask);
+        screenRect.getElement().setFieldId(screenField.getFieldId());
+        screenRect.getElement().setLength(len);
+        screenRect.getElement().setMaxLength(len);
+        screenRect.getElement().setValue(value);
 
-              if(len < screenField.getLength()){
-            	  processMultiLineField(screenRect, screenField, len, fieldMask);
-              }
-           }
-        }		
+        if(len < screenField.getLength()){
+        	processMultiLineField(screenRect, screenField, len, fieldMask);
+        }
 	}
 	
 	//process 5250 multiline screen fields to web fields
@@ -295,7 +291,7 @@ public enum TnStreamProcessor {
 	static private String getFieldValue(ScreenField screenField){
         String value = "";
         if (screenField.isNumeric() || screenField.isSignedNumeric()){
-       	 value = screenField.getString();
+        	value = screenField.getString();
         } else {
         	value = rtrim(screenField.getString());
         }
