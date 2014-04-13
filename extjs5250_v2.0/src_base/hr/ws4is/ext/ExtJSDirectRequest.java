@@ -21,7 +21,9 @@ package hr.ws4is.ext;
 import java.util.List;
 
 public class ExtJSDirectRequest<T> {
+	
 	//{"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
+	
 	public String action;
 	public String method;
 	public String namespace;
@@ -78,15 +80,13 @@ public class ExtJSDirectRequest<T> {
 	}
 	
 	
-	public T getDataByIndex(int i)
-	{
-		if(data==null)
-		{
+	public T getDataByIndex(int i) {
+		
+		if(data==null) {
 			return null;
 		}
 		
-		if(data.isEmpty())
-		{
+		if(data.isEmpty()) {
 			return null;
 		}
 		

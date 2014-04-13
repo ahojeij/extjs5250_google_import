@@ -20,7 +20,6 @@ package hr.ws4is.websocket;
 
 import hr.ws4is.JsonDecoder;
 import hr.ws4is.WS4ISConstants;
-import hr.ws4is.cdi.WebLocaleEvent;
 import hr.ws4is.ext.ExtJSDirectRequest;
 import hr.ws4is.ext.ExtJSDirectResponse;
 import hr.ws4is.ext.ExtJSResponse;
@@ -31,7 +30,6 @@ import hr.ws4is.websocket.data.WebSocketResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.event.Event;
@@ -46,26 +44,19 @@ import javax.websocket.Session;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-
 public class WebSocketEndpoint {	
 	
 	static final ThreadLocal<WebSocketSession> websocketContextThreadLocal = new ThreadLocal<WebSocketSession>();
 			
-	private Locale locale ;
-
 	@Inject 
 	private Event<WebsocketEvent> webSocketEvent;
 	
-	@Inject 
-	private Event<WebLocaleEvent> localeEvent;
 	
 	@Inject 
 	private WebSocketOperations<JsonNode> directOperations;
 
 	@PreDestroy
 	void preDEstroy() {
-		locale = null;
-		//webSocketEvent=null;
 		websocketContextThreadLocal.remove();		
 	}
 		
@@ -113,9 +104,6 @@ public class WebSocketEndpoint {
 		try {
 			final HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
 			final WebSocketSession wsession = new WebSocketSession(session,httpSession);
-			
-			locale = (Locale) config.getUserProperties().get(Locale.class.getCanonicalName());
-			localeEvent.fire(new WebLocaleEvent(locale));
 			
 			session.getUserProperties().put(WS4ISConstants.WEBSOCKET_PATH,config.getUserProperties().get(WS4ISConstants.WEBSOCKET_PATH));
 

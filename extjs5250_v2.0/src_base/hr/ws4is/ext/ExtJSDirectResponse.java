@@ -19,6 +19,7 @@
 package hr.ws4is.ext;
 
 public class ExtJSDirectResponse<T> {
+	
 	//{"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
 	private String action;
 	private String method;
@@ -29,6 +30,7 @@ public class ExtJSDirectResponse<T> {
 	
 	public ExtJSDirectResponse(ExtJSDirectRequest<T> request, Object response) {
 		super();
+		
 		this.result = response;
 		if(request!=null){
 			this.action = request.action;

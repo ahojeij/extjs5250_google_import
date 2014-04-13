@@ -26,8 +26,8 @@ import javax.enterprise.util.Nonbinding;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD})
-public @interface ExtJSMethod 
-{
+public @interface ExtJSMethod {
+	
 	String value();	
 	@Nonbinding	boolean formHandler() default false;
 }

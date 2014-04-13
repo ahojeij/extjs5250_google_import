@@ -37,28 +37,23 @@ public class BeanManagerUtil
     private volatile BeanManager beanManager;
 
     @SuppressWarnings("unchecked")
-    public <T> IDestructibleBeanInstance<T> getDestructibleBeanInstance(final Class<T> type, final Annotation... qualifiers){
+    public <T> IDestructibleBeanInstance<T> getDestructibleBeanInstance(final Class<T> type, final Annotation... qualifiers) {
     	Set<Bean<?>> beansF = new HashSet<Bean<?>>(); 
     	Set<Bean<?>> beans = beanManager.getBeans(Object.class, qualifiers);
     	
     	Iterator<Bean<?>> it = beans.iterator();
-		while(it.hasNext())
-		{
+		while(it.hasNext()) {
 			Bean<?> bean = it.next();
 			
-	    	if(type.isInterface())
-	    	{
+	    	if(type.isInterface()) {
 	    		Class<?>[] intfs = bean.getBeanClass().getInterfaces();
-	    		for(Class<?> intf : intfs)
-	    		{
-	    			if(type.equals(intf))
-	    			{
+	    		for(Class<?> intf : intfs) {
+	    			if(type.equals(intf)) {
 	    				beansF.add(bean);
 	    			}
 	    		}
 	    	} else {
-	    		if(bean.getBeanClass().equals(type))
-	    		{
+	    		if(bean.getBeanClass().equals(type)) {
 	    			beansF.add(bean);
 	    		}
 	    	}			
@@ -70,11 +65,9 @@ public class BeanManagerUtil
     
     public <T> IDestructibleBeanInstance<T> getDestructibleBeanInstance(final Bean<T> bean) {
     	IDestructibleBeanInstance<T> result = null;
-        if (bean != null) 
-        {
+        if (bean != null) {
             CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
-            if (creationalContext != null) 
-            {
+            if (creationalContext != null) {
                 T instance = bean.create(creationalContext);
                 result = new DestructibleBeanInstance<T>(instance, bean, creationalContext);
             }
@@ -83,16 +76,16 @@ public class BeanManagerUtil
     }
     
     public BeanManager getBeanManager(){
-	return beanManager;
+    	return beanManager;
     }
     
     public void setBeanManager(BeanManager beanManager)	{
-	this.beanManager = beanManager;
+    	this.beanManager = beanManager;
     }
     
     @Override
     public String toString() {
-	return "BeanManagerUtil [beanManager=" + beanManager + ", getBeanManager()=" + getBeanManager() + "]";
+    	return "BeanManagerUtil [beanManager=" + beanManager + ", getBeanManager()=" + getBeanManager() + "]";
     }	
 }
 

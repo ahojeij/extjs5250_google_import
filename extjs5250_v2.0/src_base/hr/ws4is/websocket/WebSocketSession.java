@@ -44,6 +44,7 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 public class WebSocketSession implements Session {
+	
 	private final Session session;
 	private ExtJSDirectRequest<?> request;
 	
@@ -86,16 +87,20 @@ public class WebSocketSession implements Session {
 
 
 	public boolean sendResponse(WebSocketResponse wsResponse, boolean async) {
+		
 		if(wsResponse == null) {
 			return false;
 		}
+		
 		if(!session.isOpen()) {
 			//TODO log
 			return false;
 		}
 		
 		boolean success = true;
+		
 		try{
+			
 			if(async) {
 				session.getAsyncRemote().sendObject(wsResponse);
 			} else {
@@ -106,6 +111,7 @@ public class WebSocketSession implements Session {
 			success = false;
 			e.printStackTrace();
 		}
+		
 		return success;
 	}
 
@@ -233,8 +239,7 @@ public class WebSocketSession implements Session {
 	@Override
 	public boolean equals(Object obj) {
 		boolean status = false;
-		if(obj instanceof WebSocketSession)
-		{
+		if(obj instanceof WebSocketSession)	{
 			try{
 				Field f = WebSocketSession.class.getField("session");
 				f.setAccessible(true);

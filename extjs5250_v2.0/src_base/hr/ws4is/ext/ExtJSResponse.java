@@ -75,13 +75,11 @@ public class ExtJSResponse implements Serializable {
 	public void setException(Throwable exception) {
 		this.exception = exception;
 		
-		if(exception == null) 
-		{
+		if(exception == null){
 			return;		
 		}
 		
-		if(exception instanceof RuntimeException && exception.getCause()!=null)
-		{
+		if(exception instanceof RuntimeException && exception.getCause()!=null){
 			this.exception = exception.getCause();
 		} else {
 			this.exception = exception;	

@@ -46,7 +46,6 @@ import javax.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class WebSocketOperations<T> {
 	
 	final static String [] allPaths = {"*"};
@@ -55,14 +54,12 @@ public class WebSocketOperations<T> {
 	protected BeanManagerUtil beanManagerUtil;	
 
 	@PreDestroy
-	private void preDestroy()
-	{
+	private void preDestroy() {
 		beanManagerUtil = null;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ExtJSDirectResponse<T> process(ExtJSDirectRequest<T> request, HttpSession session, String uri)
-	{
+	public ExtJSDirectResponse<T> process(ExtJSDirectRequest<T> request, HttpSession session, String uri) {
 		ExtJSDirectResponse<T> directResponse = null;
 		ExtJSResponse response = null;
 	

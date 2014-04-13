@@ -16,21 +16,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  */
-package hr.ws4is.cdi;
+package hr.ws4is.websocket;
 
+import hr.ws4is.WS4ISConstants;
 
-import static java.lang.annotation.ElementType.*;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@WebListener
+public final class WebSocketHttpSessionListener implements HttpSessionListener {	
 
-import javax.inject.Qualifier;
+	@Override
+	public void sessionCreated(HttpSessionEvent arg0) {
+		arg0.getSession().setAttribute(WS4ISConstants.HTTP_SEESION_STATUS, "true");
+	}
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({METHOD, TYPE,FIELD, PARAMETER})
-public @interface WebLocale 
-{
+	@Override
+	public void sessionDestroyed(HttpSessionEvent arg0) {
+		arg0.getSession().setAttribute(WS4ISConstants.HTTP_SEESION_STATUS, "false");
+	}
 
 }

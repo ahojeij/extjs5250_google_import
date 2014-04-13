@@ -29,7 +29,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
-
 public abstract class WebSocketService  {  
 
 	@Inject 

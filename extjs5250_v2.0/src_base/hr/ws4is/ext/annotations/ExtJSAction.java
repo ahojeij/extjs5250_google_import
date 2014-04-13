@@ -29,8 +29,7 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({TYPE})
-public @interface ExtJSAction 
-{
+public @interface ExtJSAction {
 
 	String namespace();
 	String action();

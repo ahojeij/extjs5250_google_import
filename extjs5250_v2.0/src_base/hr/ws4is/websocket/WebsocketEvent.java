@@ -21,7 +21,8 @@ package hr.ws4is.websocket;
 import javax.enterprise.inject.Vetoed;
 
 @Vetoed
-public class WebsocketEvent {	
+public class WebsocketEvent {
+	
 	private final WebSocketSession session;
 	private final WebSocketEventStatus eventStatus;
 	private final Throwable throwable;

@@ -46,8 +46,8 @@ class DestructibleBeanInstance<T> implements IDestructibleBeanInstance<T>{
      * @see ws4is.j2ee.IDestructibleBeanInstance#destroy()
      */
     @Override
-    public void destroy(){
-    	if(instance!=null){
+    public void destroy() {
+    	if(instance!=null) {
     		bean.destroy(instance, context);
     		instance = null;
     	}
@@ -58,8 +58,8 @@ class DestructibleBeanInstance<T> implements IDestructibleBeanInstance<T>{
     }
 
 	@Override
-    public Bean<T> getBean(){
-	return bean;
+    public Bean<T> getBean() {
+		return bean;
     }
     
     @Override

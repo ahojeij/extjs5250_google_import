@@ -37,8 +37,7 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({TYPE})
-public @interface ExtJSDirect 
-{
+public @interface ExtJSDirect {
   @Nonbinding
   String[] paths();
 }
