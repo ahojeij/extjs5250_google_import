@@ -1,0 +1,33 @@
+REQUIREMENTS :
+
+	Java EE 1.7 
+	JEE7 server like WildFly 8
+	
+INSTRUCTION :	
+
+1. Set AS4/00 ip address and port in Configuration file 5250_5250.properties.
+2. Copy 5250_5250.properties to user home directory
+   For example
+   if it is windows 7 -> copy to C:\Users\CURRENT_WINDOWS_USER_NAME
+   if it is unix -> /home/USER
+           where USER is user under which web server is running
+
+3. copy 5250.war file to java web server
+
+4. with browser open url http://YOUR_WEB_SERVER:PORT/extjs5250
+
+
+NOTE: to test sending responses from server at any time (websocket channel) use this command
+
+   QSYS/SNDBRKMSG MSG(TEST MESSAGE) TOMSGQ(QPADEV****) MSGTYPE(*INQ) RPYMSGQ(QUSER)
+
+   Where QPADEV**** is device of your web session
+
+   
+TODO :
+  more config options like displayName support, language setup...
+  
+ISSUES: 
+  Only issue is tn5250j old connection mechanism - thread based connections. 
+  This is limitation for having many tn5250 sessions, best option would be to switch to event based communication.
+   

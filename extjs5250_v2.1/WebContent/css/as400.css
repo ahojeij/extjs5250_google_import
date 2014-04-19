@@ -1,0 +1,136 @@
+.x-mask {
+  filter: alpha(opacity=60);
+  opacity: .6;
+  background: rgba(0, 0, 0, 1);
+  cursor: default;
+}
+
+.tnline {
+  margin-top:4px;
+}
+
+ /* color styles. */
+.tnmain {background : black;
+        color : gray;
+        align : "center";
+        text-align : "center";
+        }
+
+ .tncontainer2 {padding:5px;font-size: 15px; font-family: courier new, courier, mono; !important;}
+ .tncontainer  {padding:5px;font-size: 10px; font-family: Lucida Console, Monaco, monospace;  !important;}
+ 
+ .tncontainer .button{
+    cursor:pointer;
+    color: black;
+    text-align: center;
+    text-shadow: 0 -1px 1px #64799e;
+    background: #d5d5d5;
+    }
+    
+.tncontainer .txtBypass {background: transparent; 
+           border-width:0 0 0 0px;
+           border-style: none;
+           color: #00CC33;
+           text-decoration: none;}
+
+.tncontainer .password { background: transparent; 
+          border-width:0 0 thin 0px;
+          border-style: solid;
+          border-color: #00CC33; 
+          color : #00CC33;}
+
+.tncontainer .hidden {background: transparent; 
+        border-width:0 0 thin 0px;
+        border-style: solid;
+        border-color: #00CC33;
+        color: #000000;}
+        
+.tncontainer .textbox { background: transparent; 
+         border-width:0 0 thin 0px;
+         border-style: solid;
+         border-color: #00CC33;
+         color: #00CC33;}
+         
+         
+.tncontainer .black {color: black;text-decoration: none;} 
+.tncontainer .green {color: #00FF00;text-decoration: none;} 
+.tncontainer .green-ul {color: #00FF00;text-decoration: underline;} 
+.tncontainer .green-rv {background-color: #00FF00;color: black;text-decoration: none;} 
+.tncontainer .green-rv-ul {background-color: #00FF00;color: black;text-decoration: underline;} 
+.tncontainer .white {color: white;text-decoration: none;}
+.tncontainer .white-ul {color: white;text-decoration: underline;} 
+.tncontainer .white-rv {background-color: white;color: black;text-decoration: none;}
+
+.tncontainer .red {color: red;text-decoration: none;}
+.tncontainer .red-rv {background-color: red;color: white;text-decoration: none;}
+.tncontainer .red-hi {color: red;text-decoration: none;}
+.tncontainer .red-hi-rv {background-color: red;color: white;text-decoration: none;}
+.tncontainer .red-ul {color: red;text-decoration: underline;} 
+.tncontainer .red-ul-hi-rv {background-color: red;color: white;text-decoration: underline;} 
+.tncontainer .red-ul-hi {color: red;text-decoration: underline;}  
+
+
+.tncontainer .blue {color: rgb(140,120,255);text-decoration: none;} 
+.tncontainer .blue-ul {color: rgb(140,120,255);text-decoration: underline;} 
+.tncontainer .blue-rv {background-color: rgb(140,120,255);color: black;text-decoration: none;} 
+.tncontainer .blue-rv-ul {background-color: rgb(140,120,255);color: black;text-decoration: underline;} 
+
+.tncontainer .pink {color: pink;text-decoration: none;} 
+.tncontainer .pink-ul {color: pink;text-decoration: underline;} 
+.tncontainer .pink-rv {background-color: pink;color: black;text-decoration: none;} 
+.tncontainer .pink-rv-ul {background-color: pink;color: black;text-decoration: underline;} 
+
+.tncontainer .yellow {color: yellow;text-decoration: none;} 
+.tncontainer .yellow-ul {color: yellow;text-decoration: underline;} 
+.tncontainer .yellow-rv {background-color: yellow;color: black;text-decoration: none;} 
+
+.tncontainer .turq {color: turquoise;text-decoration: none;} 
+.tncontainer .turq-ul {color: turquoise;text-decoration: underline;} 
+.tncontainer .turq-cs {color: turquoise;text-decoration: none;} 
+.tncontainer .turq-rv {background-color: turquoise;color: black;text-decoration: none;} 
+.tncontainer .turq-rv-ul {background-color: turquoise;color: black;text-decoration: underline;} 
+
+.tncontainer .nondisp {background-color: black;color: black;text-decoration: none;} 
+.tncontainer .enterButton{display: none;}
+         
+
+.tncontainer .txt_green { border-color: #00CC33;}
+.tncontainer .txt_white { border-color :white;}
+.tncontainer .txt_red { border-color :red;}
+.tncontainer .txt_blue { border-color :rgb(140,120,255);}
+.tncontainer .txt_pink  {border-color:pink;}
+.tncontainer .txt_yellow { border-color:yellow;}
+.tncontainer .txt_turq {border-color:turquoise;}
+
+        
+/* red blink */
+.tncontainer .red-hi_i {background-color: black;color: black;}
+.tncontainer .red-hi-rv_i {background-color: black;color: red;}
+.tncontainer .red-ul-hi_i {background-color: black;color: black; 
+             border-width:0 0 thin 0px;
+             border-left-width: 0px; 
+             border-style: solid; 
+             border-color: red;}
+
+.tnstatus {background-color: black;
+        color: white;
+        border-top:solid 2px White;
+        width:100%;
+        text-align:left;
+        padding-left: 2px;
+        font-size: 14px;
+        font-weight: 600;}
+                
+.tnstatus .red {color: red;}
+.tnstatus .yellow {color: yellow;} 
+.tnstatus .white {color: white;}
+
+.tnstatus .busy{background-image:url('../img/wait.gif');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .msgw{background-image:url('../img/mail.png');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .err{background-image:url('../img/exclamation.png');background-repeat:no-repeat;margin-top:2px;}
+
+input, textarea, select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}

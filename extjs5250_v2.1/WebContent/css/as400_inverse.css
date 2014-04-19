@@ -1,0 +1,80 @@
+.x-mask {
+  filter: alpha(opacity=60);
+  opacity: .6;
+  background: rgba(0, 0, 0, 1);
+  cursor: default;
+}
+
+.tnline {
+  margin-top:4px;
+}
+
+ /* color styles. */
+ .tnmain {
+        align : "center";
+        color: white;
+        background:black;
+        text-align : "center";
+        }
+
+ .tncontainer {padding:5px;font-size: 10px; font-family: Lucida Console, Monaco, monospace; }
+ 
+ .tncontainer .button{
+    cursor:pointer;
+    color: gray;
+    text-align: center;
+    text-shadow: 0 -1px 1px #64799e;
+    background: #d5d5d5;
+    }
+    
+.tncontainer .green-ul {text-decoration: underline;}
+.tncontainer .green-rv {background-color: white;color: black;text-decoration: none;}
+.tncontainer .green-rv-ul {background-color: white;color: black;text-decoration: underline;}
+.tncontainer .white-ul {text-decoration: underline;}
+.tncontainer .white-rv {background-color: white;color: black;text-decoration: none;}
+
+.tncontainer .red-rv {background-color: white;color: black;text-decoration: none;}
+.tncontainer .red-hi-rv {background-color: red;color: white;text-decoration: none;}
+.tncontainer .red-ul {text-decoration: underline;}
+.tncontainer .red-ul-hi-rv {background-color: white;color: black;text-decoration: underline;}
+.tncontainer .red-ul-hi {text-decoration: underline;}
+
+
+.tncontainer .blue-ul {text-decoration: underline;}
+.tncontainer .blue-rv {background-color: white;color: black;text-decoration: none;}
+.tncontainer .blue-rv-ul {background-color: white;color: black;text-decoration: underline;}
+
+.tncontainer .pink-ul {text-decoration: underline;}
+.tncontainer .pink-rv {background-color: white;color: black;text-decoration: none;}
+.tncontainer .pink-rv-ul {background-color: white;color: black;text-decoration: underline;}
+
+.tncontainer .yellow-ul {text-decoration: underline;}
+.tncontainer .yellow-rv {background-color: white;color: black;text-decoration: none;}
+
+.tncontainer .turq-ul {text-decoration: underline;}
+.tncontainer .turq-rv {background-color: white;color: black;text-decoration: none;}
+.tncontainer .turq-rv-ul {background-color: white;color: black;text-decoration: underline;}
+    
+    
+.tnstatus { background-color:  black;
+        color: white;
+        border-top:solid 2px white;
+        width:100%;
+        text-align:left;
+        padding-left: 2px;
+        font-size: 14px;
+        font-weight: 600;}
+                
+.tnstatus .red {color: red;}
+.tnstatus .yellow {color: yellow;} 
+.tnstatus .white {color: black;}
+
+.tnstatus .busy{background-image:url('../img/wait_gray.gif');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .msgw{background-image:url('../img/mail.png');background-repeat:no-repeat;margin-top:2px;}
+.tnstatus .err{background-image:url('../img/exclamation.png');background-repeat:no-repeat;margin-top:2px;}
+
+input, textarea, select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
