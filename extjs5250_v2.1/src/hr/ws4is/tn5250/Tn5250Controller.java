@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletContext;
 
 import hr.ws4is.ext.ExtJSResponse;
+import hr.ws4is.ext.ExtJSResponseList;
 import hr.ws4is.ext.annotations.ExtJSAction;
 import hr.ws4is.ext.annotations.ExtJSDirect;
 import hr.ws4is.ext.annotations.ExtJSMethod;
@@ -41,7 +42,7 @@ import hr.ws4is.websocket.WebSocketSession;
  * Main websocket controller that will be invoked from browser  
  */
 @ExtJSDirect(paths={"socket"})
-@ExtJSAction(namespace = "hr.ws4is", action="Controller")
+@ExtJSAction(namespace = "hr.ws4is", action="Controller5250")
 public class Tn5250Controller {
 
 	@Inject 
@@ -86,14 +87,14 @@ public class Tn5250Controller {
 	 * List all available AS/400 servers for connections
 	 */
 	@ExtJSMethod("list5250Definitions")
-	public Tn5250ResponseList list5250Definitions() {
-		Tn5250ResponseList response = null;
+	public ExtJSResponseList<String> list5250Definitions() {
+		ExtJSResponseList<String> response = null;
 		try{
 			Map<String,TnHost> hosts = getTnHosts();			
-			response = new Tn5250ResponseList(true,null);			
+			response = new ExtJSResponseList<>(true,null);			
 			response.setData(hosts.keySet());
 		} catch (Exception e){
-			response = new Tn5250ResponseList(e,e.getMessage());
+			response = new ExtJSResponseList<String>(e,e.getMessage());
 		}
 
         return response;
@@ -103,14 +104,14 @@ public class Tn5250Controller {
 	 * List all active 5250 sessions for current web session
 	 */
 	@ExtJSMethod("list5250Sessions")
-	public Tn5250ResponseList list5250Sessions() {
-		Tn5250ResponseList response = null;
+	public ExtJSResponseList<String> list5250Sessions() {
+		ExtJSResponseList<String> response = null;
 		try{
 			Map<String, TnSession> sessions = getTnSessions();		
-			response = new Tn5250ResponseList(true,null);			
+			response = new ExtJSResponseList<>(true,null);			
 			response.setData(sessions.keySet());
 		} catch (Exception e){
-			response = new Tn5250ResponseList(e,e.getMessage());
+			response = new ExtJSResponseList<>(e,e.getMessage());
 		}		
         return response;
 	}

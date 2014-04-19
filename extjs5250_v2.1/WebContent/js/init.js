@@ -6,7 +6,7 @@ Ext.onReady(function(){
 	var tn5250API = {
 			provider : '5250provider',
 			namespace : 'hr.ws4is',
-		    action : 'Controller',
+		    action : 'Controller5250',
 		    methods : {      
 		      open    : 'open5250Session',
 		      close   : 'close5250Session',
@@ -21,7 +21,7 @@ Ext.onReady(function(){
                            "url": "ws://localhost:8080/extjs5250/socket",
 			               "type":"ws4isWebSocket", 
 			               "namespace" : "hr.ws4is", 
-			               "actions":{   "Controller": [{"name":"reload5250Definitions","len":0},
+			               "actions":{   "Controller5250": [{"name":"reload5250Definitions","len":0},
 			                                                {"name":"list5250Definitions","len":0},
 			                                                {"name":"list5250Sessions","len":0},
 			                                                {"name":"open5250Session","len":1},

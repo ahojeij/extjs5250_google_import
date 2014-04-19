@@ -3,6 +3,8 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_base"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_test"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_tn3812"/>
         <property name="context-root" value="extjs5250"/>
         <property name="java-output-path" value="/extjs5250/build/classes"/>
     </wb-module>

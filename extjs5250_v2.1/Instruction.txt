@@ -31,3 +31,6 @@ ISSUES:
   Only issue is tn5250j old connection mechanism - thread based connections. 
   This is limitation for having many tn5250 sessions, best option would be to switch to event based communication.
    
+NOTE:
+ Tn3812 printer written based on RFC 2887 specification - http://tools.ietf.org/pdf/rfc2887
+ SCS printer data stream processing written based on document IBM IPDS & SCS Technical Reference (S544-5312-07)      
