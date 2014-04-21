@@ -18,11 +18,49 @@
  */
 package hr.ws4is.tn3812.drivers.processors;
 
+import hr.ws4is.tn3812.drivers.processors.scs.SCSPageOrientation;
+
 /**
  * Interface used inside data parsing listeners to get 
  * current print data parsing statuses like positioning instructions,
  * page setup instructions and font styling instructions 
  */
 public interface IControls {
+	
+	public abstract void reset();
+
+	public abstract SCSPageOrientation getPageOrientation();
+
+	public abstract float getFontSize();
+
+	public abstract short getLinesPerPage();
+	
+	public abstract int getLineSize();
+
+	public abstract short getCharactersPerLine();
+
+	public abstract float getMarginLeftInInches();
+
+	public abstract float getMarginLeftInCentimeters();
+
+	public abstract float getMarginRightInInches();
+
+	public abstract float getMarginRightInCentimeters();
+
+	public abstract float getMarginTopInInches();
+
+	public abstract float getMarginTopInCentimeters();
+
+	public abstract float getMarginBottomInInches();
+
+	public abstract float getMarginBottomInCentimeters();
+
+	public abstract float getPageWidthInIches();
+
+	public abstract float getPageWidthInCentimeters();
+
+	public abstract float getPageHeightInIches();
+
+	public abstract float getPagHeightidthInCentimeters();
 
 }

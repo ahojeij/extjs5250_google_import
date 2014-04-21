@@ -51,4 +51,9 @@ public interface ITn3812DataListener {
 	 * @param data
 	 */
 	public void onLastChain(ByteBuffer data);
+
+	/**
+	 * Signal when connection is closed by peer
+	 */
+	public void onClosed();
 }

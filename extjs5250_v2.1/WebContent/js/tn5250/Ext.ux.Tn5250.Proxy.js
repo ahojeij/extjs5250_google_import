@@ -7,18 +7,17 @@
  */
 
 /*
- remotingAPI : {
-    provider : '5250provider',
-    namespace : 'hr.ws4is',
-    action : 'Controller',
-    methods : {      
-      open    : 'open5250Session',
-      close   : 'close5250Session',
-      request : 'request5250Session',
-      refresh : 'refresh5250Session',
-      sessions : '',
-      hosts : ''
-    }
+	var tn5250API = {
+			provider : '5250provider',
+		    methods : {      
+		      open    : 'hr.ws4is.Tn5250Controller.openSession',
+		      close   : 'hr.ws4is.Tn5250Controller.closeSession',
+		      request : 'hr.ws4is.Tn5250Controller.requestSession',
+		      refresh : 'hr.ws4is.Tn5250Controller.refreshSession',
+		      sessions: 'hr.ws4is.Tn5250Controller.listSessions',	
+		      hosts   : 'hr.ws4is.HostsController.listDefinitions' 
+		    }
+	}; 
  } 
 */
 
@@ -27,9 +26,13 @@
     var API = null;
     
     var buildApiCall = function (name){
-    	return API.namespace + '.' + API.action + '.' + API.methods[name];
+    	return API.methods[name];
     };
     
+    var openInNewTab = function (url) {
+      var win=window.open(url, '_blank');
+      win.focus();
+    }
     
     var getDisplay = function (displayID){
     	var panels = Ext.ComponentQuery.query('tnpanel[displayID="'+ displayID +'"]')
@@ -69,15 +72,13 @@
 	 *  		
 	 *		var tn5250API = {
 	 *				provider : '5250provider',
-	 *				namespace : 'hr.ws4is',
-	 *			    action : 'Controller',
 	 *			    methods : {      
-	 *			      open    : 'open5250Session',
-	 *			      close   : 'close5250Session',
-	 *			      request : 'request5250Session',
-	 *			      refresh : 'refresh5250Session',
-	 *			      sessions : 'list5250Sessions',
-	 *			      hosts    : 'list5250Definitions'		      
+	 *              open    : 'hr.ws4is.Tn5250Controller.openSession',
+	 *              close   : 'hr.ws4is.Tn5250Controller.closeSession',
+	 *              request : 'hr.ws4is.Tn5250Controller.requestSession',
+	 *              refresh : 'hr.ws4is.Tn5250Controller.refreshSession',
+	 *              sessions: 'hr.ws4is.Tn5250Controller.listSessions',
+	 *              hosts   : 'hr.ws4is.HostsController.listDefinitions' 	      
 	 *			    }
 	 *		}; 
 	 *		Ext.ux.Tn5250.Proxy.RegisterAPI(tn5250API);
@@ -107,6 +108,10 @@
                     if(panel){
                     	panel.fireEvent('5250response',resp);
                      }                        		  
+                } else if(resp.reportName){
+                	var p = window.location.href.lastIndexOf('/');
+                	var url =window.location.href.substr(0,p) + '/reports?r=' + resp.reportName; 
+                	openInNewTab(url);
                 }
             });
 

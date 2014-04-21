@@ -18,6 +18,8 @@
  */
 package hr.ws4is.tn3812.drivers.processors;
 
+import hr.ws4is.tn3812.drivers.processors.scs.SCSFactory;
+
 /**
  *Factory to create data steam processor  
  */
@@ -28,10 +30,7 @@ public enum ProcessorFactory {
 	   IProcessor processor = null;
 	   switch (type){
 	   	case  SCS :  
-	   		processor = new SCSProcessor();
-	   		break;
-	   	case  SCS_LOGGER :
-	   		processor = new SCSLogger();
+	   		processor = SCSFactory.get(type);
 	   		break;
 	   	default:
 	   		break;

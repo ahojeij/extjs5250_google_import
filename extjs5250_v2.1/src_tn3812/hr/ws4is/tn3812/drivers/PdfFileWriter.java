@@ -33,18 +33,20 @@ import java.nio.ByteBuffer;
  * SCS data stream listener used to convert SCS data to PDF
  * PDF will be saved in temp location 
  */
-public class PdfFileWriter implements ITn3812DataListener {
+class PdfFileWriter implements ITn3812DataListener {
 	
 	IProcessor scsProcessor;
-
+	ITn3812Context config;
+	
 	@Override
 	public void onInit(ITn3812Context config) {
-		scsProcessor = ProcessorFactory.initProcessor(ProcessorType.SCS);		
+		scsProcessor = ProcessorFactory.initProcessor(ProcessorType.SCS);	
+		this.config = config;
 	}
 	
 	@Override
 	public void onHeader(ByteBuffer data) {		
-		scsProcessor.initialize(data);
+		scsProcessor.initialize(config, data);
 	}
 
 	@Override
@@ -62,7 +64,12 @@ public class PdfFileWriter implements ITn3812DataListener {
 	@Override
 	public void onLastChain(ByteBuffer data) {
 		scsProcessor.process(data);
-		scsProcessor.finnish();
+		scsProcessor.finish();
 	}
+	
+	@Override
+	public void onClosed() {
+		
+	}	
 
 }

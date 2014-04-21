@@ -54,4 +54,6 @@ public interface ITn3812Config {
 
 	public abstract boolean isIBMASCII899();
 
+	public abstract void setDevName(String deviceName);
+
 }

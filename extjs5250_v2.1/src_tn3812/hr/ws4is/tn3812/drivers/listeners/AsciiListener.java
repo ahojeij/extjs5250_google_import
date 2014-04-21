@@ -5,34 +5,35 @@ import java.nio.ByteBuffer;
 
 import hr.ws4is.tn3812.drivers.listeners.IProcessorListener;
 import hr.ws4is.tn3812.drivers.processors.IControls;
-import hr.ws4is.tn3812.drivers.processors.SCSStyleType;
+import hr.ws4is.tn3812.drivers.processors.scs.SCSStyleType;
+import hr.ws4is.tn3812.interfaces.ITn3812Context;
 
 final class AsciiListener implements IProcessorListener {
 
 	ByteBuffer buffer;
 	
 	@Override
-	public void onFormFeed(IControls controls) {
+	public void onFormFeed() {
 		System.out.println("*** onFormFeed");
 	}
 
 	@Override
-	public void onLineFeed(IControls controls) {
+	public void onLineFeed() {
 		System.out.println("*** onLineFeed");
 	}
 
 	@Override
-	public void onHorizontalMove(IControls controls) {
+	public void onHorizontalMove() {
 		System.out.println("*** onHorizontalMove");
 	}
 
 	@Override
-	public void onVerticalMove(IControls controls) {
+	public void onVerticalMove() {
 		System.out.println("*** onVerticalMove");
 	}
 
 	@Override
-	public void onNewLine(IControls controls) {
+	public void onNewLine() {
 		//System.out.println("*** onNewLine");
 		byte[] data = new byte[buffer.limit()];
 		buffer.get(data);
@@ -45,7 +46,7 @@ final class AsciiListener implements IProcessorListener {
 
 
 	@Override
-	public void onFontStyleChange(IControls controls, SCSStyleType type) {
+	public void onFontStyleChange(SCSStyleType type) {
 		System.out.println("*** onFontStyleChange");
 	}
 
@@ -55,12 +56,12 @@ final class AsciiListener implements IProcessorListener {
 	}
 
 	@Override
-	public void onFinish(IControls controls) {
+	public void onFinish(ITn3812Context context) {
 		System.out.println("*** onFinish");
 	}
 
 	@Override
-	public void onData(ByteBuffer buffer, IControls controls) {
+	public void onData(ByteBuffer buffer) {
 		this.buffer = buffer;
 	}
 

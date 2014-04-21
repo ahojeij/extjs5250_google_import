@@ -16,24 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  */
-package hr.ws4is.tn3812.drivers.processors;
+package hr.ws4is.web;
 
-import hr.ws4is.tn3812.drivers.listeners.IProcessorListener;
-import hr.ws4is.tn3812.interfaces.ITn3812Context;
+import hr.ws4is.websocket.WebSocketConfigurator;
+import hr.ws4is.websocket.WebSocketService;
+import hr.ws4is.websocket.WebsocketDecoder;
+import hr.ws4is.websocket.WebsocketEncoder;
 
-import java.nio.ByteBuffer;
+import javax.websocket.server.ServerEndpoint;
 
-/**
- * Interface for data SCS processing engine
- */
-public interface IProcessor {
-
-	public void start(IProcessorListener listener);
-	
-	public void initialize(ITn3812Context context, ByteBuffer data);	
-	public void process(ByteBuffer data);		
-	public void finish();
-	
-	public IControls getControls();
-
+@ServerEndpoint(value = "/socket",
+   configurator=WebSocketConfigurator.class, 
+   decoders={WebsocketDecoder.class}, 
+   encoders={WebsocketEncoder.class},
+   subprotocols={"ws4is"})
+public class TnWebSocketService extends WebSocketService {
+  // this is main initialization websocket service 
 }

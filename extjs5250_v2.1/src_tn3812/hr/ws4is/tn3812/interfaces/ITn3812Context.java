@@ -29,8 +29,12 @@ public interface ITn3812Context {
 
 	public ITn3812Config  getconfiguration();
 	public void connect() throws IOException, InterruptedException, ExecutionException ;
-	public void disconnect() throws IOException;
+	public void disconnect();
 	
 	public void addDataListener(ITn3812DataListener listener);
 	public void removeDataListener(ITn3812DataListener listener);
+	
+	public void setData(String key, Object value);
+	public Object getData(String key);
+	boolean isConnected();
 }

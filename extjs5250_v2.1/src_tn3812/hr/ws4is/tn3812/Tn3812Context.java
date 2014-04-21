@@ -28,8 +28,10 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -72,6 +74,9 @@ class Tn3812Context implements ITn3812Context {
 	//private List<Tn3812PrinterListener> printerListeners = null;
 	private List<ITn3812DataListener> dataListeners = null;
 	ReadWriteLock dataListenersLock = null;
+	ReadWriteLock dataLock = null;
+	
+	private Map<String,Object> data;
     
 	public Tn3812Context(InetSocketAddress addr, ITn3812Config config ) {
 		super();
@@ -84,6 +89,26 @@ class Tn3812Context implements ITn3812Context {
 		outgoingDataHandler = new OutgoingData(this);
 		writeQueue = new ConcurrentLinkedQueue<Runnable>();
 		dataListenersLock =  new ReentrantReadWriteLock();
+		dataLock =  new ReentrantReadWriteLock();
+		data = new HashMap<>();
+	}
+	
+	public void setData(String key, Object value){
+		dataLock.writeLock().lock();
+		try{
+			data.put(key, value);	
+		} finally{
+			dataLock.writeLock().unlock();
+		}		
+	}
+	
+	public Object getData(String key){
+		dataLock.readLock().lock();
+		try{
+			return data.get(key);	
+		} finally{
+			dataLock.readLock().unlock();
+		}			
 	}
 	
 	public AsynchronousSocketChannel getChannel() {
@@ -124,9 +149,6 @@ class Tn3812Context implements ITn3812Context {
 		try {
 			if (dataListeners != null) {
 				for (ITn3812DataListener listener : dataListeners ){
-					if(buffer.position()!=0){
-						buffer.flip();
-					}
 					switch(type){
 					case HEAD : 
 						listener.onHeader(buffer);
@@ -139,7 +161,13 @@ class Tn3812Context implements ITn3812Context {
 						break;
 					case LAST :
 						listener.onLastChain(buffer);
-						break;						
+						break;
+					case INIT :
+						listener.onInit(this);
+						break;
+					case CLOSED :
+						listener.onClosed();
+						break;								
 					}
 				}
 			}
@@ -165,10 +193,20 @@ class Tn3812Context implements ITn3812Context {
 	}
 	
 	@Override
-	public void disconnect() throws IOException  {
-		channel.shutdownInput().shutdownOutput().close();
-		writeQueue.clear();
-		removAllListeners();		
+	public void disconnect()  {
+		try {
+			channel.shutdownInput().shutdownOutput().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally{
+			writeQueue.clear();
+			removAllListeners();	
+		}		
+	}
+	
+	@Override
+	public boolean isConnected(){
+		return channel.isOpen();
 	}
 	
 	
@@ -178,7 +216,7 @@ class Tn3812Context implements ITn3812Context {
 		dataListenersLock.writeLock().lock();
 		try {
 			if (dataListeners == null) {
-				dataListeners = new ArrayList<ITn3812DataListener>(3);
+				dataListeners = new LinkedList<ITn3812DataListener>();
 			}
 			dataListeners.add(listener);
 		} finally {

@@ -37,7 +37,7 @@ public class TestDataProcessing {
 
 	public static void main(String[] args) throws Exception {
 		IProcessor processor = ProcessorFactory.initProcessor(ProcessorType.SCS);
-		IProcessorListener listener = ProcessorListenerFactory.initListener(ListenerType.ASCII);
+		IProcessorListener listener = ProcessorListenerFactory.initListener(ListenerType.PDF);
 		
 		test_file1(processor, listener);
 	}
@@ -48,21 +48,23 @@ public class TestDataProcessing {
 		
 		//simulate printer initialization 
 		buffer = load("output/file1/1989464302747");
-		processor.initialize(buffer);
+		processor.initialize(null,buffer);
 
 		//simulate printer initialization 
 		buffer = load("output/file1/2041182656084");
-		processor.initialize(buffer);
-
+		processor.initialize(null, buffer);
+				
 		//simulate first of chain - report startup header
 		processor.start(listener);
 
-		//simulate chain - report dta flow to the printer 
-		buffer = load("output/file1/2052755946773");	
+		//simulate chain - report data flow to the printer 
+		//buffer = load("output/file1/2052755946773");	
+		buffer = load("output/3638068169836");
+		
 		processor.process(buffer);
 		
 		//simulate last of chain - end report printing
-		processor.finnish();		
+		processor.finish();		
 		
 	}
 

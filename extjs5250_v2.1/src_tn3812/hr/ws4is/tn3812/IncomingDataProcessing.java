@@ -119,9 +119,6 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		boolean firstChain = isFlag(flags, Tn3812Flag.FIRST_OF_CHAIN);
 		boolean lastChain =  isFlag(flags, Tn3812Flag.LAST_OF_CHAIN);
 		boolean header = firstChain && lastChain;
-		System.out.println(firstChain);
-		System.out.println(lastChain);
-		System.out.println(header);		
 		
 		byte reserved = buffer.get();
 		byte opcode = buffer.get();
@@ -143,7 +140,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		
 		buffer.mark(); 
 		ByteBuffer data = getBytes(buffer, buffer.limit() - buffer.position()-2);
-	
+
 		try {			
 			if(header){
 				ctx.fireData(Tn3812ResponseTypeData.HEAD, data);	
@@ -186,8 +183,12 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		try {
 			System.out.println(new String( hostName.array(),"IBM870"));
 			System.out.println(new String( printerName.array(),"IBM870"));
+			buffer.flip();
+			ctx.fireData(Tn3812ResponseTypeData.INIT, buffer);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
+		} finally{
+			buffer.clear();
 		}
 		
 	}
@@ -256,8 +257,9 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 	
 	private ByteBuffer getBytes(ByteBuffer buffer, int size){
 		ByteBuffer valueBuffer = ByteBuffer.allocate(size);
-	    while (valueBuffer.hasRemaining())
+	    while (valueBuffer.hasRemaining()){
 	    	valueBuffer.put(buffer.get());	     
+	    }
 		valueBuffer.flip();		
 		return valueBuffer;
 	}

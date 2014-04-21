@@ -19,24 +19,25 @@
 package hr.ws4is.tn3812.drivers.listeners;
 
 import hr.ws4is.tn3812.drivers.processors.IControls;
-import hr.ws4is.tn3812.drivers.processors.SCSStyleType;
+import hr.ws4is.tn3812.drivers.processors.scs.SCSStyleType;
+import hr.ws4is.tn3812.interfaces.ITn3812Context;
 
 import java.nio.ByteBuffer;
 
 public interface IProcessorListener {
 	
-	public void onFormFeed(IControls controls);
-	public void onLineFeed(IControls controls);
+	public void onFormFeed();
+	public void onLineFeed();
 	
-	public void onHorizontalMove(IControls controls);
-	public void onVerticalMove(IControls controls);
-	public void onNewLine(IControls controls);
+	public void onHorizontalMove();
+	public void onVerticalMove();
+	public void onNewLine();
 	
-	public void onFontStyleChange(IControls controls, SCSStyleType type);
+	public void onFontStyleChange(SCSStyleType type);
 
 	public void onStart(IControls controls);
-	public void onFinish(IControls controls);
+	public void onFinish(ITn3812Context context);
 	
-	public void onData(ByteBuffer buffer, IControls controls);
+	public void onData(ByteBuffer buffer);
 	
 }

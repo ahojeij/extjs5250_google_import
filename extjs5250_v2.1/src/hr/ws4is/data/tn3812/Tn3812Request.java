@@ -16,24 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  */
-package hr.ws4is.tn3812.drivers.processors;
+package hr.ws4is.data.tn3812;
 
-import hr.ws4is.tn3812.drivers.listeners.IProcessorListener;
-import hr.ws4is.tn3812.interfaces.ITn3812Context;
-
-import java.nio.ByteBuffer;
-
-/**
- * Interface for data SCS processing engine
- */
-public interface IProcessor {
-
-	public void start(IProcessorListener listener);
-	
-	public void initialize(ITn3812Context context, ByteBuffer data);	
-	public void process(ByteBuffer data);		
-	public void finish();
-	
-	public IControls getControls();
+public class Tn3812Request {
 
 }

@@ -34,3 +34,22 @@ ISSUES:
 NOTE:
  Tn3812 printer written based on RFC 2887 specification - http://tools.ietf.org/pdf/rfc2887
  SCS printer data stream processing written based on document IBM IPDS & SCS Technical Reference (S544-5312-07)      
+ 
+ ***** SOURCE FOLDER DESCRIPTIONS 
+ 
+ **src **
+ directory contains all needed logic for web rest services to enable remote commands for 5250/3812 session management  
+ 
+ **src_base **
+ directory with websocket implementation specifically customised for ExtJS framework 
+ 
+ **src_tn3812 ** 
+ directory is a tn3812 telnet client implementation with drivers mechanizm. 
+ To active session we can register multiple drivers so for one data, multiple processing engines can be used simultaneously.
+ For example, we want to stream raw data, but also to generate pdf document with another driver.
+ 
+ Drivers are listeners for printer session data retrieval. Each driver can register data processing listener depending on
+ data type processor. So in the future, we could easily implement IPDS data parser.
+ 
+ Processor listeners have various method to be called while data stream is processed. For new line, page print, style change etc...
+ Available processors listeners are pdf generator, console otuptut and raw data writer.

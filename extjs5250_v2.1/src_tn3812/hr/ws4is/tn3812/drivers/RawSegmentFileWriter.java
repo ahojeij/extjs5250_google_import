@@ -28,10 +28,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 /** 
- * Generic SCS data stream listener used to save report content in the file.
+ * Generic SCS data stream listener used to save report content in the file as received segments.
  * Mostly used for debugging purposes
  */
-class RawFileWriter implements ITn3812DataListener {
+class RawSegmentFileWriter implements ITn3812DataListener {
 
 	FileChannel channel = null; 
 
@@ -49,18 +49,21 @@ class RawFileWriter implements ITn3812DataListener {
 
 	@Override
 	public void onFirstChain(ByteBuffer data) {
-		close(channel);
 		channel = open();
 		write(channel, data);	
+		close(channel);	
 	}
 
 	@Override
 	public void onChain(ByteBuffer data) {
-		write(channel, data);			
+		channel = open();
+		write(channel, data);	
+		close(channel);		
 	}
 
 	@Override
 	public void onLastChain(ByteBuffer data) {
+		channel = open();
 		write(channel, data);	
 		close(channel);
 	}
@@ -81,7 +84,7 @@ class RawFileWriter implements ITn3812DataListener {
 	private FileChannel  open(){
 		FileChannel channel = null;		
 		try {
-			channel = new FileOutputStream("output/streams/" + System.nanoTime()).getChannel();						
+			channel = new FileOutputStream("output/segments/" + System.nanoTime()).getChannel();						
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} 		

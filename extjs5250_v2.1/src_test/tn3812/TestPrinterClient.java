@@ -23,20 +23,25 @@ import java.util.concurrent.ExecutionException;
 
 import hr.ws4is.tn3812.Tn3812ClientFactory;
 import hr.ws4is.tn3812.Tn3812Config;
-import hr.ws4is.tn3812.drivers.RawFileWriter;
+import hr.ws4is.tn3812.drivers.Tn3812DriverFactory;
 import hr.ws4is.tn3812.interfaces.ITn3812Context;
+import hr.ws4is.tn3812.interfaces.ITn3812DataListener;
 
 /*
  * Start printer session with registered raw data writer 
  */
 public class TestPrinterClient {
 
+
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
 		Tn3812Config config = new Tn3812Config();
 		config.setDevName("PRT01");
 		
 		ITn3812Context ctx = Tn3812ClientFactory.createSession("192.168.140.20", 23, config);
-		ctx.addDataListener(new RawFileWriter());
+		ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.PDF);
+		//ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.SEGMENT);
+		ctx.addDataListener(driver);
+		ctx.addDataListener(new MyListener());
 		ctx.connect();
 		
 		while(true){
