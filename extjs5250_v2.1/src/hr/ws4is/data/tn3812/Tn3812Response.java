@@ -29,17 +29,14 @@ public class Tn3812Response extends ExtJSResponse{
 	
 	public Tn3812Response() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tn3812Response(boolean success, String message) {
 		super(success, message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tn3812Response(Throwable exception, String message) {
 		super(exception, message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getPrinterName() {

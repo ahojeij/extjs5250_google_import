@@ -28,13 +28,16 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Main printer response data processing handler. Used after successful negotiation.
  * This handler is used to process all receiving spools by calling registered listeners (drivers) 
  */
 class IncomingDataProcessing extends BasicCompletionHandler {
 	
-	//private private Logger logger = LoggerFactory.getLogger(IncomingData.class);
+	private static final Logger logger = LoggerFactory.getLogger(IncomingDataProcessing.class);
 
 	boolean negotiate = true;
 	
@@ -50,6 +53,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 	public void completed(Integer result, Void attachment) {		
 		try{
 			if(result == -1) {
+				logger.warn("No data received from socket!");
 				//connection closed from host
 				//TODO , call listeners
 				ctx.getChannel().close();
@@ -91,11 +95,13 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 	
 	private void process(ByteBuffer buffer){
 		short size = buffer.getShort();
-		System.out.println("Size : " + size);
+		//System.out.println("Size : " + size);
 
 		short gds = buffer.getShort();
-		if(checkShort(gds, Tn3812Constants.GDS)) {
-			System.out.println("GDS OK");
+		if(!checkShort(gds, Tn3812Constants.GDS)) {
+			//System.out.println("GDS OK");
+			logger.error("Incomming stream is not recognized!");
+			return;
 		}
 
 		Tn3812ResponseType responseType = getResponseType(buffer);
@@ -108,7 +114,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 			sendComplete();
 			break;
 		default : 
-			System.out.println("Invalid resposne!");
+			logger.error("Invalid stream received!");
 		}		
 	}
 	
@@ -165,6 +171,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 	}
 	
 	private void processStartupResponse(ByteBuffer buffer, short size){
+		
 		Tn3812ResponseCodes code = getResponseCode(buffer);
 		switch(code){
 		case I901 : 
@@ -179,15 +186,19 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		
 		ByteBuffer hostName = getBytes(buffer, 8);
 		ByteBuffer printerName = getBytes(buffer, 10);
+
+		try {
+			String host = new String( hostName.array(),"IBM870");
+			String printer = new String( printerName.array(),"IBM870");			
+			logger.info("Started session {} for host {} !", host.toUpperCase(), printer.toUpperCase());			
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e.getMessage(), e);
+		} 
 		
 		try {
-			System.out.println(new String( hostName.array(),"IBM870"));
-			System.out.println(new String( printerName.array(),"IBM870"));
 			buffer.flip();
 			ctx.fireData(Tn3812ResponseTypeData.INIT, buffer);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} finally{
+		} finally {
 			buffer.clear();
 		}
 		
@@ -198,15 +209,15 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		buffer.mark();
 		short dflow = buffer.getShort();
 		if(checkShort(dflow, Tn3812Constants.DATA_FLOW_SERVER)) {
-			System.out.println("DATA FROM SERVER");
+			//logger.debug("DATA FROM SERVER");
 			responseType = Tn3812ResponseType.SERVER_FLOW;
 		} else if ( checkShort(dflow, Tn3812Constants.DATA_FLOW_CLIENT) ){
-			System.out.println("DATA FROM CLIENT");
+			//logger.debug("DATA FROM CLIENT");
 			responseType = Tn3812ResponseType.CLIENT_FLOW;
 		} else {
 			buffer.reset();
 			if (isStartupResponse(buffer)){
-				System.out.println("STARTUP RESPONSE");
+				//logger.debug("STARTUP RESPONSE");
 				responseType = Tn3812ResponseType.STARTUP;
 			}
 		}

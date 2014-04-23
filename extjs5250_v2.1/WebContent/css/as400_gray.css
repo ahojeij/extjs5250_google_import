@@ -20,13 +20,16 @@
 
  .tncontainer {padding:5px;font-size: 10px; font-family: Lucida Console, Monaco, monospace; }
  
- .tncontainer .button{
+ .tncontainer .button {
     cursor:pointer;
     color: gray;
     text-align: center;
     text-shadow: 0 -1px 1px #64799e;
     background: #d5d5d5;
     }
+    
+.tncontainer .textbox { height : inherit; }
+.tncontainer .password { height : inherit; }        
     
 .tncontainer .green-ul {text-decoration: underline;}
 .tncontainer .green-rv {background-color: #404040;color: whitesmoke;text-decoration: none;}

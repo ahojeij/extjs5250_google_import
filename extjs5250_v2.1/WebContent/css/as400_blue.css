@@ -27,6 +27,9 @@
     background: #d5d5d5;
     }
     
+.tncontainer .textbox { height : inherit; }
+.tncontainer .password { height : inherit; }       
+    
 .tncontainer .txtBypass {background: transparent; 
            border-width:0 0 0 0px;
            border-style: none;

@@ -19,7 +19,7 @@ Ext.define('Ext.ux.Tn5250.HostsMenu', {
 	           ],
 	            
     alias : 'widget.tnmenu',
-    autoDestroy : true,       
+    autoDestroy : true,      
      
     constructor	: function(config){
     	var me = this;		
@@ -31,29 +31,26 @@ Ext.define('Ext.ux.Tn5250.HostsMenu', {
 		
 		var init = function (item,evt,opt){
 			var me = item;
-			if(me.menu.items.length>0 || me.populating) return;
+			if(me.populating) return;			
 			me.populating = true;
-			Ext.ux.Tn5250.Proxy.listHosts({
-				success : function(res){
-								var pnl = Ext.ComponentQuery.query('tntabpanel')[0];
-								var itms = [];
-								Ext.Array.each(res.data, function(host, index, sessions) {
-									itms.push({ text : host, plain : true, 
-										        listeners : { click : function(){pnl.createSession(this.text); } }
-									          });
-								});
-								me.menu.add(itms);								
-						  },
-				failure : function(){
-					        me.populating = false;
-				            Ext.MessageBox.alert('Error','Can\'t load hosts list' );
-						  }
-			});			
+			me.menu.removeAll(true);
+			var pnl = Ext.ComponentQuery.query('tntabpanel')[0];
+			var store = Ext.StoreManager.get(me.store);
+			var itms = store.getRange().map(function(r){
+					return { text : r.get('name'), 
+					    plain : true, 
+			            listeners : { click : function(){pnl.createSession(this.text); } }
+		          };								 
+				})								
+			me.menu.add(itms);		
+			me.menu.showBy(me);
+			me.populating = false;
+					
 		};
 		me.listeners = {click : init};
-		me.menu = new Ext.menu.Menu({items: []});
-		
+		me.menu = new Ext.menu.Menu();		
 		me.callParent();
+
     }
 });
 

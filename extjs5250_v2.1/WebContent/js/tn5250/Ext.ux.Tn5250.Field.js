@@ -24,19 +24,15 @@ Ext.define('Ext.ux.Tn5250.Field',{
 	autoEl : {tag : 'input'},
 
      constructor: function(config) {
-         //if Touch, remove deprecated
-         if(Ext.version) {
-           this.initComponent=Ext.emptyFn;
-           this.onRender=Ext.emptyFn;
-         };
          this.callParent(arguments);
      },
 
     //ExtJs 4
     initComponent : function(){
         var me = this;
-	    me.callParent();
         me.internalConfig();
+	    me.callParent();
+        
     },
     
     //ExtJs 4

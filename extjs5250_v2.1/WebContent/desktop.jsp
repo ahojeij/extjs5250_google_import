@@ -6,6 +6,7 @@
   <title>Telnet-5250</title>
 
         <link rel="stylesheet" href="js/extjs5/resources/ext-theme-gray-all.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link id="tntheme" rel="stylesheet" href="css/as400.css" type="text/css" />
 
        <script type="text/javascript" src="js/extjs4/ext-all-debug.js"></script>
@@ -28,6 +29,10 @@
 
        <script type="text/javascript" src="js/desktop/Ext.ux.Tn5250.HostsMenu.js"></script>
        <script type="text/javascript" src="js/desktop/Ext.ux.Tn5250.Window.js"></script>
+       
+       <script type="text/javascript" src="js/desktop/Ext.ux.Tn3812.Form.js"></script>
+       <script type="text/javascript" src="js/desktop/Ext.ux.Tn3812.Window.js"></script>
+       
               
        <script type="text/javascript" src="js/init.js"></script>
        <script type="text/javascript" src="js/desktop/index.js"></script>
@@ -40,10 +45,13 @@
 	     }
 	   </script>
 
+	  <script type="text/javascript" src="js/test.js"></script>
 </head>
 
 <body>
-<pre>Ctrl+SHIFT = Reset
+<pre>
+NOTE: Load hosts first by clicking refresh icon in top right corner!!!
+Ctrl+SHIFT = Reset
 Ctrl = Return
 Enter = Field Exit
 F1..12 = PF1..12

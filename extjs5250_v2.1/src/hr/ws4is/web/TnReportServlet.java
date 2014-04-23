@@ -65,6 +65,15 @@ public class TnReportServlet extends HttpServlet {
 		
 	}
 
+	/*
+	 * For security reason retrieve only filename without any path
+	 * This protects from browsing upper directories (strings like ../../../c:/users/****)
+	 */
+	
+	private String getSecureFileName(String fileName){
+		String [] paths = fileName.split("/");
+		return paths[paths.length-1];
+	}
 	
 	private File prepareFile(String fileName){
 		
@@ -73,7 +82,7 @@ public class TnReportServlet extends HttpServlet {
 		if(!file.exists()){
 			file.mkdir();
 		}
-		file = new File(file, fileName);
+		file = new File(file, getSecureFileName(fileName));
 		return file;
 	}
 	

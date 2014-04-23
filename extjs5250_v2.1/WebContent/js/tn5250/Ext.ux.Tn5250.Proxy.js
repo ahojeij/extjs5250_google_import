@@ -28,7 +28,8 @@
     var buildApiCall = function (name){
     	return API.methods[name];
     };
-    
+
+   
     var openInNewTab = function (url) {
       var win=window.open(url, '_blank');
       win.focus();
@@ -103,7 +104,9 @@
             	window.resp = resp;
             	console.log(resp);
             	*/
-                if(resp.displayID){
+            	if(buildApiCall('hosts').lastIndexOf(resp.method)>0){
+            		resp.result.data =  resp.result.data.map(function(o){return {name:o,id:o}});
+            	} else if(resp.displayID){
                 	var panel = getDisplay(resp.displayID);
                     if(panel){
                     	panel.fireEvent('5250response',resp);

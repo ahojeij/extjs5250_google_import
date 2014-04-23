@@ -59,27 +59,27 @@ If BYTE 7 = 1xxx xxxx then bytes 10-LL may contain:
  */
 public enum Tn3812PrinterCommands {
 	
-	PRINTER_READY( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02 }),
+	PRINTER_READY      ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02 }),
 	
-	CACNEL( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x00}),
-	INVALID_PARAMETER( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x29}),
-	INVALID_COMMAND( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x28}),
+	CACNEL             ( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x00}),
+	INVALID_PARAMETER  ( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x29}),
+	INVALID_COMMAND    ( new byte[] {(byte)0x08, (byte)0x11, (byte)0x02, (byte)0x28}),
 	
-	MACHINE_CHECK( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x11 }),
-	GRAPHICS_CHECK( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x26 }),
-	PRINT_CHECK( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x31 }),
-	FORM_JAM( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x41 }),
-	PAPER_JAM( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x47 }),
-	END_OF_FORMS( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x50 }),
-	PRINTER_NOT_READY( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x51 }),
+	MACHINE_CHECK      ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x11 }),
+	GRAPHICS_CHECK     ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x26 }),
+	PRINT_CHECK        ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x31 }),
+	FORM_JAM           ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x41 }),
+	PAPER_JAM          ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x47 }),
+	END_OF_FORMS       ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x50 }),
+	PRINTER_NOT_READY  ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x51 }),
 	DATA_STREAM_CLASS_1( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x66 }),
 	DATA_STREAM_CLASS_2( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x67 }),
 	DATA_STREAM_CLASS_3( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x68 }),
 	DATA_STREAM_CLASS_4( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x69 }),
-	COVER_OPEN( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x81 }),
-	MACHINE_CHECK_2( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x86 }),
-	MACHINE_CHECK_3( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x87 }),
-	RIBBON_CHECK( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x88 })
+	COVER_OPEN         ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x81 }),
+	MACHINE_CHECK_2    ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x86 }),
+	MACHINE_CHECK_3    ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x87 }),
+	RIBBON_CHECK       ( new byte[] {(byte)0xC9, (byte)0x00, (byte)0x03, (byte)0x02, (byte)0x88 })
 	;
 
     private final byte[]  value;

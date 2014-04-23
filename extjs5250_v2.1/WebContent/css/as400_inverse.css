@@ -27,6 +27,9 @@
     background: #d5d5d5;
     }
     
+.tncontainer .textbox { height : inherit; }
+.tncontainer .password { height : inherit; }      
+    
 .tncontainer .green-ul {text-decoration: underline;}
 .tncontainer .green-rv {background-color: white;color: black;text-decoration: none;}
 .tncontainer .green-rv-ul {background-color: white;color: black;text-decoration: underline;}
