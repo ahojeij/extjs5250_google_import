@@ -30,7 +30,12 @@
 			
 			
 			function createPrinter(){
-				//TODO connect ; add to store 
+				var me = this;
+				var form  = me.down('form').getForm();
+				var o = form.getFieldValues();
+				Ext.ux.Tn5250.Proxy.CreatePrinter(o.hostName, o.printerName, function(){
+					Ext.StoreManager.get(me.printerStore).load();				
+				});
 				me.close();
 			};
 			
@@ -39,7 +44,7 @@
 	        };
 	        me.items = [{xtype: 'tn3812form', store : me.store}]
 		    me.buttons = [
-		              { text: 'Ok', handker : createPrinter },
+		              { text: 'Ok', handler : createPrinter, scope : me },
 		              { text: 'Cancel', handler : function(){me.close();} }
 		            ];	        
 			me.callParent();

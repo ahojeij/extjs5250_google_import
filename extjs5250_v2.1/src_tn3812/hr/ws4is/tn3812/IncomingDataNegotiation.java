@@ -38,6 +38,10 @@ class IncomingDataNegotiation extends BasicCompletionHandler {
 	public IncomingDataNegotiation(Tn3812Context ctx) {
 		super(ctx);
 	}	
+	
+	public void reset(){
+		negotiate = true;
+	}
 
 	public void failed(Throwable exc, Void attachment) {
 	    exc.printStackTrace();
@@ -45,6 +49,10 @@ class IncomingDataNegotiation extends BasicCompletionHandler {
 
 	
 	public void completed(Integer result, Void attachment) {
+		if(handleClosed(result, attachment)) {
+			return;
+		}
+		
 		try{
 			ByteBuffer buffer = ByteBuffer.allocate(8192);
 			byte[] data = BasicCompletionHandler.readFromBuffer(ctx, result);

@@ -101,5 +101,16 @@ class RawSegmentFileWriter implements ITn3812DataListener {
 		}
 	}
 
+	@Override
+	public void onError(ITn3812Context config, ByteBuffer data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRemoved() {
+		close(channel);
+		channel = null;
+	}	
 	
 }

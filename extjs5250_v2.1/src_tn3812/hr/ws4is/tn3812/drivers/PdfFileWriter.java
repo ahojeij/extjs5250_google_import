@@ -70,6 +70,17 @@ class PdfFileWriter implements ITn3812DataListener {
 	@Override
 	public void onClosed() {
 		
+	}
+
+	@Override
+	public void onError(ITn3812Context config, ByteBuffer data) {
+				
+	}
+
+	@Override
+	public void onRemoved() {
+		scsProcessor = null;
+		config = null;
 	}	
 
 }

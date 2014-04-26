@@ -18,21 +18,42 @@
  */
 package hr.ws4is.tn3812;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ExecutionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic data send callback handler with generally used methods 
  */
 abstract class BasicCompletionHandler implements CompletionHandler<Integer, Void> {
 
+	private static Logger logger = LoggerFactory.getLogger(BasicCompletionHandler.class);
+	
 	Tn3812Context ctx;
 	
 	public BasicCompletionHandler(Tn3812Context ctx) {
 		super();
 		this.ctx = ctx;
+	}
+	
+	public boolean handleClosed(Integer result, Void attachment){
+		try{
+			if(result == -1) {
+				logger.warn("No data received from socket!");
+				//connection closed from host
+				//TODO , call listeners
+				ctx.getChannel().close();
+				return true;
+			}			
+		}catch (IOException e){
+			e.printStackTrace();
+		}		
+		return false;
 	}
 	
 	public static void startReading(Tn3812Context ctx, BasicCompletionHandler handler){

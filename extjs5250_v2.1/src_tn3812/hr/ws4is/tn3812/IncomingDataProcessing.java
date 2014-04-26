@@ -23,7 +23,6 @@ import hr.ws4is.tn3812.enums.Tn3812ResponseTypeData;
 import hr.ws4is.tn3812.enums.Tn3812ResponseCodes;
 import hr.ws4is.tn3812.enums.Tn3812ResponseType;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -50,26 +49,27 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 	}
 
 	
-	public void completed(Integer result, Void attachment) {		
-		try{
-			if(result == -1) {
-				logger.warn("No data received from socket!");
-				//connection closed from host
-				//TODO , call listeners
-				ctx.getChannel().close();
-				return;
-			}			
-		}catch (IOException e){
-			e.printStackTrace();
-		} 
+	public void completed(Integer result, Void attachment) {	
 		
+		if(handleClosed(result, attachment)) {
+			return;
+		}
+		
+		boolean status = false;
 		try{
 			ByteBuffer buffer = ctx.getInBuffer(); 
 			buffer.flip();
-			process(buffer);			
+			status = process(buffer);
 			buffer.clear();	
-		} finally{
-			BasicCompletionHandler.startReading(ctx, this);	
+		} finally{			
+			if(status  == false){
+				IncomingDataNegotiation handler = ctx.getIncomingDataHandler();
+				handler.reset();
+				BasicCompletionHandler.startReading(ctx, handler);
+			}else{
+				BasicCompletionHandler.startReading(ctx, this);	
+			}
+				
 		}
 		
 	}
@@ -93,7 +93,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		}
 	}
 	
-	private void process(ByteBuffer buffer){
+	private boolean process(ByteBuffer buffer){
 		short size = buffer.getShort();
 		//System.out.println("Size : " + size);
 
@@ -101,25 +101,27 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		if(!checkShort(gds, Tn3812Constants.GDS)) {
 			//System.out.println("GDS OK");
 			logger.error("Incomming stream is not recognized!");
-			return;
+			return false;
 		}
 
+		boolean status = false;
 		Tn3812ResponseType responseType = getResponseType(buffer);
 		switch(responseType){
 		case STARTUP : 
-			processStartupResponse(buffer, size);
+			status = processStartupResponse(buffer, size);
 			break;
 		case SERVER_FLOW :
-			processDataResponse(buffer, size);
+			status = processDataResponse(buffer, size);
 			sendComplete();
 			break;
 		default : 
 			logger.error("Invalid stream received!");
 		}		
+		return status;
 	}
 	
 	@SuppressWarnings("unused")
-	private void processDataResponse(ByteBuffer buffer, short size){
+	private boolean processDataResponse(ByteBuffer buffer, short size){
 		byte  headerLength = buffer.get();
 		byte flags = buffer.get();
 		boolean firstChain = isFlag(flags, Tn3812Flag.FIRST_OF_CHAIN);
@@ -133,7 +135,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		if(opcode != 1 ){
 			// 02 - clear buffers
 			buffer.clear();
-			return;
+			return true;
 		} 		 
 		
 		ByteBuffer diagnostic = getBytes(buffer, headerLength-4);
@@ -162,6 +164,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		} finally {
 			data.clear();
 		}
+		return true;
 	
 	}
 	
@@ -170,7 +173,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		return (value & flag.getValue()) == flag.getValue();
 	}
 	
-	private void processStartupResponse(ByteBuffer buffer, short size){
+	private boolean processStartupResponse(ByteBuffer buffer, short size){
 		
 		Tn3812ResponseCodes code = getResponseCode(buffer);
 		switch(code){
@@ -179,9 +182,9 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		case I906 :
 			System.out.println(code.getName());
 			break;
-		default : 
-			System.out.println(code.getName());
-			//TODO throw exception
+		default : 			
+			ctx.fireData(Tn3812ResponseTypeData.ERROR, ByteBuffer.wrap(code.getName().getBytes()));			
+			return false;
 		}
 		
 		ByteBuffer hostName = getBytes(buffer, 8);
@@ -201,6 +204,7 @@ class IncomingDataProcessing extends BasicCompletionHandler {
 		} finally {
 			buffer.clear();
 		}
+		return true;
 		
 	}
 	

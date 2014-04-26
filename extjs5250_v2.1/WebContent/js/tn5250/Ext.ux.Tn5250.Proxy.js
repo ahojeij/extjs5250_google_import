@@ -15,7 +15,8 @@
 		      request : 'hr.ws4is.Tn5250Controller.requestSession',
 		      refresh : 'hr.ws4is.Tn5250Controller.refreshSession',
 		      sessions: 'hr.ws4is.Tn5250Controller.listSessions',	
-		      hosts   : 'hr.ws4is.HostsController.listDefinitions' 
+		      hosts   : 'hr.ws4is.HostsController.listDefinitions', 
+		      printerSessions: 'hr.ws4is.Tn3812Controller.listSessions',
 		    }
 	}; 
  } 
@@ -100,20 +101,27 @@
             var prov = Ext.direct.Manager.getProvider(API.provider);
             prov.addListener('data',function(prov,resp,act){
             	//debug
-            	/*
+            	/* */
             	window.resp = resp;
             	console.log(resp);
-            	*/
-            	if(buildApiCall('hosts').lastIndexOf(resp.method)>0){
-            		resp.result.data =  resp.result.data.map(function(o){return {name:o,id:o}});
-            	} else if(resp.displayID){
-                	var panel = getDisplay(resp.displayID);
+            	
+            	var r = resp.result ? resp.result : resp; 
+            	if(!r.success){
+            		return;
+            	};
+            	var wcall = resp.action +'.'+ resp.method;
+            	if(buildApiCall('hosts').lastIndexOf(wcall)>0){
+            		resp.result.data =  r.data.map(function(o){return {name:o,id:o}});
+            	} else if(buildApiCall('printerSessions').lastIndexOf(wcall)>0){
+                	resp.result.data =  r.data.map(function(o){return {name:o,id:o}});            		
+            	} else if(r.displayID){
+                	var panel = getDisplay(r.displayID);
                     if(panel){
-                    	panel.fireEvent('5250response',resp);
+                    	panel.fireEvent('5250response',r);
                      }                        		  
-                } else if(resp.reportName){
+                } else if(r.reportName){
                 	var p = window.location.href.lastIndexOf('/');
-                	var url =window.location.href.substr(0,p) + '/reports?r=' + resp.reportName; 
+                	var url =window.location.href.substr(0,p) + '/reports?r=' + r.reportName; 
                 	openInNewTab(url);
                 }
             });
@@ -146,7 +154,7 @@
 
 
 		/**
-		 * Closes current tn 5250 session
+		 * Creates a new tn 5250 session
 		 * 
 		 * @aram {String} hostName
 		 *  virtual name of configured host at the server side. Name is used from server to find AS/400 server config.
@@ -195,7 +203,28 @@
 		 */			
 		listHosts : function(cb){
 			eval(buildApiCall('hosts'))(cb);
+		},
+		
+		/**
+		 * List of currently opened tn3812 sessions for curent web user/session
+		 *  
+		 * @aram {function} callback
+		 *  Standard Ext.remoting callback method. 
+		 *  Returns a list of 3281 session printer names 
+		 */		
+		listPrinterSessions : function(cb){
+			eval(buildApiCall('printerSessions'))(cb);
+		},
+		
+		
+		CreatePrinter : function(hostName, printerName, cb){
+			eval(buildApiCall('printerOpen'))(hostName, printerName, cb);
+		},
+		
+		ClosePrinter : function(name,cb){
+			eval(buildApiCall('printerClose'))(name, cb);
 		}
+			
 	
 	});
 

@@ -20,12 +20,13 @@ package hr.ws4is.data.tn3812;
 
 import hr.ws4is.ext.ExtJSResponse;
 
-public class Tn3812Response extends ExtJSResponse{
+public class Tn3812Response extends ExtJSResponse {
 
 	private static final long serialVersionUID = 1L;
 
 	String printerName;
 	String reportName;
+	String tnType;
 	
 	public Tn3812Response() {
 		super();
@@ -53,6 +54,14 @@ public class Tn3812Response extends ExtJSResponse{
 
 	public void setReportName(String reportName) {
 		this.reportName = reportName;
+	}
+
+	public String getTnType() {
+		return tnType;
+	}
+
+	public void setTnType(String tnType) {
+		this.tnType = tnType;
 	}
 
 }

@@ -7,7 +7,6 @@ import javax.enterprise.inject.Vetoed;
 
 import hr.ws4is.tn3812.interfaces.ITn3812Context;
 import hr.ws4is.tn3812.interfaces.ITn3812DataListener;
-import hr.ws4is.websocket.WebSocketSession;
 
 @Vetoed
 public class MyListener implements ITn3812DataListener {
@@ -49,6 +48,17 @@ public class MyListener implements ITn3812DataListener {
 	@Override
 	public void onClosed() {
 		
+	}
+
+	@Override
+	public void onError(ITn3812Context config, ByteBuffer data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRemoved() {
+		config = null;
 	}	
 
 }

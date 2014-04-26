@@ -28,11 +28,28 @@
 	    },
 	    
 	    initComponent  : function() {
-			var me = this;
-	        me.layout = {
-	            type: 'fit'
-	        };
-	        me.items =[],		
+			var me = this;			
+			me.bodyPadding = '5 5 0';
+			me.fieldDefaults =  {
+	            msgTarget: 'side',
+	            labelWidth: 75
+	        };			
+	        me.items =[
+	                   {
+	                	    xtype : 'combo',
+	                	    fieldLabel: 'Host name',
+	                	    store: Ext.StoreManager.get(me.store),
+	                	    editable  : false,
+	                	    queryMode: 'local',
+	                	    displayField: 'name',
+	                	    valueField: 'name',
+	                	    name : 'hostName'
+	                   },{
+                	        xtype: 'textfield',
+                	        fieldLabel: 'Device name',
+                	        fieldStyle : {textTransform: 'uppercase'},
+                	        name: 'printerName'	                	   
+	                   }];		
 			me.callParent();
 	    }
 	});

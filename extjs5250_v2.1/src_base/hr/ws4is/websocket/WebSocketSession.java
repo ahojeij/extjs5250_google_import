@@ -43,7 +43,12 @@ import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WebSocketSession implements Session {
+	
+	private static final Logger logger = LoggerFactory.getLogger(WebSocketSession.class);
 	
 	private final Session session;
 	private ExtJSDirectRequest<?> request;
@@ -92,10 +97,12 @@ public class WebSocketSession implements Session {
 			return false;
 		}
 		
+		/*
 		if(!session.isOpen()) {
-			//TODO log
+			logger.warn("Websocket response not sent, session is closed!");
 			return false;
 		}
+		*/
 		
 		boolean success = true;
 		

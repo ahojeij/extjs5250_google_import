@@ -95,45 +95,39 @@ public class Tn3812Controller {
 	public Tn3812Response openSession(String hostName, String printerName) {
 		Tn3812Response response = null;
 		try{
+			printerName = printerName.toUpperCase();
 			final TnHost host = TnWebHelper.findTnHost(session, hostName);
 			if(host==null){
 				response = new Tn3812Response(false,TnConstants.HOST_NOT_FOUND);	
 			}else{
 				final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
 				ITn3812Context tnSession = sessions.get(printerName);
-				if(tnSession!=null){
-					//TODO, already exists
-				}
 				
 				response = new Tn3812Response(true,null);
 				response.setPrinterName(printerName);
 				
-				final String deviceName = printerName;
-				Runnable rn = new Runnable() {
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(100);
-							ITn3812Context tnSession = null;
-							
-							ITn3812Config config = new Tn3812Config();
-							config.setDevName(deviceName);
-							
-							tnSession = Tn3812ClientFactory.createSession(host.getIpAddress(), host.getPortNumber(), config);
-							ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.PDF);
-							tnSession.addDataListener(driver);							
-							//TODO, link session with printer ?! add listener with websocket ? 
-							tnSession.addDataListener(new Tn3812Listener(session));
-							tnSession.connect();
-							
-							sessions.put(deviceName, tnSession);
-						} catch (InterruptedException | ExecutionException | IOException e) {
-							e.printStackTrace();
-						}
+				if(tnSession==null){
+					
+					try {
+						
+						ITn3812Config config = new Tn3812Config();
+						config.setDevName(printerName);
+						
+						tnSession = Tn3812ClientFactory.createSession(host.getIpAddress(), host.getPortNumber(), config);
+						
+						//add pdf generator 
+						ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.PDF);
+						tnSession.addDataListener(driver);							
+
+						//add session listener
+						tnSession.addDataListener(new Tn3812Listener(session));						
+												
+						tnSession.connect();
+					} catch (InterruptedException | ExecutionException | IOException e) {
+						e.printStackTrace();
 					}
-				};
-				Thread t = new Thread(rn);
-				t.start();
+					
+				}
 				
 			}			
 			
@@ -150,6 +144,7 @@ public class Tn3812Controller {
 	public Tn3812Response closeSession(String printerName) {
 		Tn3812Response response = null;
 		try{
+			printerName = printerName.toUpperCase();
 			Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
 			ITn3812Context tnSession = sessions.remove(printerName);
 			if(tnSession==null){
@@ -171,6 +166,7 @@ public class Tn3812Controller {
 	public Tn3812Response refreshStatus(String printerName) {
 		Tn3812Response response = null;
 		try{
+			printerName = printerName.toUpperCase();
 			Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
 			ITn3812Context tnSession = sessions.remove(printerName);
 			if(tnSession==null){

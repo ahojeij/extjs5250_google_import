@@ -43,7 +43,10 @@ Ext.onReady(function(){
 		      request : 'hr.ws4is.Tn5250Controller.requestSession',
 		      refresh : 'hr.ws4is.Tn5250Controller.refreshSession',
 		      sessions: 'hr.ws4is.Tn5250Controller.listSessions',	
-		      hosts   : 'hr.ws4is.HostsController.listDefinitions' 
+		      hosts   : 'hr.ws4is.HostsController.listDefinitions' ,
+		      printerSessions: 'hr.ws4is.Tn3812Controller.listSessions',
+		      printerOpen: 'hr.ws4is.Tn3812Controller.openSession',
+		      printerClose: 'hr.ws4is.Tn3812Controller.closeSession'
 		    }
 	}; 	
 	Ext.ux.Tn5250.Proxy.RegisterAPI(tn5250API);

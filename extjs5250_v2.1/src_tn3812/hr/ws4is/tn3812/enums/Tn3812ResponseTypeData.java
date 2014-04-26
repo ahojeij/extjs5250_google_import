@@ -22,5 +22,5 @@ package hr.ws4is.tn3812.enums;
  * Enum types to define printing status  
  */
 public enum Tn3812ResponseTypeData {
-	HEAD, FIRST, CHAIN, LAST, INIT, CLOSED
+	HEAD, FIRST, CHAIN, LAST, INIT, CLOSED, ERROR
 }

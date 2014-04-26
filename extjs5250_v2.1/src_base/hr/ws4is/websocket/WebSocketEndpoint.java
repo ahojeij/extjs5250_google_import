@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PreDestroy;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -55,10 +54,6 @@ public class WebSocketEndpoint {
 	@Inject 
 	private WebSocketOperations<JsonNode> directOperations;
 
-	@PreDestroy
-	void preDEstroy() {
-		websocketContextThreadLocal.remove();		
-	}
 		
 	@Produces
 	private WebSocketSession sessionProducer() {

@@ -70,4 +70,16 @@ class ASCIIPrintWriter implements ITn3812DataListener {
 	public void onClosed() {
 		
 	}
+
+	@Override
+	public void onError(ITn3812Context config, ByteBuffer data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRemoved() {
+		scsProcessor = null;
+		config = null;
+	}
 }

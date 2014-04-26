@@ -15,17 +15,29 @@
 		    });
 
 
-	var store = Ext.create('WS4IS.data.HostsStore',{
-		        storeId : 'tnhostsstore',
-		        proxy: {
-		            type: 'direct',
-		            directFn: 'hr.ws4is.HostsController.listDefinitions',
-		            reader: {
-		                type: 'json',
-		                root: 'data'
-		            }
-		        }
-		});
+		Ext.create('WS4IS.data.HostsStore',{
+	        storeId : 'tnhostsstore',
+	        proxy: {
+	            type: 'direct',
+	            directFn: 'hr.ws4is.HostsController.listDefinitions',
+	            reader: {
+	                type: 'json',
+	                root: 'data'
+	            }
+	        }
+	   });
+		
+		Ext.create('WS4IS.data.HostsStore',{
+	        storeId : 'tnprintersstore',
+	        proxy: {
+	            type: 'direct',
+	            directFn: 'hr.ws4is.Tn3812Controller.listSessions',
+	            reader: {
+	                type: 'json',
+	                root: 'data'
+	            }
+	        }
+	});		
 	
 		
    Ext.create('Ext.ux.Tn5250.Window', {
@@ -34,7 +46,8 @@
           width: 1150,
           height: 800,
           name : 'main',
-          store : 'tnhostsstore'
+          store : 'tnhostsstore',
+          printerStore : 'tnprintersstore'
    }).show();
    
  });

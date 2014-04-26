@@ -167,7 +167,9 @@ class Tn3812Context implements ITn3812Context {
 						break;
 					case CLOSED :
 						listener.onClosed();
-						break;								
+						break;			
+					case ERROR :
+						listener.onError(this,buffer);
 					}
 				}
 			}
@@ -195,7 +197,10 @@ class Tn3812Context implements ITn3812Context {
 	@Override
 	public void disconnect()  {
 		try {
-			channel.shutdownInput().shutdownOutput().close();
+			if(channel.isOpen()){
+				channel.close();
+			}
+			//channel.shutdownInput().shutdownOutput().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally{

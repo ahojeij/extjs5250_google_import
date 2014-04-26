@@ -26,12 +26,13 @@
 
 
    function startPrinter(){
-	   var store = this.up('window').store;
+	   var win = this.up('window');
 	   Ext.create('Ext.ux.Tn3812.Window', {
 			   title : 'New Printer',
 			   width : 300,
 			   height : 200,
-			   store : store,
+			   store : win.store,
+			   printerStore : win.printerStore,
 			   modal  :true
 		   }).show();
    };
@@ -73,20 +74,42 @@
 	    
 	    initComponent  : function() {
 			var me = this;
+			
+			var printerStore = Ext.StoreManager.get(me.printerStore);
 	        me.layout = 'border';
+	        me.maximized = false;
 	        me.defaults =  {	            
 	            split: true
 	        };	        
 	        me.items =[{xtype: 'tntabpanel', 
 	        	        autoReload:true, 
 	        	        region: 'center'
-	        	       }, {
-	        	    	 xtype: 'panel', 
+	        	       }, {      	    	   
+	        	    	 xtype: 'grid', 
 	        	    	 region: 'east', 
 	        	    	 title : 'Printers',
+	        	    	 store : printerStore,
 	        	    	 collapsible: true, 
 	        	    	 collapsed : true,
-	        	    	 minWidth : 200	        	    	 
+	        	    	 minWidth : 180,
+	        	    	 width : 180,
+	        	    	 columns: [
+	        	    		        { text: 'Name',  dataIndex: 'name' },
+	        	    		        { text: '...',  
+	        	    		          xtype:'actioncolumn',
+	        	    		          width:50,
+	        	    		          items: [{
+	        	    		        	  icon: 'img/close.png',  // Use a URL in the icon config
+	        	    		                tooltip: 'Close printer',
+	        	    		                handler: function(grid, rowIndex, colIndex) {
+	        	    		                    var rec = grid.getStore().getAt(rowIndex);
+	        	    		                    Ext.ux.Tn5250.Proxy.ClosePrinter(rec.get('name'), function(){
+	        	    		                    	printerStore.load();
+	        	    		                    });
+	        	    		                }	        	    		        	  
+	        	    		          }]
+	        	    		        }
+	        	    		    ]	        	    	 
 	        	       }
 	        		  ];
 	        me.tbar = [{ xtype: 'tnmenu', 
@@ -119,8 +142,8 @@
 	            tooltip: 'Refresh list of Hosts',
 	            // hidden:true,
 	            handler: function(event, toolEl, panelHeader) {
-	            	var store = Ext.StoreManager.get(me.store);
-	            	store.load();
+	            	Ext.StoreManager.get(me.store).load();
+	            	Ext.StoreManager.get(me.printerStore).load();
 	            }
 	        }];
 	        

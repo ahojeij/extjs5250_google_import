@@ -98,5 +98,14 @@ class RawFileWriter implements ITn3812DataListener {
 		}
 	}
 
-	
+	@Override
+	public void onError(ITn3812Context config, ByteBuffer data) {
+		
+	}
+
+	@Override
+	public void onRemoved() {
+		close(channel);
+		channel = null;
+	}		
 }

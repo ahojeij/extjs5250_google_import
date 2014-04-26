@@ -25,7 +25,18 @@ import java.nio.ByteBuffer;
  */
 public interface ITn3812DataListener {
 
+	/**
+	 * When printer session is initialized
+	 * @param config
+	 */
 	public void onInit(ITn3812Context config);
+	
+	/**
+	 * When session initialization error received, for example, printer name already used
+	 * @param config
+	 * @param data
+	 */
+	public void onError(ITn3812Context config, ByteBuffer data);
 	
 	/**
 	 * On printer initialization.
@@ -56,4 +67,9 @@ public interface ITn3812DataListener {
 	 * Signal when connection is closed by peer
 	 */
 	public void onClosed();
+	
+	/**
+	 * Signal when listener is removed 
+	 */
+	public void onRemoved();
 }
