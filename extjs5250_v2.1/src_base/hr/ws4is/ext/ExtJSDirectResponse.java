@@ -14,78 +14,85 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext;
 
+/**
+ * Class to be converted to JSON data, specific format for ExtJS response.
+ * For Ext.Direct to recognize response, action, method, type and tid must be set
+ * as ExtJS keeps signature on send and expects the same signature in response to match queued event
+ *
+ * @param <T>
+ */
 public class ExtJSDirectResponse<T> {
-	
-	//{"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
-	private String action;
-	private String method;
-	private String type;
-	private String tid;
-	private boolean keepTransaction = false;
-	private Object result;		
-	
-	public ExtJSDirectResponse(ExtJSDirectRequest<T> request, Object response) {
-		super();
-		
-		this.result = response;
-		if(request!=null){
-			this.action = request.action;
-			this.method = request.method;
-			this.tid = request.tid;
-			this.type = request.type;			
-		}
-	}
 
-	public String getAction() {
-		return action;
-	}
+    // {"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
+    private String action;
+    private String method;
+    private String type;
+    private String tid;
+    private boolean keepTransaction;
+    private Object result;
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public ExtJSDirectResponse(final ExtJSDirectRequest<T> request, final Object response) {
+        super();
 
-	public String getMethod() {
-		return method;
-	}
+        this.result = response;
+        if (request != null) {
+            this.action = request.getAction();
+            this.method = request.getMethod();
+            this.tid = request.getTid();
+            this.type = request.getType();
+        }
+    }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
+    public final String getAction() {
+        return action;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public final void setAction(final String action) {
+        this.action = action;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public final String getMethod() {
+        return method;
+    }
 
-	public String getTid() {
-		return tid;
-	}
+    public final void setMethod(final String method) {
+        this.method = method;
+    }
 
-	public void setTid(String tid) {
-		this.tid = tid;
-	}
+    public final String getType() {
+        return type;
+    }
 
-	public Object getResult() {
-		return result;
-	}
+    public final void setType(final String type) {
+        this.type = type;
+    }
 
-	public void setResult(Object result) {
-		this.result = result;
-	}
+    public final String getTid() {
+        return tid;
+    }
 
-	public boolean isKeepTransaction() {
-		return keepTransaction;
-	}
+    public final void setTid(final String tid) {
+        this.tid = tid;
+    }
 
-	public void setKeepTransaction(boolean keepTransaction) {
-		this.keepTransaction = keepTransaction;
-	}
-	
+    public final Object getResult() {
+        return result;
+    }
+
+    public final void setResult(final Object result) {
+        this.result = result;
+    }
+
+    public final boolean isKeepTransaction() {
+        return keepTransaction;
+    }
+
+    public final void setKeepTransaction(final boolean keepTransaction) {
+        this.keepTransaction = keepTransaction;
+    }
+
 }

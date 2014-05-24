@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.websocket;
 
@@ -26,37 +26,50 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Internal JSON decoder for WebSocket ExtJS request
+ *
+ */
 @Vetoed
 public class WebsocketDecoder implements Decoder.Text<WebSocketRequest> {
 
-	@Override
-	public WebSocketRequest decode(String message) throws DecodeException{
-		WebSocketRequest wsMessage = null;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketDecoder.class);
 
-		try{
-			JsonDecoder<WebSocketRequest> jd = new JsonDecoder<>(WebSocketRequest.class, message);
-			wsMessage = jd.getObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new DecodeException(message, e.getMessage(), e);
-		}
-		return wsMessage;
-	}
+    @Override
+    public final WebSocketRequest decode(final String message) throws DecodeException {
 
-	@Override
-	public boolean willDecode(String message){
-		if(message == null) return false;
-		return message.trim().startsWith("{") && message.trim().endsWith("}");
-	}
+        WebSocketRequest wsMessage = null;
 
-	@Override
-	public void destroy() {
+        try {
+            final JsonDecoder<WebSocketRequest> jd = new JsonDecoder<>(WebSocketRequest.class, message);
+            wsMessage = jd.getObject();
+        } catch (Exception exception) {
+            LOGGER.error(exception.getMessage(), exception);
+            throw new DecodeException(message, exception.getMessage(), exception);
+        }
+        return wsMessage;
+    }
 
-	}
+    @Override
+    public final boolean willDecode(final String message) {
+        boolean decode = false;
+        if (message != null) {
+            decode = message.trim().startsWith("{") && message.trim().endsWith("}");
+        }
+        return decode;
+    }
 
-	@Override
-	public void init(EndpointConfig arg0) {
+    @Override
+    public void destroy() {
 
-	}
+    }
+
+    @Override
+    public void init(final EndpointConfig arg0) {
+
+    }
 
 }

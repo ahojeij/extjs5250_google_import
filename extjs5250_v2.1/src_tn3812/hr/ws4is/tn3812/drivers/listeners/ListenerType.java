@@ -14,10 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.listeners;
 
+/**
+ * List of available listener types
+ *
+ */
 public enum ListenerType {
- PDF, ASCII, LOGGER
+    PDF, ASCII, LOGGER
 }

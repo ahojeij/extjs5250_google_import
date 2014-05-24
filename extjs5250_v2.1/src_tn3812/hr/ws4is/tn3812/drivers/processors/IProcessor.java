@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.processors;
 
@@ -28,12 +28,14 @@ import java.nio.ByteBuffer;
  */
 public interface IProcessor {
 
-	public void start(IProcessorListener listener);
-	
-	public void initialize(ITn3812Context context, ByteBuffer data);	
-	public void process(ByteBuffer data);		
-	public void finish();
-	
-	public IControls getControls();
+    void start(IProcessorListener listener);
+
+    void initialize(ITn3812Context context, ByteBuffer data);
+
+    void process(ByteBuffer data);
+
+    void finish();
+
+    IControls getControls();
 
 }

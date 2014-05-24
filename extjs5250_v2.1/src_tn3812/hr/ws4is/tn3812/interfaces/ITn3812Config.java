@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.interfaces;
 
@@ -22,38 +22,38 @@ import hr.ws4is.tn3812.enums.Tn3812EnvelopeTypes;
 import hr.ws4is.tn3812.enums.Tn3812PageTypes;
 
 /**
- * Generic interface of session config object used outside engine 
+ * Generic interface of session config object used outside engine.
  */
 public interface ITn3812Config {
 
-	public abstract String getDevName();
+    String getDevName();
 
-	public abstract String getIBMMSGQNAME();
+    String getIBMMSGQNAME();
 
-	public abstract String getIBMMSGQLIB();
+    String getIBMMSGQLIB();
 
-	public abstract String getIBMFONT();
+    String getIBMFONT();
 
-	public abstract String getIBMFORMFEED();
+    String getIBMFORMFEED();
 
-	public abstract String getIBMMFRTYPMDL();
+    String getIBMMFRTYPMDL();
 
-	public abstract Tn3812PageTypes getIBMPPRSRC1();
+    Tn3812PageTypes getIBMPPRSRC1();
 
-	public abstract Tn3812PageTypes getIBMPPRSRC2();
+    Tn3812PageTypes getIBMPPRSRC2();
 
-	public abstract Tn3812EnvelopeTypes getIBMENVELOPE();
+    Tn3812EnvelopeTypes getIBMENVELOPE();
 
-	public abstract String getIBMWSCSTNAME();
+    String getIBMWSCSTNAME();
 
-	public abstract String getIBMWSCSTLIB();
+    String getIBMWSCSTLIB();
 
-	public abstract String getCodepage();
+    String getCodepage();
 
-	public abstract boolean isIBMTRANSFORM();
+    boolean isIBMTRANSFORM();
 
-	public abstract boolean isIBMASCII899();
+    boolean isIBMASCII899();
 
-	public abstract void setDevName(String deviceName);
+    void setDevName(String deviceName);
 
 }

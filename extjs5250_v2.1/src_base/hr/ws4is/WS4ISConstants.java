@@ -14,19 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is;
 
+/**
+ * Enumeration containing some internally used constants 
+ */
 public enum WS4ISConstants {
-	;
-		
-	public static final String HTTP_SEESION_STATUS = "ws4is.session.status";
-	public static final String HTTP_SEESION_REQUIRED = "Websocket requires valid http session";
-	
-	public static final String WEBSOCKET_PATH = "ws4is.websocket.path";
-	public static final String WEBSOCKET_SUBPROTOCOL = "ws4is";
-	public static final String WEBSOCKET_TYPE = "ws";
-	
-	public static final String DIRECT_SERVICE_NOT_FOUND = "Requested ExtDirect Service not found";
+    ;
+
+    public static final String HTTP_SEESION_STATUS   = "ws4is.session.status";
+    public static final String HTTP_SEESION_REQUIRED = "Websocket requires valid http session";
+    
+    public static final String WEBSOCKET_PATH        = "ws4is.websocket.path";
+    public static final String WEBSOCKET_SUBPROTOCOL = "ws4is";
+    public static final String WEBSOCKET_TYPE        = "ws";
+
+    public static final String DIRECT_SERVICE_NOT_FOUND = "Requested ExtDirect Service not found";
 }

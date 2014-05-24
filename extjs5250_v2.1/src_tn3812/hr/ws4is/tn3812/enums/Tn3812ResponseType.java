@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.enums;
 
@@ -22,5 +22,5 @@ package hr.ws4is.tn3812.enums;
  * Response status to determine data flow type
  */
 public enum Tn3812ResponseType {
-	UNKNOWN, STARTUP, SERVER_FLOW, CLIENT_FLOW	
+    UNKNOWN, STARTUP, SERVER_FLOW, CLIENT_FLOW
 }

@@ -14,15 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.cdi;
 
 import javax.enterprise.inject.spi.Bean;
 
-public interface IDestructibleBeanInstance<T>{
-	public abstract T getInstance();
-	public abstract Class<?> getBeanClass();
-	public abstract Bean<T> getBean();
-	public abstract void destroy();
+public interface IDestructibleBeanInstance<T> {
+
+    /**
+     * Returns CDI bean instance
+     * @return
+     */
+    T getInstance();
+
+    /**
+     * Returns CDI bean class type
+     * @return
+     */
+    Class<?> getBeanClass();
+
+    /**
+     * Returns Bean found by BeanManager
+     * @return
+     */
+    Bean<T> getBean();
+
+    /**
+     * Destroys injected bean instance
+     */
+    void release();
+
 }

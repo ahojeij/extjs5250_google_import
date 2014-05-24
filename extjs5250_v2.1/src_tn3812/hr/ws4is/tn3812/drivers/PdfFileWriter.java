@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers;
 
@@ -30,57 +30,55 @@ import hr.ws4is.tn3812.interfaces.ITn3812DataListener;
 import java.nio.ByteBuffer;
 
 /**
- * SCS data stream listener used to convert SCS data to PDF
- * PDF will be saved in temp location 
+ * SCS data stream listener used to convert SCS data to PDF PDF will be saved in
+ * temp location
  */
 class PdfFileWriter implements ITn3812DataListener {
-	
-	IProcessor scsProcessor;
-	ITn3812Context config;
-	
-	@Override
-	public void onInit(ITn3812Context config) {
-		scsProcessor = ProcessorFactory.initProcessor(ProcessorType.SCS);	
-		this.config = config;
-	}
-	
-	@Override
-	public void onHeader(ByteBuffer data) {		
-		scsProcessor.initialize(config, data);
-	}
 
-	@Override
-	public void onFirstChain(ByteBuffer data) {
-		IProcessorListener pdfListener = ProcessorListenerFactory.initListener(ListenerType.PDF);
-		scsProcessor.start(pdfListener);
-		scsProcessor.process(data);
-	}
+    IProcessor scsProcessor;
+    ITn3812Context config;
 
-	@Override
-	public void onChain(ByteBuffer data) {
-		scsProcessor.process(data);
-	}
+    @Override
+    public void onInit(final ITn3812Context config) {
+        scsProcessor = ProcessorFactory.initProcessor(ProcessorType.SCS);
+        this.config = config;
+    }
 
-	@Override
-	public void onLastChain(ByteBuffer data) {
-		scsProcessor.process(data);
-		scsProcessor.finish();
-	}
-	
-	@Override
-	public void onClosed() {
-		
-	}
+    @Override
+    public void onHeader(final ByteBuffer data) {
+        scsProcessor.initialize(config, data);
+    }
 
-	@Override
-	public void onError(ITn3812Context config, ByteBuffer data) {
-				
-	}
+    @Override
+    public void onFirstChain(final ByteBuffer data) {
+        final IProcessorListener pdfListener = ProcessorListenerFactory.initListener(ListenerType.PDF);
+        scsProcessor.start(pdfListener);
+        scsProcessor.process(data);
+    }
 
-	@Override
-	public void onRemoved() {
-		scsProcessor = null;
-		config = null;
-	}	
+    @Override
+    public void onChain(final ByteBuffer data) {
+        scsProcessor.process(data);
+    }
+
+    @Override
+    public void onLastChain(final ByteBuffer data) {
+        scsProcessor.process(data);
+        scsProcessor.finish();
+    }
+
+    @Override
+    public void onClosed() {
+
+    }
+
+    @Override
+    public void onError(final ITn3812Context config, final ByteBuffer data) {
+
+    }
+
+    @Override
+    public void onRemoved() {
+    }
 
 }

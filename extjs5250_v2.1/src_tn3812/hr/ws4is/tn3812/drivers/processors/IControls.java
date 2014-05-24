@@ -14,53 +14,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.processors;
 
 import hr.ws4is.tn3812.drivers.processors.scs.SCSPageOrientation;
 
 /**
- * Interface used inside data parsing listeners to get 
- * current print data parsing statuses like positioning instructions,
- * page setup instructions and font styling instructions 
+ * Interface used inside data parsing listeners to get current print data
+ * parsing statuses like positioning instructions, page setup instructions and
+ * font styling instructions
  */
 public interface IControls {
-	
-	public abstract void reset();
 
-	public abstract SCSPageOrientation getPageOrientation();
+    void reset();
 
-	public abstract float getFontSize();
+    SCSPageOrientation getPageOrientation();
 
-	public abstract short getLinesPerPage();
-	
-	public abstract int getLineSize();
+    float getFontSize();
 
-	public abstract short getCharactersPerLine();
+    short getLinesPerPage();
 
-	public abstract float getMarginLeftInInches();
+    int getLineSize();
 
-	public abstract float getMarginLeftInCentimeters();
+    short getCharactersPerLine();
 
-	public abstract float getMarginRightInInches();
+    float getMarginLeftInInches();
 
-	public abstract float getMarginRightInCentimeters();
+    float getMarginLeftInCentimeters();
 
-	public abstract float getMarginTopInInches();
+    float getMarginRightInInches();
 
-	public abstract float getMarginTopInCentimeters();
+    float getMarginRightInCentimeters();
 
-	public abstract float getMarginBottomInInches();
+    float getMarginTopInInches();
 
-	public abstract float getMarginBottomInCentimeters();
+    float getMarginTopInCentimeters();
 
-	public abstract float getPageWidthInIches();
+    float getMarginBottomInInches();
 
-	public abstract float getPageWidthInCentimeters();
+    float getMarginBottomInCentimeters();
 
-	public abstract float getPageHeightInIches();
+    float getPageWidthInIches();
 
-	public abstract float getPagHeightidthInCentimeters();
+    float getPageWidthInCentimeters();
+
+    float getPageHeightInIches();
+
+    float getPagHeightidthInCentimeters();
 
 }

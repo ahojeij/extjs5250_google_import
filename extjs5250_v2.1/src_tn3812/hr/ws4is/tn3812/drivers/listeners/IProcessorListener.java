@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.listeners;
 
@@ -24,20 +24,27 @@ import hr.ws4is.tn3812.interfaces.ITn3812Context;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Data processor event listener interface
+ */
 public interface IProcessorListener {
-	
-	public void onFormFeed();
-	public void onLineFeed();
-	
-	public void onHorizontalMove();
-	public void onVerticalMove();
-	public void onNewLine();
-	
-	public void onFontStyleChange(SCSStyleType type);
 
-	public void onStart(IControls controls);
-	public void onFinish(ITn3812Context context);
-	
-	public void onData(ByteBuffer buffer);
-	
+    void onFormFeed();
+
+    void onLineFeed();
+
+    void onHorizontalMove();
+
+    void onVerticalMove();
+
+    void onNewLine();
+
+    void onFontStyleChange(SCSStyleType type);
+
+    void onStart(IControls controls);
+
+    void onFinish(ITn3812Context context);
+
+    void onData(ByteBuffer buffer);
+
 }

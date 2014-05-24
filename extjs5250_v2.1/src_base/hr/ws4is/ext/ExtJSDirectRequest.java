@@ -14,83 +14,83 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext;
 
 import java.util.List;
 
+/**
+ * Class representing ExtJS Direct request.
+ * It is used for decoding received JSON data from ExtJS into Java class instance
+ * @param <T>
+ */
 public class ExtJSDirectRequest<T> {
-	
-	//{"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
-	
-	public String action;
-	public String method;
-	public String namespace;
-	public String type;
-	public String tid;
-	public List<T> data;
-	
-	public String getNamespace() {
-		return namespace;
-	}
-	
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-	
-	public String getAction() {
-		return action;
-	}
-	
-	public void setAction(String action) {
-		this.action = action;
-	}
-	
-	public String getMethod() {
-		return method;
-	}
-	
-	public void setMethod(String method) {
-		this.method = method;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	public String getTid() {
-		return tid;
-	}
-	
-	public void setTid(String tid) {
-		this.tid = tid;
-	}
-	
-	public List<T> getData() {
-		return data;
-	}
-	
-	public void setData(List<T> data) {
-		this.data = data;
-	}
-	
-	
-	public T getDataByIndex(int i) {
-		
-		if(data==null) {
-			return null;
-		}
-		
-		if(data.isEmpty()) {
-			return null;
-		}
-		
-		return data.get(i);
-	}
+
+    // {"action":"DemoForm","method":"submit","data":[{"id":"0","username":"asfsa","password":"asdfv","email":"sadfv","rank":"345"}],"type":"rpc","tid":1}
+
+    private String action;
+    private String method;
+    private String namespace;
+    private String type;
+    private String tid;
+    private List<T> data;
+
+    public final String getNamespace() {
+        return namespace;
+    }
+
+    public final void setNamespace(final String namespace) {
+        this.namespace = namespace;
+    }
+
+    public final String getAction() {
+        return action;
+    }
+
+    public final void setAction(final String action) {
+        this.action = action;
+    }
+
+    public final String getMethod() {
+        return method;
+    }
+
+    public final void setMethod(final String method) {
+        this.method = method;
+    }
+
+    public final String getType() {
+        return type;
+    }
+
+    public final void setType(final String type) {
+        this.type = type;
+    }
+
+    public final String getTid() {
+        return tid;
+    }
+
+    public final void setTid(final String tid) {
+        this.tid = tid;
+    }
+
+    public final List<T> getData() {
+        return data;
+    }
+
+    public final void setData(final List<T> data) {
+        this.data = data;
+    }
+
+    public final T getDataByIndex(final int index) {
+
+        T value = null;
+        if (data != null && !data.isEmpty()) {
+            value = data.get(index);
+        }
+        return value;
+    }
 
 }

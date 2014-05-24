@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.data;
 
@@ -23,7 +23,7 @@ import java.net.InetSocketAddress;
 import javax.enterprise.inject.Vetoed;
 
 /**
- * Used by Property loader to prepare list of all available host configurations
+ * Used by Property loader to prepare list of all available host configurations.
  */
 @Vetoed
 public final class TnHost {
@@ -34,41 +34,43 @@ public final class TnHost {
 	private boolean screen132 = true;
 	private String codePage = "Cp870";
 
-	public InetSocketAddress getLocation(){
-		InetSocketAddress ia = new InetSocketAddress(ipAddress, port);
-		if(ia.isUnresolved()) return null;
-		return ia;
+	public InetSocketAddress getLocation() {
+		InetSocketAddress inetAddress = new InetSocketAddress(ipAddress, port);
+		if (inetAddress.isUnresolved()) {
+			inetAddress = null;
+		}
+		return inetAddress;
 	}
 
-	public boolean isValid(){
-		return (name!=null) && getLocation()!=null;
+	public boolean isValid() {
+		return (name != null) && (getLocation() != null);
 	}
 
 	public String getIpAddress() {
 		return ipAddress;
 	}
-	
-	public void setIpAddress(String ipAddress) {
+
+	public void setIpAddress(final String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
 	public int getPortNumber() {
 		return port;
 	}
-	
+
 	public String getPort() {
 		return Integer.toString(port);
 	}
-	
-	public void setPort(String port) {
+
+	public void setPort(final String port) {
 		this.port = Integer.parseInt(port);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
-	public void setName(String name) {
+
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -76,17 +78,17 @@ public final class TnHost {
 		return screen132;
 	}
 
-	public void setScreen132(String screen) {
-		
-		if(screen==null){
+	public void setScreen132(final String screen) {
+
+		if (screen == null) {
 			return;
 		}
-		
-		if("true".equals(screen.toLowerCase())){
+
+		if (Boolean.TRUE.toString().equals(screen.toLowerCase())) {
 			this.screen132 = true;
 		}
 
-		if("false".equals(screen.toLowerCase())){
+		if (Boolean.FALSE.toString().equals(screen.toLowerCase())) {
 			this.screen132 = false;
 		}
 
@@ -96,12 +98,11 @@ public final class TnHost {
 		return codePage;
 	}
 
-	public void setCodePage(String codePage) {
-		if(codePage==null){
+	public void setCodePage(final String codePage) {
+		if (codePage == null) {
 			return;
 		}
 		this.codePage = codePage;
 	}
-	
-		
+
 }

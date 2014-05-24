@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.web.controllers;
 
@@ -30,46 +30,48 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Hosts controller that will be invoked from browser.
- * Used for managing hosts configurations  
+ * Hosts controller that will be invoked from browser. Used for managing hosts
+ * configurations.
  */
-@ExtJSDirect(paths={"socket"})
-@ExtJSAction(namespace = "hr.ws4is", action="HostsController")
+@ExtJSDirect(paths = { "socket" })
+@ExtJSAction(namespace = "hr.ws4is", action = "HostsController")
 public class TnHostsController {
 
-	@Inject 
-	WebSocketSession session;		
-	
-	/*
-	 * Reload AS/400 server configurations
-	 */
-	@ExtJSMethod("reloadDefinitions")
-	public ExtJSResponse reload5250Definitions() {		
-		ExtJSResponse response = null;
-		try{
-			TnWebHelper.reloadConfiguration(session);
-			response = new ExtJSResponse(true,null);	
-		}catch(Exception e){
-			response = new ExtJSResponse(e,e.getMessage());
-		}	
+    @Inject
+    private WebSocketSession session;
+
+    /*
+     * Reload AS/400 server configurations
+     */
+    @ExtJSMethod("reloadDefinitions")
+    public final ExtJSResponse reload5250Definitions() {
+
+        final ExtJSResponse response = new ExtJSResponse();
+        try {
+            TnWebHelper.reloadConfiguration(session);
+            response.setSuccess(true);
+        } catch (Exception exception) {
+            response.setError(exception, exception.getMessage());
+        }
         return response;
-	}
-	
-	/*
-	 * List all available AS/400 servers for connections
-	 */
-	@ExtJSMethod("listDefinitions")
-	public ExtJSResponseList<String> list5250Definitions() {
-		ExtJSResponseList<String> response = null;
-		try{
-			Map<String,TnHost> hosts = TnWebHelper.getTnHosts(session);			
-			response = new ExtJSResponseList<>(true,null);			
-			response.setData(hosts.keySet());
-		} catch (Exception e){
-			response = new ExtJSResponseList<String>(e,e.getMessage());
-		}
+    }
+
+    /*
+     * List all available AS/400 servers for connections
+     */
+    @ExtJSMethod("listDefinitions")
+    public final ExtJSResponseList<String> list5250Definitions() {
+
+        final ExtJSResponseList<String> response = new ExtJSResponseList<>();
+        try {
+            final Map<String, TnHost> hosts = TnWebHelper.getTnHosts(session);
+            response.setSuccess(true);
+            response.setData(hosts.keySet());
+        } catch (Exception exception) {
+            response.setError(exception, exception.getMessage());
+        }
 
         return response;
-	}	
-	
+    }
+
 }

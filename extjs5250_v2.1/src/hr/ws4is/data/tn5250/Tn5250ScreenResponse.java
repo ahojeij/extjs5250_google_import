@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.data.tn5250;
 
@@ -23,97 +23,95 @@ import java.util.List;
 import hr.ws4is.ext.ExtJSResponse;
 
 /**
- * Response structure with screen information
+ * Response structure with screen information.
  */
 public class Tn5250ScreenResponse extends ExtJSResponse {
 
-	private static final long serialVersionUID = 1L;
-	
-	public String devName;
-	public String displayID;	
-	public boolean locked;		    //sends lock screen request
-	public boolean clearScr = true; //sends clear screen request
-	public int size = 80;		    //sends screen size 80/132
-	public boolean msgw; 	        //sends message wait signal
-	public String conerr; 	        //host error code
-	
-	public List<Tn5250ScreenElement> data;
-	
-	public Tn5250ScreenResponse() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	public Tn5250ScreenResponse(boolean success, String message) {
-		super(success, message);
-	}
+    public String devName;
+    public String displayID;
+    public boolean locked;          // sends lock screen request
+    public boolean clearScr = true; // sends clear screen request
+    public int size = 80;           // sends screen size 80/132
+    public boolean msgw;            // sends message wait signal
+    public String conerr;           // host error code
 
-	public Tn5250ScreenResponse(Throwable exception, String message) {
-		super(exception, message);
-	}
-	
+    public List<Tn5250ScreenElement> data;
 
-	public String getDevName() {
-		return devName;
-	}
+    public Tn5250ScreenResponse() {
+        super();
+    }
 
-	public void setDevName(String devName) {
-		this.devName = devName;
-	}
+    public Tn5250ScreenResponse(final boolean success, final String message) {
+        super(success, message);
+    }
 
-	public boolean isLocked() {
-		return locked;
-	}
+    public Tn5250ScreenResponse(final Throwable exception, final String message) {
+        super(exception, message);
+    }
 
-	public void setLocked(boolean locked) {
-		this.locked = locked;
-	}
+    public final String getDevName() {
+        return devName;
+    }
 
-	public boolean isClearScr() {
-		return clearScr;
-	}
+    public final void setDevName(final String devName) {
+        this.devName = devName;
+    }
 
-	public void setClearScr(boolean clearScr) {
-		this.clearScr = clearScr;
-	}
+    public final boolean isLocked() {
+        return locked;
+    }
 
-	public int getSize() {
-		return size;
-	}
+    public final void setLocked(final boolean locked) {
+        this.locked = locked;
+    }
 
-	public void setSize(int size) {
-		this.size = size;
-	}
+    public final boolean isClearScr() {
+        return clearScr;
+    }
 
-	public boolean isMsgw() {
-		return msgw;
-	}
+    public final void setClearScr(final boolean clearScr) {
+        this.clearScr = clearScr;
+    }
 
-	public void setMsgw(boolean msgw) {
-		this.msgw = msgw;
-	}
+    public final int getSize() {
+        return size;
+    }
 
-	public String getConerr() {
-		return conerr;
-	}
+    public final void setSize(final int size) {
+        this.size = size;
+    }
 
-	public void setConerr(String conerr) {
-		this.conerr = conerr;
-	}
+    public final boolean isMsgw() {
+        return msgw;
+    }
 
-	public List<Tn5250ScreenElement> getData() {
-		return data;
-	}
+    public final void setMsgw(final boolean msgw) {
+        this.msgw = msgw;
+    }
 
-	public void setData(List<Tn5250ScreenElement> data) {
-		this.data = data;
-	}
+    public final String getConerr() {
+        return conerr;
+    }
 
-	public String getDisplayID() {
-		return displayID;
-	}
+    public final void setConerr(final String conerr) {
+        this.conerr = conerr;
+    }
 
-	public void setDisplayID(String displayID) {
-		this.displayID = displayID;
-	}
+    public final List<Tn5250ScreenElement> getData() {
+        return data;
+    }
 
+    public final void setData(final List<Tn5250ScreenElement> data) {
+        this.data = data;
+    }
+
+    public final String getDisplayID() {
+        return displayID;
+    }
+
+    public final void setDisplayID(final String displayID) {
+        this.displayID = displayID;
+    }
 }

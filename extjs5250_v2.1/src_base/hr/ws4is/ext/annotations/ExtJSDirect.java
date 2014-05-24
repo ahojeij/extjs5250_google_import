@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext.annotations;
 
@@ -27,17 +27,21 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
-/*
- * for descriptor service; 
- * use path to map to specific url services
- * if * then all ; 
- * if not set then ignored and not generally available
- * if set ,must match corresponding UriInfo
+/**
+ * Used to link rest / websocket service to Controller
+ * Also used by descriptor service to ba able to generate ExtJS dynamic code.
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({TYPE})
+@Target({ TYPE })
 public @interface ExtJSDirect {
-  @Nonbinding
-  String[] paths();
+
+    /**
+     * if * then all matched;
+     * if not set then ignored and not generally available
+     * if set, must match corresponding UriInfo from rest service
+     * @return
+     */
+    @Nonbinding
+    String[] paths();
 }

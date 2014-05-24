@@ -14,36 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.websocket.data;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
 /**
  * WebSocket return structure {type:'ws' , cmd : * , data : *}
  */
 public enum WebSocketInstruction {
-	WELCO("welco"), BYE("bye"), ERR("err"), DATA("data"), ECHO("echo");
+
+    WELCO("welco"), BYE("bye"), ERR("err"), DATA("data"), ECHO("echo");
 
     private final String text;
 
     private WebSocketInstruction(final String text) {
         this.text = text;
     }
-    
+
     @JsonValue
     public String getText() {
-		return text;
-	}
+        return text;
+    }
 
-	/* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Enum#toString()
      */
     @Override
     public String toString() {
         return text;
-    }	
-    
+    }
+
 }

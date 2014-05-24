@@ -14,14 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
- package hr.ws4is.tn5250;
+package hr.ws4is.tn5250;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.inject.Vetoed;
+import javax.servlet.http.HttpSession;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
@@ -36,54 +37,54 @@ import hr.ws4is.websocket.WebSocketSession;
  */
 @Vetoed
 public enum Tn5250SessionFactory {
-	;
-	
-	public final static ITn5250Session create(WebSocketSession wsSession, TnHost host, String displayId){
-		String displayName = "DSP_" + getDisplayName(wsSession);
-		String hostName = host.getName();		
-		Session5250 session = createSession(wsSession,host,displayName, displayId);		
-		ITn5250Session hostSession = new Tn5250Session(displayId, displayName, hostName, session);
-		return hostSession;
-	}
+    ;
 
-	private static final String getDisplayName(WebSocketSession wsSession){
-		AtomicInteger counter = (AtomicInteger) wsSession.getHttpSession().getAttribute(TnConstants.SESSION_COUNTER);
-		return Integer.toString(counter.incrementAndGet());
-	}
-	
-	private static final Session5250 createSession(WebSocketSession wsSession, TnHost host, String displayName, String displayId) {
-		Session5250 hostSession = null;
-		
-	    Properties sesProps = new Properties();
-	    
-	    sesProps.put(TN5250jConstants.SESSION_HOST,host.getIpAddress());
-	    sesProps.put(TN5250jConstants.SESSION_HOST_PORT,host.getPort());
+    public static final ITn5250Session create(final WebSocketSession wsSession, final TnHost host, final String displayId) {
+        final String displayName = "DSP_" + getDisplayName(wsSession);
+        final String hostName = host.getName();
+        final Session5250 session = createSession(wsSession, host, displayName, displayId);
+        return new Tn5250Session(displayId, displayName, hostName, session);
+    }
 
-	    //sesProps.put(TN5250jConstants.SESSION_CODE_PAGE ,"");
+    private static String getDisplayName(final WebSocketSession wsSession) {
+        final HttpSession session = wsSession.getHttpSession();
+        final AtomicInteger counter = (AtomicInteger) session.getAttribute(TnConstants.SESSION_COUNTER);
+        return Integer.toString(counter.incrementAndGet());
+    }
 
-	    sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED,"1");
-	    sesProps.put(TN5250jConstants.SESSION_USE_GUI,"1");
-	    sesProps.put(TN5250jConstants.SESSION_TERM_NAME_SYSTEM, "1");
-	    sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED,"1");
+    private static Session5250 createSession(final WebSocketSession wsSession, final TnHost host, final String displayName, final String displayId) {
 
-	    if(host.isScreen132()){
-        	sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_27X132_STR);
-	    }else{
-        	sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_24X80_STR);
-	    }
+        final Properties sesProps = new Properties();
 
-            /*
-            if (display.displayName!=null){
-            	sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME ,display.displayName.toUpperCase());
-            }
-            */
+        sesProps.put(TN5250jConstants.SESSION_HOST, host.getIpAddress());
+        sesProps.put(TN5250jConstants.SESSION_HOST_PORT, host.getPort());
 
-	    SessionManager manager = SessionManager.instance();
-	    hostSession = manager.openSession(sesProps,"",displayName);
-	    Tn5250SessionListener listener = new Tn5250SessionListener(wsSession, displayId);
-	    hostSession.addSessionListener(listener);
-	    hostSession.connect(); 
+        // sesProps.put(TN5250jConstants.SESSION_CODE_PAGE ,"");
+
+        sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
+        sesProps.put(TN5250jConstants.SESSION_USE_GUI, "1");
+        sesProps.put(TN5250jConstants.SESSION_TERM_NAME_SYSTEM, "1");
+        sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
+
+        if (host.isScreen132()) {
+            sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_27X132_STR);
+        } else {
+            sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_24X80_STR);
+        }
+
+        /*
+         * if (display.displayName!=null){
+         * sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME
+         * ,display.displayName.toUpperCase()); }
+         */
+
+        final Tn5250SessionListener listener = new Tn5250SessionListener(wsSession, displayId);
+        final SessionManager manager = SessionManager.instance();
+        final Session5250 hostSession = manager.openSession(sesProps, "", displayName);
+        hostSession.addSessionListener(listener);
+        hostSession.connect();
+
         return hostSession;
-	}
-	
+    }
+
 }

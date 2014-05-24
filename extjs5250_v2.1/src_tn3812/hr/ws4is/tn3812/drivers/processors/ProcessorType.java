@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.processors;
 
 /**
- * Definition of existing data stream processors
- * Used inside factory to create processor instance
+ * Definition of existing data stream processors Used inside factory to create
+ * processor instance
  */
 public enum ProcessorType {
-  SCS, SCS_LOGGER
+    SCS, SCS_LOGGER
 }

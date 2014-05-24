@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.web;
 
@@ -25,11 +25,10 @@ import hr.ws4is.websocket.WebsocketEncoder;
 
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/socket",
-   configurator=WebSocketConfigurator.class, 
-   decoders={WebsocketDecoder.class}, 
-   encoders={WebsocketEncoder.class},
-   subprotocols={"ws4is"})
+@ServerEndpoint(value = "/socket", configurator = WebSocketConfigurator.class,
+               decoders = { WebsocketDecoder.class }, 
+               encoders = { WebsocketEncoder.class }, 
+               subprotocols = { "ws4is" })
 public class TnWebSocketService extends WebSocketService {
-  // this is main initialization websocket service 
+    // this is main initialization websocket service
 }

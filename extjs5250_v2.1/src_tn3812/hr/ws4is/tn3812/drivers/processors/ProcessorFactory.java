@@ -14,28 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.processors;
 
 import hr.ws4is.tn3812.drivers.processors.scs.SCSFactory;
 
 /**
- *Factory to create data steam processor  
+ * Factory to create data steam processor
  */
 public enum ProcessorFactory {
-	;
+    ;
 
-   final static public IProcessor initProcessor(ProcessorType type){
-	   IProcessor processor = null;
-	   switch (type){
-	   	case  SCS :  
-	   		processor = SCSFactory.get(type);
-	   		break;
-	   	default:
-	   		break;
-	   }
-	   return processor;
-   }
-      
+    public static final IProcessor initProcessor(final ProcessorType type) {
+        
+        IProcessor processor = null;
+        if (type == ProcessorType.SCS) {
+            processor = SCSFactory.get(type);
+        }
+        return processor;
+    }
+
 }

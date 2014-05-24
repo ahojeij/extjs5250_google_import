@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.web;
 
@@ -45,117 +45,125 @@ import javax.servlet.http.HttpSessionListener;
 import org.tn5250j.tools.LangTool;
 
 /**
- * HttpSession and Servlet context listener to handle tn5250 sessions on httpsession close  
+ * HttpSession and Servlet context listener to handle tn5250 sessions on
+ * httpsession close.
  *
  */
 @WebListener
 public final class TnWebListener implements HttpSessionListener, ServletContextListener {
-	
-	private ServletContext servletContext; 
-	
-	@SuppressWarnings("unchecked")
-	@Produces
-	Map<String,TnHost> getTnHostList(){
-		return (Map<String, TnHost>) servletContext.getAttribute(TnHost.class.getCanonicalName());
-	}
-		
 
-	/*
-	 *  closes on websocket disconnect ?? 
-	 *  Maybe not... close only if http sessions are closed?!
-	 *  because multiple browser windows might be opened
-	 *  maybe to identify 5250 sessions opened websocket id ?  
-	protected void onWSClose(@Observes WebsocketEvent wsEvent){		
-		closeTnSession(wsEvent.getWebSocketSession().getHttpSession());
-	}
-	*/
+    private ServletContext servletContext;
 
-	/*
-	 *  reasign websocket session to active tn sessions;
-	 *  this is in a case when browser is relaoded
-	 */
-	@SuppressWarnings("unchecked")
-	protected void onWSClose(@Observes WebsocketEvent wsEvent){		
-	  if(wsEvent.getEventStatus() == WebSocketEventStatus.START){
-		  WebSocketSession wsSession = wsEvent.getWebSocketSession();
-		  Map<String, ITn5250Session> tnSessions = (Map<String, ITn5250Session>) wsSession.getHttpSession().getAttribute(ITn5250Session.class.getCanonicalName());
-		  Collection<ITn5250Session> sessions =  tnSessions.values();
-		  for(ITn5250Session session : sessions){
-			  if(session.isConnected()){
-				  session.updateWebSocketSession(wsSession);
-			  }
-		  }
-	  }
-	}
-	
-	private void closeTn5250Session(HttpSession webSession){
-		System.out.println("Closing Tn5250 sessions for Web session :" + webSession.getId());
-		
-		@SuppressWarnings("unchecked")
-		Map<String,ITn5250Session> tnSessions = (Map<String, ITn5250Session>) webSession.getAttribute(ITn5250Session.class.getCanonicalName());
-		Collection<ITn5250Session> sessions =  tnSessions.values();
-		for(ITn5250Session session : sessions){
-			if(session.isConnected()){
-				System.out.println("   Closing Tn5250 session :" + session.getDisplayId());
-				session.disconnect();
-			}
-		}
-		tnSessions.clear();
-		webSession.removeAttribute(ITn5250Session.class.getCanonicalName());
-	}
-	
-	private void closeTn3812Session(HttpSession webSession){
-		System.out.println("Closing Tn3812 sessions for Web session :" + webSession.getId());
-		
-		@SuppressWarnings("unchecked")
-		Map<String,ITn3812Context> tnSessions = (Map<String, ITn3812Context>) webSession.getAttribute(ITn3812Context.class.getCanonicalName());
-		Collection<ITn3812Context> sessions =  tnSessions.values();
-		for(ITn3812Context session : sessions){
-			if(session.isConnected()){
-				System.out.println("   Closing Tn3812 session :" + session.getconfiguration().getDevName());
-				session.disconnect();
-			}
-		}
-		tnSessions.clear();
-		webSession.removeAttribute(ITn5250Session.class.getCanonicalName());
-	}
+    @SuppressWarnings("unchecked")
+    @Produces
+    Map<String, TnHost> getTnHostList() {
+        return (Map<String, TnHost>) servletContext.getAttribute(TnHost.class.getCanonicalName());
+    }
 
-	
-	@Override
-	public void sessionCreated(HttpSessionEvent arg0) {
-		HttpSession webSession = arg0.getSession();
-		webSession.setAttribute(ITn5250Session.class.getCanonicalName(), new HashMap<String,ITn5250Session>());
-		webSession.setAttribute(ITn3812Context.class.getCanonicalName(), new HashMap<String,ITn3812Context>());
-		webSession.setAttribute(TnConstants.SESSION_COUNTER, new AtomicInteger());
-	}
+    /*
+     * Closes on websocket disconnect ?? Maybe not... close only if http
+     * sessions are closed?! because multiple browser windows might be opened
+     * maybe to identify 5250 sessions opened websocket id ? protected void
+     * onWSClose(@Observes WebsocketEvent wsEvent){
+     * closeTnSession(wsEvent.getWebSocketSession().getHttpSession()); }
+     */
 
-	/*
-	 * Clean all 5250 sessions for current session
-	 */
-	@Override
-	public void sessionDestroyed(HttpSessionEvent arg0) {		
-		HttpSession webSession = arg0.getSession();
-		webSession.removeAttribute(TnConstants.SESSION_COUNTER);
-		closeTn5250Session(webSession);
-		closeTn3812Session(webSession);
-	}
+    /*
+     * reasign websocket session to active tn sessions; this is in a case when
+     * browser is relaoded
+     */
+    @SuppressWarnings("unchecked")
+    protected void onWSClose(@Observes final WebsocketEvent wsEvent) {
+        
+        if (wsEvent.getEventStatus() == WebSocketEventStatus.START) {
+            final WebSocketSession wsSession = wsEvent.getWebSocketSession();
+            final HttpSession httpSession = wsSession.getHttpSession();
+            final Map<String, ITn5250Session> tnSessions = (Map<String, ITn5250Session>) httpSession.getAttribute(ITn5250Session.class.getCanonicalName());
+            final Collection<ITn5250Session> sessions = tnSessions.values();
+            
+            for (final ITn5250Session session : sessions) {
+                if (session.isConnected()) {
+                    session.updateWebSocketSession(wsSession);
+                }
+            }
+            
+        }
+        
+    }
 
-	/*
-	 * remove 5250 server configurations from memory 
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent arg0) {
-		arg0.getServletContext().removeAttribute(TnHost.class.getCanonicalName());
-	}
+    private void closeTn5250Session(final HttpSession webSession) {
+        System.out.println("Closing Tn5250 sessions for Web session :" + webSession.getId());
 
-	/*
-	 * Load 5250 server configurations 
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent arg0) {
-		LangTool.init();
-		Map<String,TnHost> hosts = TnConfigLoader.reload();
-		arg0.getServletContext().setAttribute(TnHost.class.getCanonicalName(), hosts);
-	}
+        @SuppressWarnings("unchecked")
+        final Map<String, ITn5250Session> tnSessions = (Map<String, ITn5250Session>) webSession.getAttribute(ITn5250Session.class.getCanonicalName());
+        final Collection<ITn5250Session> sessions = tnSessions.values();
+        
+        for (final ITn5250Session session : sessions) {
+            if (session.isConnected()) {
+                System.out.println("   Closing Tn5250 session :" + session.getDisplayId());
+                session.disconnect();
+            }
+        }
+        
+        tnSessions.clear();
+        webSession.removeAttribute(ITn5250Session.class.getCanonicalName());
+    }
+
+    private void closeTn3812Session(final HttpSession webSession) {
+        System.out.println("Closing Tn3812 sessions for Web session :" + webSession.getId());
+
+        @SuppressWarnings("unchecked")
+        final Map<String, ITn3812Context> tnSessions = (Map<String, ITn3812Context>) webSession.getAttribute(ITn3812Context.class.getCanonicalName());
+        final Collection<ITn3812Context> sessions = tnSessions.values();
+        
+        for (final ITn3812Context session : sessions) {
+            if (session.isConnected()) {
+                System.out.println("   Closing Tn3812 session :" + session.getconfiguration().getDevName());
+                session.disconnect();
+            }
+        }
+        
+        tnSessions.clear();
+        webSession.removeAttribute(ITn5250Session.class.getCanonicalName());
+    }
+
+    @Override
+    public void sessionCreated(final HttpSessionEvent arg0) {
+        final HttpSession webSession = arg0.getSession();
+        webSession.setAttribute(ITn5250Session.class.getCanonicalName(), new HashMap<String, ITn5250Session>());
+        webSession.setAttribute(ITn3812Context.class.getCanonicalName(), new HashMap<String, ITn3812Context>());
+        webSession.setAttribute(TnConstants.SESSION_COUNTER, new AtomicInteger());
+    }
+
+    /*
+     * Clean all 5250 sessions for current session
+     */
+    @Override
+    public void sessionDestroyed(final HttpSessionEvent arg0) {
+        final HttpSession webSession = arg0.getSession();
+        webSession.removeAttribute(TnConstants.SESSION_COUNTER);
+        closeTn5250Session(webSession);
+        closeTn3812Session(webSession);
+    }
+
+    /*
+     * remove 5250 server configurations from memory
+     */
+    @Override
+    public void contextDestroyed(final ServletContextEvent arg0) {
+        final ServletContext servletContext = arg0.getServletContext();
+        servletContext.removeAttribute(TnHost.class.getCanonicalName());
+    }
+
+    /*
+     * Load 5250 server configurations
+     */
+    @Override
+    public void contextInitialized(final ServletContextEvent arg0) {
+        LangTool.init();
+        final Map<String, TnHost> hosts = TnConfigLoader.reload();
+        final ServletContext servletContext = arg0.getServletContext();
+        servletContext.setAttribute(TnHost.class.getCanonicalName(), hosts);
+    }
 
 }

@@ -14,30 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers.listeners;
 
-import hr.ws4is.tn3812.drivers.listeners.IProcessorListener;
-import hr.ws4is.tn3812.drivers.listeners.ListenerType;
-
+/**
+ * Printer driver listener factory
+ *
+ */
 public enum ProcessorListenerFactory {
-	;
+    ;
 
-   
-   final static public IProcessorListener initListener(ListenerType type){
-	   IProcessorListener processor = null;
-	   switch (type){
-	   	 case  PDF :  
-		   	processor = new PdfListener();
-		   	break;
-	   	 case  ASCII :  
-		   	processor = new AsciiListener();
-		   	break;		   	
-		 default : 
-			 break;
-	   }
-	   return processor;
-   }
-   
+    public static final IProcessorListener initListener(final ListenerType type) {
+        IProcessorListener processor = null;
+        switch (type) {
+        case PDF:
+            processor = new PdfListener();
+            break;
+        case ASCII:
+            processor = new AsciiListener();
+            break;
+        default:
+            break;
+        }
+        return processor;
+    }
+
 }

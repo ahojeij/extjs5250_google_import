@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext.annotations;
 
@@ -26,11 +26,19 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+/**
+ * Used to define ExtJS.Direct controller and it's namespace.
+ * Each controller to be accessible from ExtJS.Direct must have this qualifier.
+ * Engine uses this to match incoming request on rest service to defined actions.
+ * Used mostly for security control.
+ *
+ */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({TYPE})
+@Target({ TYPE })
 public @interface ExtJSAction {
 
-	String namespace();
-	String action();
+    String namespace();
+
+    String action();
 }

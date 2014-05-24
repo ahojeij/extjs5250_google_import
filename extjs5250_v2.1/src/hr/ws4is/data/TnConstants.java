@@ -19,24 +19,24 @@
 package hr.ws4is.data;
 
 /**
- * constants used by tn5250 websocket service
+ * Constants used by tn5250 websocket service.
  */
 public enum TnConstants {
-	;
-
-	public final static String HOST_5250_CONFIG = TnConstants.class.getCanonicalName() + "_HOST_5250_CONFIG";
-	
-	public final static String DISPLAY_ID =  "Display name not set";
-	public final static String NOT_CONNECTED =  "Session not connected";
-	public final static String UNABLE_TO_CONNECT =  "Unable to connect";
-	public final static String NO_DATA =  "Screen data not received";
-	public final static String INVALID_DISPLAY =  "Invalid display name";
-	public final static String NO_HOST_CONFIG =  "Hosts configurations is missing";
-	public final static String HOST_NOT_FOUND =  "Host not found";
-	public final static String SESSION_NOT_FOUND =  "Session not found";
-	public final static String REQUEST_ERROR =  "Request error";
-	
-	public final static String SESSION_STORE = "tn5250";
-	public final static String CURRENT_SESSION = "tn5250_display";
-	public final static String SESSION_COUNTER = "tn5250_counter";
+    ;
+    
+    public static final String HOST_5250_CONFIG = TnConstants.class.getCanonicalName() + "_HOST_5250_CONFIG";
+    
+    public static final String DISPLAY_ID        =  "Display name not set";
+    public static final String NOT_CONNECTED     =  "Session not connected";
+    public static final String UNABLE_TO_CONNECT =  "Unable to connect";
+    public static final String NO_DATA           =  "Screen data not received";
+    public static final String INVALID_DISPLAY   =  "Invalid display name";
+    public static final String NO_HOST_CONFIG    =  "Hosts configurations is missing";
+    public static final String HOST_NOT_FOUND    =  "Host not found";
+    public static final String SESSION_NOT_FOUND =  "Session not found";
+    public static final String REQUEST_ERROR     =  "Request error";
+    public static final String SESSION_STORE     = "tn5250";
+    public static final String CURRENT_SESSION   = "tn5250_display";
+    public static final String SESSION_COUNTER   = "tn5250_counter";
+    
 }

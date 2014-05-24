@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.drivers;
 
@@ -24,31 +24,35 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Tn3812 printer session factory class.
- * Creates 5250 printer session ready to connect to the server
+ * Tn3812 printer session factory class. Creates 5250 printer session ready to
+ * connect to the server
  */
 public enum Tn3812DriverFactory {
-	ASCII, PDF, RAW, SEGMENT
-	;
-         
-    public static final ITn3812DataListener create(Tn3812DriverFactory type) throws InterruptedException, ExecutionException, IOException {
-    	ITn3812DataListener driver = null;
-    	switch(type){
-    	case ASCII :
-    		driver = new ASCIIPrintWriter();
-    		break;
-    	case PDF :
-    		driver = new PdfFileWriter();
-    		break;
-    	case RAW : 
-    		driver = new RawFileWriter();
-    		break;    		
-    	case SEGMENT :
-    		driver = new RawSegmentFileWriter();
-    		break;        	
-    	}
-    	return driver;
-		
-    }
     
+    ASCII, PDF, RAW, SEGMENT
+    ;
+
+    public static final ITn3812DataListener create(final Tn3812DriverFactory type) throws InterruptedException, ExecutionException, IOException {
+        
+        ITn3812DataListener driver = null;
+        switch (type) {
+        case ASCII:
+            driver = new ASCIIPrintWriter();
+            break;
+        case PDF:
+            driver = new PdfFileWriter();
+            break;
+        case RAW:
+            driver = new RawFileWriter();
+            break;
+        case SEGMENT:
+            driver = new RawSegmentFileWriter();
+            break;
+        default:
+            break;
+        }
+        return driver;
+
+    }
+
 }

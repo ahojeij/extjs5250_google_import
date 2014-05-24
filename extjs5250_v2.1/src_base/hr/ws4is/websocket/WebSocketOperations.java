@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.websocket;
 
@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -47,169 +46,170 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketOperations<T> {
-	
-	final static String [] allPaths = {"*"};
-		
-	@Inject 
-	protected BeanManagerUtil beanManagerUtil;	
 
-	@PreDestroy
-	private void preDestroy() {
-		beanManagerUtil = null;
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ExtJSDirectResponse<T> process(ExtJSDirectRequest<T> request, HttpSession session, String uri) {
-		ExtJSDirectResponse<T> directResponse = null;
-		ExtJSResponse response = null;
-	
-		try {		
-			
-			Bean<?> bean = findBean(request);
-			Class<?> beanClass = bean.getBeanClass();
+    // private static final String [] ALL_PATHS = { "*" };
 
-			AnnotatedType annType = beanManagerUtil.getBeanManager().createAnnotatedType(beanClass);
-			AnnotatedMethod selectedMethod = findMethod(request, annType);
-			ExtJSDirect direct = beanClass.getAnnotation(ExtJSDirect.class);
-			
-			boolean error = checkForError(annType, selectedMethod, direct, session, uri);	
-			if(error) {
-				response = new ExtJSResponse(false,WS4ISConstants.DIRECT_SERVICE_NOT_FOUND);				
-			} else {
-				List<AnnotatedParameter<?>> paramList = selectedMethod.getParameters();
-				Object params [] = fillParams(request, paramList);			
-				response = executeBean(bean, selectedMethod, params);	
-			}
-						
-		} catch (Exception e) {
-			response = new ExtJSResponse(e, e.getMessage());	
-		} finally {
-			directResponse = new ExtJSDirectResponse<T>(request, response);		
-		}
-		
-		return directResponse;		
-	}
+    @Inject
+    private BeanManagerUtil beanManagerUtil;
 
-	/*
-	 * PRIVATE SECTION
-	 */
-	private boolean checkForError(AnnotatedType<?> annType, AnnotatedMethod<?> selectedMethod, ExtJSDirect direct, HttpSession session, String uri){
-		boolean error = false;
-		
-		//check for path			
-		if(direct==null) {
-			error = true;				
-		} else if(!checkPath(uri,direct.paths())) {
-			error = true;				
-		}  else if(!isValidHttpSession(session)) {
-			error = true;
-		} else if(selectedMethod == null) {
-			error = true;
-		}
-		return error;
-	}
-	
-	private boolean checkPath(String uri , String[] paths){
-		boolean result = false;
-		for(String path : paths) {
-			
-			if("*".equals(path)) {
-				result = true;
-				break;
-			}
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public final ExtJSDirectResponse<T> process(final ExtJSDirectRequest<T> request, final HttpSession session, final String uri) {
 
-			int idx = uri.indexOf(path);
-			if(idx==0 || idx==1){
-				result = true;
-				break;
-			}
-			
-		}		
-		return result;
-	}
-	
-	private boolean isValidHttpSession(HttpSession httpSession) {
-		if(httpSession==null) return false;
-		String attr = (String)httpSession.getAttribute(WS4ISConstants.HTTP_SEESION_STATUS);		
-		return "true".equalsIgnoreCase(attr);
-	}
-	
+        ExtJSDirectResponse<T> directResponse = null;
+        ExtJSResponse response = null;
 
-	private Bean<?> findBean(final ExtJSDirectRequest<?> request){
-		ExtJSActionLiteral literal = new ExtJSActionLiteral(request.getNamespace(), request.getAction());
-		Iterator<Bean<?>> it = beanManagerUtil.getBeanManager().getBeans(Object.class, literal).iterator();
-		return it.next();
-	}	
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private AnnotatedMethod<?> findMethod(final ExtJSDirectRequest<T> request, final AnnotatedType annType)	{
+        try {
 
-		AnnotatedMethod<?> selectedMethod = null;				
-		Set<AnnotatedMethod<?>> aMethods = annType.getMethods();
-		for(AnnotatedMethod<?> aMethod : aMethods) {
-			ExtJSMethod annMethod = aMethod.getAnnotation(ExtJSMethod.class);
-			if(annMethod==null){
-				continue;
-			};
-			
-			if(annMethod.value().equals(request.getMethod())) {
-				selectedMethod = aMethod;
-				break;
-			}
-		}
-		
-		return selectedMethod;
-	}
-	
-	private Object[] fillParams(final ExtJSDirectRequest<T> request, final List<AnnotatedParameter<?>> methodParams) throws IOException {
-		int paramSize = methodParams.size();
-		int incomingParamsSize = request.getData() == null ? 0 : request.getData().size();
-		
-		Object params [] = new Object[paramSize];
-		for(int i = 0; i < paramSize; i++) {
-			
-				if(i<incomingParamsSize) {
-					Object paramData = request.getData().get(i);
-					if(paramData instanceof JsonNode) {
-						JsonNode jnode = (JsonNode) paramData;
-						if(jnode!=null) {	
-							Class<?> jType = (Class<?>) methodParams.get(i).getBaseType();
-							ObjectMapper mapper = JsonDecoder.getJSONEngine();
-							params[i] = mapper.treeToValue(jnode, jType);
-							//params[i] = JsonDecoder.getJSONEngine().readValue(jnode, jType);							
-						}					
+            final Bean<?> bean = findBean(request);
+            final Class<?> beanClass = bean.getBeanClass();
 
-					} else {
-						params[i] = paramData;
-					}
-				}
-		}
-		
-		return params;
-	}
-	
-	private ExtJSResponse executeBean(final Bean<?> bean, final AnnotatedMethod<?> method, final Object[] params ) {
-		ExtJSResponse response = null;
-		IDestructibleBeanInstance<?> di = null;
-		
-		try{
-			di = beanManagerUtil.getDestructibleBeanInstance(bean);
-			Object beanInstance = di.getInstance();
-			
-			Method javaMethod = method.getJavaMember();				
-			if(javaMethod.isAccessible()) {
-				javaMethod.setAccessible(true);
-			}
-			
-			response = (ExtJSResponse) javaMethod.invoke(beanInstance, params);
-			
-		} catch (Exception e) {
-			response = new ExtJSResponse(e, e.getMessage());
-		} finally {
-			if(di!=null) di.destroy();
-		}
-		
-		return response;
-	}
-	
+            final AnnotatedType annType = beanManagerUtil.getBeanManager().createAnnotatedType(beanClass);
+            final AnnotatedMethod selectedMethod = findMethod(request, annType);
+            final ExtJSDirect direct = beanClass.getAnnotation(ExtJSDirect.class);
+
+            final boolean error = checkForError(annType, selectedMethod, direct, session, uri);
+            if (error) {
+                response = new ExtJSResponse(false, WS4ISConstants.DIRECT_SERVICE_NOT_FOUND);
+            } else {
+                final List<AnnotatedParameter<?>> paramList = selectedMethod.getParameters();
+                final Object[] params = fillParams(request, paramList);
+                response = executeBean(bean, selectedMethod, params);
+            }
+
+        } catch (Exception e) {
+            response = new ExtJSResponse(e, e.getMessage());
+        } finally {
+            directResponse = new ExtJSDirectResponse<T>(request, response);
+        }
+
+        return directResponse;
+    }
+
+    /*
+     * PRIVATE SECTION
+     */
+    private boolean checkForError(final AnnotatedType<?> annType, final AnnotatedMethod<?> selectedMethod, final ExtJSDirect direct, final HttpSession session, final String uri) {
+        boolean error = false;
+
+        // check for path
+        if (direct == null) {
+            error = true;
+        } else if (!checkPath(uri, direct.paths())) {
+            error = true;
+        } else if (!isValidHttpSession(session)) {
+            error = true;
+        } else if (selectedMethod == null) {
+            error = true;
+        }
+        return error;
+    }
+
+    private boolean checkPath(final String uri, final String[] paths) {
+        boolean result = false;
+
+        for (String path : paths) {
+
+            if ("*".equals(path)) {
+                result = true;
+                break;
+            }
+
+            int idx = uri.indexOf(path);
+            if ((idx == 0) || (idx == 1)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private boolean isValidHttpSession(final HttpSession httpSession) {
+
+        if (httpSession == null) {
+            return false;
+        }
+
+        final String attr = (String) httpSession.getAttribute(WS4ISConstants.HTTP_SEESION_STATUS);
+        return Boolean.TRUE.toString().equalsIgnoreCase(attr);
+    }
+
+    private Bean<?> findBean(final ExtJSDirectRequest<?> request) {
+        final ExtJSActionLiteral literal = new ExtJSActionLiteral(request.getNamespace(), request.getAction());
+        final Iterator<Bean<?>> it = beanManagerUtil.getBeanManager().getBeans(Object.class, literal).iterator();
+        return it.next();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private AnnotatedMethod<?> findMethod(final ExtJSDirectRequest<T> request, final AnnotatedType annType) {
+
+        AnnotatedMethod<?> selectedMethod = null;
+        final Set<AnnotatedMethod<?>> aMethods = annType.getMethods();
+        for (final AnnotatedMethod<?> aMethod : aMethods) {
+            final ExtJSMethod annMethod = aMethod.getAnnotation(ExtJSMethod.class);
+            if (annMethod == null) {
+                continue;
+            }
+
+            if (annMethod.value().equals(request.getMethod())) {
+                selectedMethod = aMethod;
+                break;
+            }
+        }
+
+        return selectedMethod;
+    }
+
+    private Object[] fillParams(final ExtJSDirectRequest<T> request, final List<AnnotatedParameter<?>> methodParams) throws IOException {
+        int paramSize = methodParams.size();
+        int incomingParamsSize = request.getData() == null ? 0 : request.getData().size();
+
+        final Object[] params = new Object[paramSize];
+        for (int i = 0; i < paramSize; i++) {
+
+            if (i < incomingParamsSize) {
+                final Object paramData = request.getData().get(i);
+                if (paramData instanceof JsonNode) {
+                    final JsonNode jnode = (JsonNode) paramData;
+                    if (jnode != null) {
+                        final Class<?> jType = (Class<?>) methodParams.get(i).getBaseType();
+                        final ObjectMapper mapper = JsonDecoder.getJSONEngine();
+                        params[i] = mapper.treeToValue(jnode, jType);
+                        // params[i] =
+                        // JsonDecoder.getJSONEngine().readValue(jnode, jType);
+                    }
+
+                } else {
+                    params[i] = paramData;
+                }
+            }
+        }
+
+        return params;
+    }
+
+    private ExtJSResponse executeBean(final Bean<?> bean, final AnnotatedMethod<?> method, final Object[] params) {
+        ExtJSResponse response = null;
+        IDestructibleBeanInstance<?> di = null;
+
+        try {
+            di = beanManagerUtil.getDestructibleBeanInstance(bean);
+            final Object beanInstance = di.getInstance();
+            final Method javaMethod = method.getJavaMember();
+            if (javaMethod.isAccessible()) {
+                javaMethod.setAccessible(true);
+            }
+
+            response = (ExtJSResponse) javaMethod.invoke(beanInstance, params);
+
+        } catch (Exception e) {
+            response = new ExtJSResponse(e, e.getMessage());
+        } finally {
+            if (di != null) {
+                di.release();
+            }
+        }
+
+        return response;
+    }
+
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.interfaces;
 
@@ -25,51 +25,57 @@ import java.nio.ByteBuffer;
  */
 public interface ITn3812DataListener {
 
-	/**
-	 * When printer session is initialized
-	 * @param config
-	 */
-	public void onInit(ITn3812Context config);
-	
-	/**
-	 * When session initialization error received, for example, printer name already used
-	 * @param config
-	 * @param data
-	 */
-	public void onError(ITn3812Context config, ByteBuffer data);
-	
-	/**
-	 * On printer initialization.
-	 * Executed only once when connected
-	 * @param data
-	 */
-	public void onHeader(ByteBuffer data);
-	
-	/**
-	 * Whenever new report is started, this is called first
-	 * @param data
-	 */
-	public void onFirstChain(ByteBuffer data);
-	
-	/**
-	 * Continuous data flow for current report printing
-	 * @param data
-	 */
-	public void onChain(ByteBuffer data);
-	
-	/**
-	 * Last page printed. report finished
-	 * @param data
-	 */
-	public void onLastChain(ByteBuffer data);
+    /**
+     * When printer session is initialized
+     * 
+     * @param config
+     */
+    void onInit(ITn3812Context config);
 
-	/**
-	 * Signal when connection is closed by peer
-	 */
-	public void onClosed();
-	
-	/**
-	 * Signal when listener is removed 
-	 */
-	public void onRemoved();
+    /**
+     * When session initialization error received, for example, printer name
+     * already used
+     * 
+     * @param config
+     * @param data
+     */
+    void onError(ITn3812Context config, ByteBuffer data);
+
+    /**
+     * On printer initialization. Executed only once when connected
+     * 
+     * @param data
+     */
+    void onHeader(ByteBuffer data);
+
+    /**
+     * Whenever new report is started, this is called first
+     * 
+     * @param data
+     */
+    void onFirstChain(ByteBuffer data);
+
+    /**
+     * Continuous data flow for current report printing
+     * 
+     * @param data
+     */
+    void onChain(ByteBuffer data);
+
+    /**
+     * Last page printed. report finished
+     * 
+     * @param data
+     */
+    void onLastChain(ByteBuffer data);
+
+    /**
+     * Signal when connection is closed by peer
+     */
+    void onClosed();
+
+    /**
+     * Signal when listener is removed
+     */
+    void onRemoved();
 }

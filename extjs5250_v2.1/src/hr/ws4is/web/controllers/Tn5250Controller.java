@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.web.controllers;
 
@@ -39,164 +39,170 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Controller for 5250 telnet that will be invoked from browser through websocket  
- * Used for managing 5250 telnet connections, data retrieval and keyboard commands processing
+ * Controller for 5250 telnet that will be invoked from browser through
+ * websocket. Used for managing 5250 telnet connections, data retrieval and
+ * keyboard commands processing
  */
-@ExtJSDirect(paths={"socket"})
-@ExtJSAction(namespace = "hr.ws4is", action="Tn5250Controller")
+@ExtJSDirect(paths = { "socket" })
+@ExtJSAction(namespace = "hr.ws4is", action = "Tn5250Controller")
 public class Tn5250Controller {
 
-	@Inject 
-	WebSocketSession session;		
+    @Inject
+    private WebSocketSession session;
 
-	/*
-	 * Close all 5250 sessions
-	 */
-	@ExtJSMethod("closeSessions")
-	public ExtJSResponse closeSessions() {
+    /*
+     * Close all 5250 sessions
+     */
+    @ExtJSMethod("closeSessions")
+    public final ExtJSResponse closeSessions() {
 
-		ExtJSResponse response = null;
-		try{
-			Collection<ITn5250Session> list =  TnWebHelper.getTn5250Sessions(session).values();
-			for(ITn5250Session tnSession : list){
-				tnSession.disconnect();
-			}
-			response = new ExtJSResponse(true,null);	
-		}catch(Exception e){
-			response = new ExtJSResponse(e,e.getMessage());
-		}	
+        final ExtJSResponse response = new ExtJSResponse();
+        try {
+            final Map<String, ITn5250Session> sessions = TnWebHelper.getTn5250Sessions(session);
+            final Collection<ITn5250Session> list = sessions.values();
+            for (final ITn5250Session tnSession : list) {
+                tnSession.disconnect();
+            }
+            response.setSuccess(true);
+        } catch (Exception exception) {
+            response.setError(exception, exception.getMessage());
+        }
         return response;
-	}
+    }
 
-	
-	/*
-	 * List all active 5250 sessions for current web session
-	 */
-	@ExtJSMethod("listSessions")
-	public ExtJSResponseList<String> list5250Sessions() {
-		ExtJSResponseList<String> response = null;
-		try{
-			Map<String, ITn5250Session> sessions = TnWebHelper.getTn5250Sessions(session);		
-			response = new ExtJSResponseList<>(true,null);			
-			response.setData(sessions.keySet());
-		} catch (Exception e){
-			response = new ExtJSResponseList<>(e,e.getMessage());
-		}		
-        return response;
-	}
-	
-	
-	/*---------------------------------------------------------------------------------------------------*/
-		
-	/*
-	 * Open new session for available AS/400 connection
-	 */
-	@ExtJSMethod("openSession")
-	public Tn5250ScreenResponse open5250Session(String data) {
-		Tn5250ScreenResponse response = null;
-		try{
-			final TnHost host = TnWebHelper.findTnHost(session, data);
-			if(host==null){
-				response = new Tn5250ScreenResponse(false,TnConstants.HOST_NOT_FOUND);	
-			}else{
-				final String displayId = Long.toString(System.nanoTime());				
-				response = new Tn5250ScreenResponse(true,null);
-				response.setLocked(true);
-				response.setClearScr(true);
-				response.setDisplayID(displayId);
-				
-				//little delay for WebSocket to send display id response.
-				//after successful connection to tn5250, listener will send first screen data
-				//with displayID so front end can find proper display to render image on it
-				Runnable rn = new Runnable() {
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(100);
-							ITn5250Session tnSession = Tn5250SessionFactory.create(session, host, displayId);
-							TnWebHelper.getTn5250Sessions(session).put(tnSession.getDisplayId(), tnSession);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				};
-				Thread t = new Thread(rn);
-				t.start();
-				
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get5250ErrorResponse(e);
-		}		
-        return response;
-	}
-	
-	/*
-	 * Close active 5250 session 
-	 */
-	@ExtJSMethod("closeSession")
-	public Tn5250ScreenResponse close5250Session(String data) {
-		Tn5250ScreenResponse response = null;
-		try{
-			Map<String, ITn5250Session> sessions = TnWebHelper.getTn5250Sessions(session); 
-			ITn5250Session tnSession = sessions.remove(data);
-			if(tnSession==null){
-				response = TnWebHelper.get5250SessionNotFoundResponse();	
-			}else{				
-				response = new Tn5250ScreenResponse(true,null);
-				response.setLocked(true);
-				response.setClearScr(true);
-				response.setMsg(TnConstants.NOT_CONNECTED);
-				tnSession.disconnect();
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get5250ErrorResponse(e);
-		}
-		response.setDisplayID(data);
-        return response;
-	}
+    /*
+     * List all active 5250 sessions for current web session
+     */
+    @ExtJSMethod("listSessions")
+    public final ExtJSResponseList<String> list5250Sessions() {
 
-	/*
-	 * Receive command for active 5250 session
-	 */
-	@ExtJSMethod("refreshSession")
-	public Tn5250ScreenResponse refresh5250Session(String data) {
-		Tn5250ScreenResponse response = null;
-		try{
-			ITn5250Session tnSession = TnWebHelper.findTn5250Session(session, data);
-			if(tnSession==null){
-				response = TnWebHelper.get5250SessionNotFoundResponse();	
-			}else{
-				response = tnSession.refresh();
-			}						
-		} catch (Exception e){
-			response = TnWebHelper.get5250ErrorResponse(e);
-		}
-		response.setDisplayID(data);
-        return response;		
-	}
-	
-	/*
-	 * Receive command for active 5250 session
-	 */
-	@ExtJSMethod("requestSession")
-	public Tn5250ScreenResponse request5250Session(Tn5250ScreenRequest data, Tn5250ScreenElement[] fields) {
-		Tn5250ScreenResponse response = null;
-		try{
-			ITn5250Session tnSession = TnWebHelper.findTn5250Session(session, data);			
-			if(tnSession==null){
-				response = TnWebHelper.get5250SessionNotFoundResponse();
-			}else{				
-				tnSession.process(data, fields);
-				return null;
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get5250ErrorResponse(e);
-		}
-		response.setDisplayID(data.getDisplayID());
+        final ExtJSResponseList<String> response = new ExtJSResponseList<>();
+        try {
+            final Map<String, ITn5250Session> sessions = TnWebHelper.getTn5250Sessions(session);
+            response.setSuccess(true);
+            response.setData(sessions.keySet());
+        } catch (Exception exception) {
+            response.setError(exception, exception.getMessage());
+        }
         return response;
-	}
-	
+    }
+
+    /*---------------------------------------------------------------------------------------------------*/
+
+    /*
+     * Open new session for available AS/400 connection
+     */
+    @ExtJSMethod("openSession")
+    public final Tn5250ScreenResponse open5250Session(final String data) {
+
+        Tn5250ScreenResponse response = null;
+        try {
+            final TnHost host = TnWebHelper.findTnHost(session, data);
+            if (host == null) {
+                response = new Tn5250ScreenResponse(false, TnConstants.HOST_NOT_FOUND);
+            } else {
+                final String displayId = Long.toString(System.nanoTime());
+                response = new Tn5250ScreenResponse(true, null);
+                response.setLocked(true);
+                response.setClearScr(true);
+                response.setDisplayID(displayId);
+
+                // little delay for WebSocket to send display id response.
+                // after successful connection to tn5250, listener will send
+                // first screen data
+                // with displayID so front end can find proper display to render
+                // image on it
+                final Runnable rn = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(100);
+                            final ITn5250Session tnSession = Tn5250SessionFactory.create(session, host, displayId);
+                            TnWebHelper.getTn5250Sessions(session).put(tnSession.getDisplayId(), tnSession);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                final Thread t = new Thread(rn);
+                t.start();
+
+            }
+
+        } catch (Exception e) {
+            response = TnWebHelper.get5250ErrorResponse(e);
+        }
+        return response;
+    }
+
+    /*
+     * Close active 5250 session.
+     */
+    @ExtJSMethod("closeSession")
+    public final Tn5250ScreenResponse close5250Session(final String data) {
+
+        Tn5250ScreenResponse response = null;
+        try {
+            final Map<String, ITn5250Session> sessions = TnWebHelper.getTn5250Sessions(session);
+            final ITn5250Session tnSession = sessions.remove(data);
+            if (tnSession == null) {
+                response = TnWebHelper.get5250SessionNotFoundResponse();
+            } else {
+                response = new Tn5250ScreenResponse(true, null);
+                response.setLocked(true);
+                response.setClearScr(true);
+                response.setMsg(TnConstants.NOT_CONNECTED);
+                tnSession.disconnect();
+            }
+
+        } catch (Exception e) {
+            response = TnWebHelper.get5250ErrorResponse(e);
+        }
+        response.setDisplayID(data);
+        return response;
+    }
+
+    /*
+     * Receive command for active 5250 session
+     */
+    @ExtJSMethod("refreshSession")
+    public final Tn5250ScreenResponse refresh5250Session(final String data) {
+
+        Tn5250ScreenResponse response = null;
+        try {
+            final ITn5250Session tnSession = TnWebHelper.findTn5250Session(session, data);
+            if (tnSession == null) {
+                response = TnWebHelper.get5250SessionNotFoundResponse();
+            } else {
+                response = tnSession.refresh();
+            }
+        } catch (Exception e) {
+            response = TnWebHelper.get5250ErrorResponse(e);
+        }
+        response.setDisplayID(data);
+        return response;
+    }
+
+    /*
+     * Receive command for active 5250 session
+     */
+    @ExtJSMethod("requestSession")
+    public final Tn5250ScreenResponse request5250Session(final Tn5250ScreenRequest data, final Tn5250ScreenElement[] fields) {
+
+        Tn5250ScreenResponse response = null;
+        try {
+            final ITn5250Session tnSession = TnWebHelper.findTn5250Session(session, data);
+            if (tnSession == null) {
+                response = TnWebHelper.get5250SessionNotFoundResponse();
+            } else {
+                tnSession.process(data, fields);
+                return null;
+            }
+        } catch (Exception e) {
+            response = TnWebHelper.get5250ErrorResponse(e);
+        }
+        response.setDisplayID(data.getDisplayID());
+        return response;
+    }
+
 }

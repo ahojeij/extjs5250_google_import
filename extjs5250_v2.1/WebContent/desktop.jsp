@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
   <title>Telnet-5250</title>
 
-        <link rel="stylesheet" href="js/extjs5/resources/ext-theme-gray-all.css" type="text/css" />
+        <link rel="stylesheet" href="js/extjs4/resources/ext-theme-gray-all.css" type="text/css" />
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link id="tntheme" rel="stylesheet" href="css/as400.css" type="text/css" />
 

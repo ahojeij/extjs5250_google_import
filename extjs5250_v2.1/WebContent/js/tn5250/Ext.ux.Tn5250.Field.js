@@ -86,13 +86,13 @@ Ext.define('Ext.ux.Tn5250.Field',{
 
         me.callParent();
         var el = me.getEl();
-        el.on("focus", me.onFocusClick,  me);
-        el.on("blur", me.onBlur,me);
-        el.on("keyup", me.onKeyUp,me);
-        el.on("keypress", me.onKeyPress,me);
-        el.on("keydown", me.onKeyDown,me);
-        el.on("click", me.onFocusClick,me);
-        el.on("dblclick", me.onDoubleClick,me);        
+        el.on("focus", me.onFocusClick, me);
+        el.on("blur", me.onBlur, me);
+        el.on("keyup", me.onKeyUp, me);
+        el.on("keypress", me.onKeyPress, me);
+        el.on("keydown", me.onKeyDown, me);
+        el.on("click", me.onFocusClick, me);
+        el.on("dblclick", me.onDoubleClick, me);        
         
     },
     
@@ -125,7 +125,6 @@ Ext.define('Ext.ux.Tn5250.Field',{
        dom.setAttribute('size',me.screenEl.getLength(me.obj));
        dom.setAttribute('maxlength',me.screenEl.getMaxLength(me.obj));
        dom.setAttribute('autocomplete','off');
-       dom.setAttribute('autocomplete','off');
        dom.value = me.screenEl.getValue(me.obj);
 
 
@@ -135,7 +134,7 @@ Ext.define('Ext.ux.Tn5250.Field',{
 
        if(me.readOnly){
     	   dom.setAttribute('readOnly',true);
-       } else  if(me.focused){
+       } else if(me.focused){
      	dom.focus();
        }
     },

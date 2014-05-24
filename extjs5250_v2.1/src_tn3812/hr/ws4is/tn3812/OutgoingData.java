@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812;
 
@@ -24,29 +24,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Callback handler used to start another write thread after previous is finished
+ * Callback handler used to start another write thread after previous is
+ * finished
  */
 class OutgoingData implements CompletionHandler<Integer, Void> {
-	
-	private static Logger logger = LoggerFactory.getLogger(IncomingDataNegotiation.class);
 
-	Tn3812Context ctx;
-	
-	public OutgoingData(Tn3812Context ctx) {
-		super();
-		this.ctx = ctx;
-	}
-	
-	public void completed(Integer result, Void attachment) {
-	    logger.debug(String.format("[client] %d sent %d bytes of data", ctx.getConfig().getDevName(), result));
-	    if (!ctx.getWriteQueue().isEmpty()) {
-			logger.debug("Continuing down write queue");
-			ctx.getWriteQueue().poll().run();
-	    }
-	}
-	
-	public void failed(Throwable exc, Void attachment) {
-	    exc.printStackTrace();
-	}
+    private static final Logger LOGGER = LoggerFactory.getLogger(IncomingDataNegotiation.class);
+
+    private Tn3812Context ctx;
+
+    public OutgoingData(final Tn3812Context ctx) {
+        super();
+        this.ctx = ctx;
+    }
+
+    public void completed(final Integer result, final Void attachment) {
+        LOGGER.debug(String.format("[client] %d sent %d bytes of data", ctx.getConfig().getDevName(), result));
+        if (!ctx.getWriteQueue().isEmpty()) {
+            LOGGER.debug("Continuing down write queue");
+            ctx.getWriteQueue().poll().run();
+        }
+    }
+
+    public void failed(final Throwable exc, final Void attachment) {
+        exc.printStackTrace();
+    }
 
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.enums;
 
@@ -28,21 +28,21 @@ x1xx xxxx --> Intervention Required
 */
 
 /**
- * Printer status flags 
+ * Printer status flags
  */
 public enum Tn3812Flag {
 
-	RESERVED((byte)0x07),
-	LAST_OF_CHAIN((byte)0x08),
-	FIRST_OF_CHAIN((byte)0x10),
-	PRINTER_READY((byte)0x20),
-	INTERVENTION((byte)0x40),
-	ERROR((byte)0x80)
+	RESERVED((byte) 0x07),
+	LAST_OF_CHAIN((byte) 0x08),
+	FIRST_OF_CHAIN((byte) 0x10),
+	PRINTER_READY((byte) 0x20),
+	INTERVENTION((byte) 0x40),
+	ERROR((byte) 0x80)
 	;
 
     private final byte value;
 
-    private Tn3812Flag( byte value) {
+    private Tn3812Flag( final byte value) {
         this.value = value;
     }
 

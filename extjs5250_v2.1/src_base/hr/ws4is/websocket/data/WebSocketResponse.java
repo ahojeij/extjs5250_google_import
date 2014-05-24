@@ -21,58 +21,58 @@ package hr.ws4is.websocket.data;
 
 import hr.ws4is.WS4ISConstants;
 
-
 /**
- * Object to be converted into JSON structure.
+ * Object to be converted into JSON structure. 
  * {type :'ws' , sid : session_id , tid : transaction_id, timeout : 0 , ....}
  */
 public class WebSocketResponse {
-	private String type = WS4ISConstants.WEBSOCKET_TYPE ;
+    
+    private String type = WS4ISConstants.WEBSOCKET_TYPE;
 
-	public final WebSocketInstruction cmd;
-	
-	public String errMsg ;
-	public int errId;
-	public Object data;
-	
-	public WebSocketResponse(WebSocketInstruction cmd){
-		this.cmd=cmd;
-	}
+    private final WebSocketInstruction cmd;
 
-	public String getType() {
-		return type;
-	}
+    private String errMsg;
+    private int errId;
+    private Object data;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public WebSocketResponse(final WebSocketInstruction cmd) {
+        this.cmd = cmd;
+    }
 
-	public String getErrMsg() {
-		return errMsg;
-	}
+    public final String getType() {
+        return type;
+    }
 
-	public void setErrMsg(String errMsg) {
-		this.errMsg = errMsg;
-	}
+    public final void setType(final String type) {
+        this.type = type;
+    }
 
-	public int getErrId() {
-		return errId;
-	}
+    public final String getErrMsg() {
+        return errMsg;
+    }
 
-	public void setErrId(int errId) {
-		this.errId = errId;
-	}
+    public final void setErrMsg(final String errMsg) {
+        this.errMsg = errMsg;
+    }
 
-	public Object getData() {
-		return data;
-	}
+    public final int getErrId() {
+        return errId;
+    }
 
-	public void setData(Object data) {
-		this.data = data;
-	}
+    public final void setErrId(final int errId) {
+        this.errId = errId;
+    }
 
-	public WebSocketInstruction getCmd() {
-		return cmd;
-	}
-	
+    public final Object getData() {
+        return data;
+    }
+
+    public final void setData(final Object data) {
+        this.data = data;
+    }
+
+    public final WebSocketInstruction getCmd() {
+        return cmd;
+    }
+
 }

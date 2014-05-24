@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is;
 
@@ -34,89 +34,108 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
- * Generic JSON decoder
+ * Generic JSON decoder used internally
  */
 public class JsonDecoder<T> {
-    protected T object;
-    protected MappingIterator<T> objectList;
-    //protected Class<T> clazz;
 
-    private static final ObjectMapper om ;
+    private T object;
 
-    static
-    {
-    	
-    	om = new ObjectMapper();
-    	
-    	om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).
-    	   disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).
-    	   disable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT).
-    	   disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    	
-    	/*
-    	DeserializationConfig dcfg = om.getDeserializationConfig();
-    	dcfg.without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).
-    	without(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).
-    	without(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+    private MappingIterator<T> objectList;
+    // protected Class<T> clazz;
 
-    	SerializationConfig scfg = om.getSerializationConfig();
-    	scfg.without(SerializationFeature.FAIL_ON_EMPTY_BEANS);    	
-    	
-    	om.setSerializationConfig(scfg);
-    	om.setDeserializationConfig(dcfg);
-    	*/
+    private static final ObjectMapper OBJECT_MAPPER;
+
+    static {
+        OBJECT_MAPPER = new ObjectMapper();
+
+        OBJECT_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).
+                      disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).
+                      disable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT).
+                      disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        /*
+         * DeserializationConfig dcfg = om.getDeserializationConfig();
+         * dcfg.without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).
+         * without(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).
+         * without(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+         *
+         * SerializationConfig scfg = om.getSerializationConfig();
+         * scfg.without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+         * om.setSerializationConfig(scfg); om.setDeserializationConfig(dcfg);
+         */
     }
-    
-	
-    public JsonDecoder(Class<T> type, String json) throws IOException {
-    	super();
-    	parse(type, json);
-    }
-    
-    
-    private void parse(Class<T> type, String json) throws IOException {
-    	JsonFactory factory = new JsonFactory();
 
-    	JsonParser jp = factory.createParser(json);    	
-        JsonNode jn = om.readTree(jp);
-        
-        if(jn.isArray())
-        {
-        	TypeFactory tf= TypeFactory.defaultInstance();
-        	JavaType jt = tf.constructCollectionType(ArrayList.class, type);
-        	objectList  = om.readValues(jp,  jt);
-        }else{
-            object = om.treeToValue(jn, type);
+    /**
+     * New Decoder instance for JSON data
+     * @param type - class to which to convert
+     * @param json - json data to convert to Java class instance
+     * @throws IOException
+     */
+    public JsonDecoder(final Class<T> type, final String json) throws IOException {
+        super();
+        parse(type, json);
+    }
+
+    /**
+     * Does actual conversion from JSON string to Java class instance
+     * @param type
+     * @param json
+     * @throws IOException
+     */
+    private void parse(final Class<T> type, final String json) throws IOException {
+        final JsonFactory factory = new JsonFactory();
+        final JsonParser jp = factory.createParser(json);
+        final JsonNode jn = OBJECT_MAPPER.readTree(jp);
+
+        if (jn.isArray()) {
+            final TypeFactory tf = TypeFactory.defaultInstance();
+            final JavaType jt = tf.constructCollectionType(ArrayList.class, type);
+            objectList = OBJECT_MAPPER.readValues(jp, jt);
+        } else {
+            object = OBJECT_MAPPER.treeToValue(jn, type);
         }
     }
 
-    public boolean isSingle() {
-    	return object != null;
+    /**
+     * Checks is converted JSON array or single object
+     * @return true if it is not array
+     */
+    public final boolean isSingle() {
+        return object != null;
     }
 
-    public T getObject() {
+    /**
+     * Returns JSON data converted Java class instance.
+     * If JSON data is array, this method will return null
+     * @return class instance from defined class in constructor
+     */
+    public final T getObject() {
         return object;
     }
 
-    public List<T> getObjectList() throws IOException {
-    	
-    	if(objectList ==null) 
-    	{
-    		if(object != null)
-    		{
-    			return Arrays.asList(object);
-    		}
-    	}
+    /**
+     * Returns JSON data converted Java class instance.
+     * If JSON data is object, this method will return null
+     * @return class instance from defined class in constructor
+     */
+    public final List<T> getObjectList() throws IOException {
 
-        return objectList.readAll();
+        List<T> list = null;
+        if (objectList != null) {
+            list = objectList.readAll();
+        } else if (object != null) {
+            list = Arrays.asList(object);
+        }
+
+        return list;
     }
 
-    public void setObject(T object) {
-        this.object = object;
+    /**
+     * Retrieves internal JSON parser engine
+     * @return
+     */
+    public static ObjectMapper getJSONEngine() {
+        return OBJECT_MAPPER;
     }
 
-	public static ObjectMapper getJSONEngine() {
-		return om;
-	}
-	
 }

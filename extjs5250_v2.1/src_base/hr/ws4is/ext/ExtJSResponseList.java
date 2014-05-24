@@ -14,39 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext;
 
 import java.util.Set;
 
 /**
- * Simple response structure with string list
+ * ExtJS array response structure.
  */
 public class ExtJSResponseList<T> extends ExtJSResponse {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Set<T> data;
-	
-	public ExtJSResponseList() {
-		super();
-	}
+    private Set<T> data;
 
-	public ExtJSResponseList(boolean success, String message) {
-		super(success, message);
-	}
+    public ExtJSResponseList() {
+        super();
+    }
 
-	public ExtJSResponseList(Throwable exception, String message) {
-		super(exception, message);
-	}
+    public ExtJSResponseList(final boolean success, final String message) {
+        super(success, message);
+    }
 
-	public Set<T> getData() {
-		return data;
-	}
+    public ExtJSResponseList(final Throwable exception, final String message) {
+        super(exception, message);
+    }
 
-	public void setData(Set<T> data) {
-		this.data = data;
-	}
-		
+    public final Set<T> getData() {
+        return data;
+    }
+
+    public final void setData(final Set<T> data) {
+        this.data = data;
+    }
+
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.data.tn3812;
 
@@ -22,46 +22,46 @@ import hr.ws4is.ext.ExtJSResponse;
 
 public class Tn3812Response extends ExtJSResponse {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	String printerName;
-	String reportName;
-	String tnType;
-	
-	public Tn3812Response() {
-		super();
-	}
+    private String printerName;
+    private String reportName;
+    private String tnType;
 
-	public Tn3812Response(boolean success, String message) {
-		super(success, message);
-	}
+    public Tn3812Response() {
+        super();
+    }
 
-	public Tn3812Response(Throwable exception, String message) {
-		super(exception, message);
-	}
+    public Tn3812Response(final boolean success, final String message) {
+        super(success, message);
+    }
 
-	public String getPrinterName() {
-		return printerName;
-	}
+    public Tn3812Response(final Throwable exception, final String message) {
+        super(exception, message);
+    }
 
-	public void setPrinterName(String printerName) {
-		this.printerName = printerName;
-	}
+    public final String getPrinterName() {
+        return printerName;
+    }
 
-	public String getReportName() {
-		return reportName;
-	}
+    public final void setPrinterName(final String printerName) {
+        this.printerName = printerName;
+    }
 
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
+    public final String getReportName() {
+        return reportName;
+    }
 
-	public String getTnType() {
-		return tnType;
-	}
+    public final void setReportName(final String reportName) {
+        this.reportName = reportName;
+    }
 
-	public void setTnType(String tnType) {
-		this.tnType = tnType;
-	}
+    public final String getTnType() {
+        return tnType;
+    }
+
+    public final void setTnType(final String tnType) {
+        this.tnType = tnType;
+    }
 
 }

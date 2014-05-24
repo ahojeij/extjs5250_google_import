@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.tn3812.interfaces;
 
@@ -22,19 +22,24 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Single printer session context used to manipulate with the printer.
- * Some more commands should be added to pause printer etc... 
+ * Single printer session context used to manipulate with the printer. Some more
+ * commands should be added to pause printer etc...
  */
 public interface ITn3812Context {
 
-	public ITn3812Config  getconfiguration();
-	public void connect() throws IOException, InterruptedException, ExecutionException ;
-	public void disconnect();
-	
-	public void addDataListener(ITn3812DataListener listener);
-	public void removeDataListener(ITn3812DataListener listener);
-	
-	public void setData(String key, Object value);
-	public Object getData(String key);
-	boolean isConnected();
+    ITn3812Config getconfiguration();
+
+    void connect() throws IOException, InterruptedException, ExecutionException;
+
+    void disconnect();
+
+    void addDataListener(ITn3812DataListener listener);
+
+    void removeDataListener(ITn3812DataListener listener);
+
+    void setData(String key, Object value);
+
+    Object getData(String key);
+
+    boolean isConnected();
 }

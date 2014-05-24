@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext.annotations;
 
@@ -22,29 +22,29 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
 
 @SuppressWarnings("all")
-final  public class ExtJSActionLiteral extends AnnotationLiteral<ExtJSAction> implements ExtJSAction {
+public final class ExtJSActionLiteral extends AnnotationLiteral<ExtJSAction> implements ExtJSAction {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	final String namespace ;
-	final String action ;
-		
-	public ExtJSActionLiteral(String namespace, String action) {
-		super();
-		this.action = action;
-		this.namespace = namespace;			
-	}
+    private final String namespace;
+    private final String action;
 
-	@Override
-	@Nonbinding
-	public String action() {
-		return action;
-	}
+    public ExtJSActionLiteral(final String namespace, final String action) {
+        super();
+        this.action = action;
+        this.namespace = namespace;
+    }
 
-	@Override
-	@Nonbinding
-	public String namespace() {
-		return namespace;
-	}
-	
+    @Override
+    @Nonbinding
+    public String action() {
+        return action;
+    }
+
+    @Override
+    @Nonbinding
+    public String namespace() {
+        return namespace;
+    }
+
 }

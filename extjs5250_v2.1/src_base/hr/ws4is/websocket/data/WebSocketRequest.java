@@ -27,63 +27,63 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * JsonNode to be converted into JSON structure.
+ * Class used to map JSON structure describing ExtJS websocket request.
  */
 public class WebSocketRequest {
-	
-	public final String type = WS4ISConstants.WEBSOCKET_TYPE;
 
-	WebSocketInstruction cmd;  // 'welcome , bye, data' ,
-	int timeout;  //set only when cmd=welcome
+    public final String type = WS4ISConstants.WEBSOCKET_TYPE;
 
-	String errMsg ;
-	int errId;
-	
-	//list of commands - batch
-	ArrayList<ExtJSDirectRequest<JsonNode>> data;
-	
-	public WebSocketInstruction getCmd() {
-		return cmd;
-	}
-	
-	public void setCmd(WebSocketInstruction cmd) {
-		this.cmd = cmd;
-	}
-	
-	public int getTimeout() {
-		return timeout;
-	}
-	
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-	
-	public String getErrMsg() {
-		return errMsg;
-	}
-	
-	public void setErrMsg(String errMsg) {
-		this.errMsg = errMsg;
-	}
-	
-	public int getErrId() {
-		return errId;
-	}
-	
-	public void setErrId(int errId) {
-		this.errId = errId;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public ArrayList<ExtJSDirectRequest<JsonNode>> getData() {
-		return data;
-	}
-	
-	public void setData(ArrayList<ExtJSDirectRequest<JsonNode>> data) {
-		this.data = data;
-	}
+    private WebSocketInstruction cmd; // 'welcome , bye, data' ,
+    private int timeout; // set only when cmd=welcome
+
+    private String errMsg;
+    private int errId;
+
+    // list of commands - batch
+    private ArrayList<ExtJSDirectRequest<JsonNode>> data;
+
+    public final WebSocketInstruction getCmd() {
+        return cmd;
+    }
+
+    public final void setCmd(final WebSocketInstruction cmd) {
+        this.cmd = cmd;
+    }
+
+    public final int getTimeout() {
+        return timeout;
+    }
+
+    public final void setTimeout(final int timeout) {
+        this.timeout = timeout;
+    }
+
+    public final String getErrMsg() {
+        return errMsg;
+    }
+
+    public final void setErrMsg(final String errMsg) {
+        this.errMsg = errMsg;
+    }
+
+    public final int getErrId() {
+        return errId;
+    }
+
+    public final void setErrId(final int errId) {
+        this.errId = errId;
+    }
+
+    public final String getType() {
+        return type;
+    }
+
+    public final ArrayList<ExtJSDirectRequest<JsonNode>> getData() {
+        return data;
+    }
+
+    public final void setData(final ArrayList<ExtJSDirectRequest<JsonNode>> data) {
+        this.data = data;
+    }
 
 }

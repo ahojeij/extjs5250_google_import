@@ -14,20 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext.annotations;
 
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 import javax.enterprise.util.Nonbinding;
 
+/**
+ * Used to define remotely available action method.
+ * Name must match name from incoming ExtJS.Direct call
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({METHOD})
+@Target({ METHOD })
 public @interface ExtJSMethod {
-	
-	String value();	
-	@Nonbinding	boolean formHandler() default false;
+
+    String value();
+
+    @Nonbinding
+    boolean formHandler() default false;
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.web.controllers;
 
@@ -43,144 +43,148 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 /**
- * Controller for 3812 printers that will be invoked from browser through websocket
- * Used for managing printer sessions. Starting , stopping and report notifications. 
+ * Controller for 3812 printers that will be invoked from browser through
+ * websocket Used for managing printer sessions. Starting , stopping and report
+ * notifications.
  */
-@ExtJSDirect(paths={"socket"})
-@ExtJSAction(namespace = "hr.ws4is", action="Tn3812Controller")
+@ExtJSDirect(paths = { "socket" })
+@ExtJSAction(namespace = "hr.ws4is", action = "Tn3812Controller")
 public class Tn3812Controller {
 
-	@Inject 
-	WebSocketSession session;	 
-	
-	/*
-	 * close all tn3812 sessions
-	 */
-	@ExtJSMethod("closeSessions")
-	public ExtJSResponse closeSessions() {
-		ExtJSResponse response = null;
-		try{
-			Collection<ITn3812Context> list =  TnWebHelper.getTn3812Sessions(session).values();
-			for(ITn3812Context tnSession : list){
-				tnSession.disconnect();
-			}
-			response = new ExtJSResponse(true,null);	
-		}catch(Exception e){
-			response = new ExtJSResponse(e,e.getMessage());
-		}	
-        return response;
-	}
-		
-	/*
-	 * list all tn3812 sessions for current user
-	 */
-	@ExtJSMethod("listSessions")
-	public ExtJSResponseList<String> listSessions() {
-		ExtJSResponseList<String> response = null;
-		try{
-			Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session);		
-			response = new ExtJSResponseList<>(true,null);			
-			response.setData(sessions.keySet());
-		} catch (Exception e){
-			response = new ExtJSResponseList<>(e,e.getMessage());
-		}		
-        return response;
-	}
-	
-	
-	/*
-	 * create new tn3812 session
-	 */
-	@ExtJSMethod("openSession")
-	public Tn3812Response openSession(String hostName, String printerName) {
-		Tn3812Response response = null;
-		try{
-			printerName = printerName.toUpperCase();
-			final TnHost host = TnWebHelper.findTnHost(session, hostName);
-			if(host==null){
-				response = new Tn3812Response(false,TnConstants.HOST_NOT_FOUND);	
-			}else{
-				final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
-				ITn3812Context tnSession = sessions.get(printerName);
-				
-				response = new Tn3812Response(true,null);
-				response.setPrinterName(printerName);
-				
-				if(tnSession==null){
-					
-					try {
-						
-						ITn3812Config config = new Tn3812Config();
-						config.setDevName(printerName);
-						
-						tnSession = Tn3812ClientFactory.createSession(host.getIpAddress(), host.getPortNumber(), config);
-						
-						//add pdf generator 
-						ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.PDF);
-						tnSession.addDataListener(driver);							
+    @Inject
+    private WebSocketSession session;
 
-						//add session listener
-						tnSession.addDataListener(new Tn3812Listener(session));						
-												
-						tnSession.connect();
-					} catch (InterruptedException | ExecutionException | IOException e) {
-						e.printStackTrace();
-					}
-					
-				}
-				
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get3812ErrorResponse(e, printerName);
-		}		
+    /*
+     * close all tn3812 sessions
+     */
+    @ExtJSMethod("closeSessions")
+    public final ExtJSResponse closeSessions() {
+        ExtJSResponse response = null;
+        try {
+            final Map<String, ITn3812Context> map = TnWebHelper.getTn3812Sessions(session);
+            final Collection<ITn3812Context> list = map.values();
+            for (final ITn3812Context tnSession : list) {
+                tnSession.disconnect();
+            }
+            response = new ExtJSResponse(true, null);
+        } catch (Exception e) {
+            response = new ExtJSResponse(e, e.getMessage());
+        }
         return response;
-	}
-	
-	/*
-	 * close existing tn3812 session
-	 */
-	@ExtJSMethod("closeSession")
-	public Tn3812Response closeSession(String printerName) {
-		Tn3812Response response = null;
-		try{
-			printerName = printerName.toUpperCase();
-			Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
-			ITn3812Context tnSession = sessions.remove(printerName);
-			if(tnSession==null){
-				response = TnWebHelper.get3812SessionNotFoundResponse(printerName);	
-			}else{				
-				response = new Tn3812Response(true,null);
-				response.setMsg(TnConstants.NOT_CONNECTED);
-				tnSession.disconnect();
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get3812ErrorResponse(e,printerName);
-		}
-		response.setPrinterName(printerName);
+    }
+
+    /*
+     * list all tn3812 sessions for current user
+     */
+    @ExtJSMethod("listSessions")
+    public final ExtJSResponseList<String> listSessions() {
+        ExtJSResponseList<String> response = null;
+        try {
+            final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session);
+            response = new ExtJSResponseList<>(true, null);
+            response.setData(sessions.keySet());
+        } catch (Exception e) {
+            response = new ExtJSResponseList<>(e, e.getMessage());
+        }
         return response;
-	}
-	
-	@ExtJSMethod("refreshStatus")
-	public Tn3812Response refreshStatus(String printerName) {
-		Tn3812Response response = null;
-		try{
-			printerName = printerName.toUpperCase();
-			Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session); 
-			ITn3812Context tnSession = sessions.remove(printerName);
-			if(tnSession==null){
-				response = TnWebHelper.get3812SessionNotFoundResponse(printerName);	
-			}else{				
-				response = new Tn3812Response(true,null);
-				//TODO fill with printer status 
-			}			
-			
-		} catch (Exception e){
-			response = TnWebHelper.get3812ErrorResponse(e,printerName);
-		}
-		response.setPrinterName(printerName);
+    }
+
+    /*
+     * create new tn3812 session
+     */
+    @ExtJSMethod("openSession")
+    public final Tn3812Response openSession(final String hostName, final String printerName) {
+        Tn3812Response response = null;
+        String devName = null;
+        try {
+            devName = printerName.toUpperCase();
+            final TnHost host = TnWebHelper.findTnHost(session, hostName);
+            if (host == null) {
+                response = new Tn3812Response(false, TnConstants.HOST_NOT_FOUND);
+            } else {
+                final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session);
+                ITn3812Context tnSession = sessions.get(devName);
+
+                response = new Tn3812Response(true, null);
+                response.setPrinterName(devName);
+
+                if (tnSession == null) {
+
+                    try {
+
+                        final ITn3812Config config = new Tn3812Config();
+                        config.setDevName(devName);
+
+                        tnSession = Tn3812ClientFactory.createSession(host.getIpAddress(), host.getPortNumber(), config);
+
+                        // add pdf generator
+                        final ITn3812DataListener driver = Tn3812DriverFactory.create(Tn3812DriverFactory.PDF);
+                        tnSession.addDataListener(driver);
+
+                        // add session listener
+                        tnSession.addDataListener(new Tn3812Listener(session));
+
+                        tnSession.connect();
+                    } catch (InterruptedException | ExecutionException | IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+
+        } catch (Exception e) {
+            response = TnWebHelper.get3812ErrorResponse(e, devName);
+        }
         return response;
-	}
-	
+    }
+
+    /*
+     * close existing tn3812 session
+     */
+    @ExtJSMethod("closeSession")
+    public final Tn3812Response closeSession(final String printerName) {
+        Tn3812Response response = null;
+        String devName = null;
+        try {
+            devName = printerName.toUpperCase();
+            final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session);
+            final ITn3812Context tnSession = sessions.remove(devName);
+            if (tnSession == null) {
+                response = TnWebHelper.get3812SessionNotFoundResponse(devName);
+            } else {
+                response = new Tn3812Response(true, null);
+                response.setMsg(TnConstants.NOT_CONNECTED);
+                tnSession.disconnect();
+            }
+
+        } catch (Exception e) {
+            response = TnWebHelper.get3812ErrorResponse(e, devName);
+        }
+        response.setPrinterName(devName);
+        return response;
+    }
+
+    @ExtJSMethod("refreshStatus")
+    public final Tn3812Response refreshStatus(final String printerName) {
+        Tn3812Response response = null;
+        String devName = null;
+        try {
+            devName = printerName.toUpperCase();
+            final Map<String, ITn3812Context> sessions = TnWebHelper.getTn3812Sessions(session);
+            final ITn3812Context tnSession = sessions.remove(devName);
+            if (tnSession == null) {
+                response = TnWebHelper.get3812SessionNotFoundResponse(devName);
+            } else {
+                response = new Tn3812Response(true, null);
+                // TODO fill with printer status
+            }
+
+        } catch (Exception e) {
+            response = TnWebHelper.get3812ErrorResponse(e, devName);
+        }
+        response.setPrinterName(devName);
+        return response;
+    }
+
 }

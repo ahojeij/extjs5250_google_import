@@ -7,31 +7,30 @@ import hr.ws4is.websocket.WebSocketSession;
 
 public interface ITn5250Session {
 
-	/*process key request*/
-	public abstract void process(Tn5250ScreenRequest request,
-			Tn5250ScreenElement[] fields);
+    /* process key request */
+    void process(Tn5250ScreenRequest request, Tn5250ScreenElement[] fields);
 
-	/*resends last screen*/
-	public abstract Tn5250ScreenResponse refresh();
+    /* resends last screen */
+    Tn5250ScreenResponse refresh();
 
-	public abstract String getDisplayId();
+    String getDisplayId();
 
-	public abstract void setDisplayId(String displayId);
+    void setDisplayId(String displayId);
 
-	public abstract String getDisplayName();
+    String getDisplayName();
 
-	public abstract void setDisplayName(String displayName);
+    void setDisplayName(String displayName);
 
-	public abstract String getHostName();
+    String getHostName();
 
-	public abstract void setHostName(String hostName);
+    void setHostName(String hostName);
 
-	public abstract void disconnect();
+    void disconnect();
 
-	public abstract boolean isConnected();
+    boolean isConnected();
 
-	public abstract String toString();
+    String toString();
 
-	public abstract void updateWebSocketSession(WebSocketSession wsSession);
+    void updateWebSocketSession(WebSocketSession wsSession);
 
 }

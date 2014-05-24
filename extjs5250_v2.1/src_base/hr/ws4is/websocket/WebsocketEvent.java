@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.websocket;
 
@@ -22,35 +22,35 @@ import javax.enterprise.inject.Vetoed;
 
 @Vetoed
 public class WebsocketEvent {
-	
-	private final WebSocketSession session;
-	private final WebSocketEventStatus eventStatus;
-	private final Throwable throwable;
-	
-	public WebsocketEvent(WebSocketSession session, WebSocketEventStatus eventStatus) {
-		super();
-		this.session = session;
-		this.eventStatus = eventStatus;
-		this.throwable = null;
-	}
-	
-	public WebsocketEvent(WebSocketSession session, WebSocketEventStatus eventStatus, Throwable throwable){
-		super();
-		this.session = session;
-		this.eventStatus = eventStatus;
-		this.throwable = throwable;
-	}
 
-	public WebSocketSession getWebSocketSession() {
-		return session;
-	}
+    private final WebSocketSession session;
+    private final WebSocketEventStatus eventStatus;
+    private final Throwable throwable;
 
-	public WebSocketEventStatus getEventStatus() {
-		return eventStatus;
-	}
+    public WebsocketEvent(final WebSocketSession session, final WebSocketEventStatus eventStatus) {
+        super();
+        this.session = session;
+        this.eventStatus = eventStatus;
+        this.throwable = null;
+    }
 
-	public Throwable getThrowable() {
-		return throwable;
-	}
-			
+    public WebsocketEvent(final WebSocketSession session, final WebSocketEventStatus eventStatus, final Throwable throwable) {
+        super();
+        this.session = session;
+        this.eventStatus = eventStatus;
+        this.throwable = throwable;
+    }
+
+    public final WebSocketSession getWebSocketSession() {
+        return session;
+    }
+
+    public final WebSocketEventStatus getEventStatus() {
+        return eventStatus;
+    }
+
+    public final Throwable getThrowable() {
+        return throwable;
+    }
+
 }

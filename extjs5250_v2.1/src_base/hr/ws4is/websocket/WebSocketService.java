@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.websocket;
 
@@ -29,29 +29,33 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
-public abstract class WebSocketService  {  
+/**
+ * Base WebSocket endpoint with ExtJS support. Should not be used directly.
+ * Create new class extending this one and annotate new class with @ServerEndpoint
+ */
+public class WebSocketService {
 
-	@Inject 
-	private WebSocketEndpoint endpoint;
-	
-	@OnMessage
-	public void onMessage(WebSocketRequest message, Session session) {	
-		endpoint.onMessage(message, session);
-	}
+    @Inject
+    private WebSocketEndpoint endpoint;
 
-	@OnOpen
-	public void onOpen(final Session session, final EndpointConfig config) {	
-		endpoint.onOpen(session, config);
-	}
+    @OnMessage
+    public final void onMessage(final WebSocketRequest message, final Session session) {
+        endpoint.onMessage(message, session);
+    }
 
-	@OnClose
-	public void onClose(final Session session, final CloseReason reason) {
-		endpoint.onClose(session, reason);
-	}
+    @OnOpen
+    public final void onOpen(final Session session, final EndpointConfig config) {
+        endpoint.onOpen(session, config);
+    }
 
-	@OnError
-	public void onError(Session session, Throwable t) {
-		endpoint.onError(session, t);
-	}
+    @OnClose
+    public final void onClose(final Session session, final CloseReason reason) {
+        endpoint.onClose(session, reason);
+    }
+
+    @OnError
+    public final void onError(final Session session, final Throwable t) {
+        endpoint.onError(session, t);
+    }
 
 }

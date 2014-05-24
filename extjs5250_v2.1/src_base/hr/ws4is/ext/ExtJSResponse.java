@@ -14,83 +14,83 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  */
 package hr.ws4is.ext;
 
 import java.io.Serializable;
 
-/*
- ExtJs standard response structure
+/**
+ ExtJs standard response structure used by other extended response classes
 
-{ 	  "success": false,
-	  "msg": "",
-	  "error": "",
-	  "stack": ""
-	}
-*/
+ { "success": false,
+   "msg": "",
+   "error": "",
+   "stack": ""
+  }
+ */
 public class ExtJSResponse implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public boolean success = false;
-	public String msg ;
-	public Throwable exception;
+    private boolean success;
+    private String msg;
+    private Throwable exception;
 
-	public ExtJSResponse(boolean success, String message) {
-		super();
-		this.success = success;
-		this.msg = message;
-	}
+    public ExtJSResponse(final boolean success, final String message) {
+        super();
+        this.success = success;
+        this.msg = message;
+    }
 
-	public ExtJSResponse( Throwable exception,  String message){
-		setError(exception, message);
-	}
+    public ExtJSResponse(final Throwable exception, final String message) {
+        setError(exception, message);
+    }
 
-	public ExtJSResponse() {
-		super();
-		this.success = false;
-	}
+    public ExtJSResponse() {
+        super();
+        this.success = false;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public final boolean isSuccess() {
+        return success;
+    }
 
-	public void setSuccess( boolean success) {
-		this.success = success;
-	}
+    public final void setSuccess(final boolean success) {
+        this.success = success;
+    }
 
-	public String getMsg() {
-		return msg;
-	}
+    public final String getMsg() {
+        return msg;
+    }
 
-	public void setMsg( String msg)	{
-		this.msg = msg;
-	}
+    public final void setMsg(final String msg) {
+        this.msg = msg;
+    }
 
-	public Throwable getException()	{
-		return exception;
-	}
+    public final Throwable getException() {
+        return exception;
+    }
 
-	public void setException(Throwable exception) {
-		this.exception = exception;
-		
-		if(exception == null){
-			return;		
-		}
-		
-		if(exception instanceof RuntimeException && exception.getCause()!=null){
-			this.exception = exception.getCause();
-		} else {
-			this.exception = exception;	
-		}		
-		
-	}
+    public final void setException(final Throwable exception) {
+        this.exception = exception;
 
-	public  void setError( Throwable exception,  String message) {
-		success = false;
-		msg = message;
-		setException(exception);		
-	}
-		
+        if (exception == null) {
+            return;
+        }
+
+        if (exception instanceof RuntimeException && exception.getCause() != null) {
+            this.exception = exception.getCause();
+        } else {
+            this.exception = exception;
+        }
+
+    }
+
+    public final void setError(final Throwable exception, final String message) {
+        success = false;
+        msg = message;
+        setException(exception);
+    }
+
 }
